@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NID Card PDF Re-Layout Tool</title>
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%232563eb'/%3E%3Ctext x='50' y='65' font-size='55' text-anchor='middle' fill='white'%3EID%3C/text%3E%3C/svg%3E">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f6f9;color:#172033}
+  .wrap{max-width:1100px;margin:32px auto;padding:0 18px}
+  .hero{margin-bottom:20px}
+  h1{margin:0 0 7px;font-size:28px}
+  .sub{color:#687386;margin:0}
+  .panel{background:#fff;border:1px solid #dfe4eb;border-radius:14px;padding:20px;box-shadow:0 6px 24px #1822300d;margin-bottom:18px}
+  .drop{border:2px dashed #b8c2d1;border-radius:12px;padding:32px;text-align:center;cursor:pointer;background:#fafbfd}
+  .drop.drag{border-color:#2563eb;background:#eff6ff}
+  .drop strong{display:block;font-size:17px;margin-bottom:6px}
+  .drop span{color:#738095;font-size:14px}
+  input[type=file]{display:none}
+  .controls{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:end}
+  label{font-size:13px;font-weight:600;color:#475467}
+  input[type=number],select{width:100%;margin-top:7px;padding:10px 11px;border:1px solid #ccd4df;border-radius:9px;font-size:14px;background:white}
+  .check{display:flex;gap:8px;align-items:center;margin-top:30px;font-size:14px}
+  .buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}
+  button{border:0;border-radius:9px;padding:11px 16px;font-weight:700;cursor:pointer}
+  button.primary{background:#2563eb;color:#fff}
+  button.secondary{background:#e9eef6;color:#172033}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  .status{font-size:14px;color:#667085;margin-top:12px;min-height:20px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+  .preview{background:#eef1f5;border-radius:12px;padding:10px;min-width:0}
+  .preview h3{font-size:13px;margin:0 0 9px;color:#596579}
+  .sheet{background:white;box-shadow:0 2px 8px #0001;padding:8px;display:block;width:100%;height:auto;max-height:430px;object-fit:contain;min-height:0;max-width:320px;margin:0 auto}
+  .card{width:100%;max-width:230px;border:1px solid #ddd;display:block}
+  .small{font-size:12px;color:#7a8494}
+  @media(max-width:760px){.controls{grid-template-columns:1fr 1fr}}
+  @media(max-width:470px){.controls{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>NID Card PDF Re-Layout Tool</h1>
+    <p class="sub">Upload a PDF or Image where the front and back are side-by-side. The app puts front above back, centered, with a configurable gap.</p>
+  </div>
+
+  <div class="panel">
+    <div id="drop" class="drop">
+      <strong>Upload PDF or Image</strong>
+      <span>Drop a PDF/image here or click to choose</span>
+      <input id="file" type="file" accept="application/pdf,.pdf">
+      <input id="imageFile" type="file" accept="image/png,image/jpeg,image/jpg,image/webp,image/bmp,.png,.jpg,.jpeg,.webp,.bmp">
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap">
+      <button type="button" id="pdfChoose" class="secondary">Choose PDF</button>
+      <button type="button" id="imageChoose" class="secondary">Choose Image</button>
+    </div>
+
+    <div class="controls" style="margin-top:18px">
+      <div>
+        <label>Gap between front & back (mm)
+          <input id="gap" type="number" min="0" max="50" step="1" value="8">
+        </label>
+      </div>
+      <div>
+        <label>Card width (mm)
+          <input id="cardWidth" type="number" min="40" max="180" step="1" value="86">
+        </label>
+      </div>
+      <div>
+        <label>Output paper
+          <select id="paper">
+            <option value="a4">A4</option>
+            <option value="letter">Letter</option>
+            <option value="original">Original page size</option>
+          </select>
+        </label>
+      </div>
+      <div>
+        <label>Split position (%)
+          <input id="split" type="number" min="30" max="70" step="0.1" value="50">
+        </label>
+      </div>
+      <div>
+        <label>Export resolution
+          <select id="dpi">
+            <option value="300" selected>300 DPI — Print quality</option>
+            <option value="450">450 DPI — High quality</option>
+            <option value="600">600 DPI — Maximum quality</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="small" style="margin-top:10px">
+      <b>Print-quality export:</b> 300 DPI is recommended for normal printing.
+      Use 450/600 DPI when you need maximum barcode/text sharpness.
+    </div>
+
+    <div class="check">
+      <input id="trim" type="checkbox" checked>
+      <label for="trim">Automatically trim surrounding white space from each side</label>
+    </div>
+
+    <div class="buttons">
+      <button id="process" class="primary" disabled>Process PDF</button>
+      <button id="save" class="secondary" disabled>Save as PDF</button>
+      <button id="print" class="secondary" disabled>Direct Print</button>
+    </div>
+    <div id="status" class="status"></div>
+  </div>
+
+  <div class="panel">
+    <div class="grid" id="previews"></div>
+  </div>
+</div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const fileInput = document.getElementById('file');
+const imageInput = document.getElementById('imageFile');
+const pdfChoose = document.getElementById('pdfChoose');
+const imageChoose = document.getElementById('imageChoose');
+const drop = document.getElementById('drop');
+const processBtn = document.getElementById('process');
+const saveBtn = document.getElementById('save');
+const printBtn = document.getElementById('print');
+const statusEl = document.getElementById('status');
+const previews = document.getElementById('previews');
+
+let selectedFile = null;
+let outputPages = [];
+let sourcePdf = null;
+
+drop.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', e => selectFile(e.target.files[0]));
+['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => {
+  e.preventDefault(); drop.classList.add('drag');
+}));
+['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => {
+  e.preventDefault(); drop.classList.remove('drag');
+}));
+drop.addEventListener('drop', e => selectFile(e.dataTransfer.files[0]));
+
+function selectFile(file){
+  if(!file) return;
+  const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+  const isImage = /^image\/(png|jpeg|jpg|webp|bmp)$/i.test(file.type) ||
+                  /\.(png|jpg|jpeg|webp|bmp)$/i.test(file.name);
+
+  if(!isPdf && !isImage){
+    statusEl.textContent = 'Please choose a PDF or supported image file.';
+    return;
+  }
+
+  selectedFile = file;
+  selectedFile.isImageInput = isImage;
+  processBtn.disabled = false;
+  saveBtn.disabled = true;
+  printBtn.disabled = true;
+  outputPages = [];
+  previews.innerHTML = '';
+  statusEl.textContent = `Selected: ${file.name} (${isImage ? 'Image' : 'PDF'})`;
+}
+
+pdfChoose.addEventListener('click', e => {
+  e.stopPropagation();
+  fileInput.click();
+});
+imageChoose.addEventListener('click', e => {
+  e.stopPropagation();
+  imageInput.click();
+});
+imageInput.addEventListener('change', e => selectFile(e.target.files[0]));
+
+function getTrimBox(canvas){
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const data = ctx.getImageData(0,0,w,h).data;
+  let minX=w, minY=h, maxX=-1, maxY=-1;
+  // Treat near-white pixels as background.
+  const threshold = 245;
+  for(let y=0;y<h;y++){
+    for(let x=0;x<w;x++){
+      const i=(y*w+x)*4;
+      const r=data[i], g=data[i+1], b=data[i+2], a=data[i+3];
+      if(a>10 && (r<threshold || g<threshold || b<threshold)){
+        if(x<minX)minX=x; if(x>maxX)maxX=x;
+        if(y<minY)minY=y; if(y>maxY)maxY=y;
+      }
+    }
+  }
+  if(maxX<0) return {x:0,y:0,w,h};
+  const pad = Math.max(2, Math.round(Math.min(w,h)*0.004));
+  minX=Math.max(0,minX-pad); minY=Math.max(0,minY-pad);
+  maxX=Math.min(w-1,maxX+pad); maxY=Math.min(h-1,maxY+pad);
+  return {x:minX,y:minY,w:maxX-minX+1,h:maxY-minY+1};
+}
+
+function cropCanvas(src, box){
+  const c=document.createElement('canvas');
+  c.width=box.w; c.height=box.h;
+  c.getContext('2d').drawImage(src,box.x,box.y,box.w,box.h,0,0,box.w,box.h);
+  return c;
+}
+
+function makeCardCanvas(pageCanvas, x, width, trim){
+  let c=document.createElement('canvas');
+  c.width=width; c.height=pageCanvas.height;
+  c.getContext('2d').drawImage(pageCanvas,x,0,width,pageCanvas.height,0,0,width,pageCanvas.height);
+  if(trim) c=cropCanvas(c,getTrimBox(c));
+  return c;
+}
+
+function fitContain(src, maxW, maxH){
+  const ratio=Math.min(maxW/src.width,maxH/src.height);
+  return {w:Math.max(1,Math.round(src.width*ratio)),h:Math.max(1,Math.round(src.height*ratio))};
+}
+
+async function createSheet(front, back, pageIndex, originalViewport){
+  const gapMm=Math.max(0,Number(document.getElementById('gap').value)||8);
+  const cardWidthMm=Math.max(40,Number(document.getElementById('cardWidth').value)||86);
+  const paper=document.getElementById('paper').value;
+
+  let pageWmm=210,pageHmm=297;
+  if(paper==='letter'){pageWmm=215.9;pageHmm=279.4;}
+  if(paper==='original'){
+    pageWmm=originalViewport.width*25.4/72;
+    pageHmm=originalViewport.height*25.4/72;
+  }
+
+  // Keep the ID card's natural aspect ratio and requested width.
+  const card1Ratio=front.height/front.width;
+  const card2Ratio=back.height/back.width;
+  const cardHmm=Math.max(cardWidthMm*card1Ratio,cardWidthMm*card2Ratio);
+
+  const margin=12;
+  const availableW=pageWmm-2*margin;
+  const availableH=pageHmm-2*margin-gapMm;
+  let w=cardWidthMm, h1=cardWidthMm*card1Ratio, h2=cardWidthMm*card2Ratio;
+  if(w>availableW){
+    w=availableW; h1=w*card1Ratio; h2=w*card2Ratio;
+  }
+  if(h1+h2+gapMm>availableH){
+    const scale=(availableH-gapMm)/(h1+h2);
+    w*=scale; h1*=scale; h2*=scale;
+  }
+
+  // Render the final sheet at true print resolution.
+  // 300 DPI is already suitable for high-quality ID-card printing;
+  // 450/600 DPI are available for printers that benefit from extra detail.
+  const dpiSetting=Math.max(150, Number(document.getElementById('dpi').value)||300);
+  const dpi=dpiSetting/25.4; // pixels per millimetre
+  const sheet=document.createElement('canvas');
+  sheet.width=Math.round(pageWmm*dpi);
+  sheet.height=Math.round(pageHmm*dpi);
+  const ctx=sheet.getContext('2d');
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,sheet.width,sheet.height);
+
+  const pW=sheet.width*(w/pageWmm);
+  const pH1=sheet.width*(h1/pageWmm);
+  const pH2=sheet.width*(h2/pageWmm);
+  const gap=sheet.width*(gapMm/pageWmm);
+  const x=(sheet.width-pW)/2;
+  const totalH=pH1+gap+pH2;
+  const y=(sheet.height-totalH)/2;
+
+  ctx.drawImage(front,x,y,pW,pH1);
+  ctx.drawImage(back,x,y+pH1+gap,pW,pH2);
+
+  return {canvas:sheet, pageWmm,pageHmm, pageIndex};
+}
+
+processBtn.addEventListener('click', async ()=>{
+  if(!selectedFile) return;
+  processBtn.disabled=true;
+  saveBtn.disabled=true; printBtn.disabled=true;
+  previews.innerHTML='';
+  outputPages=[];
+  try{
+    if(selectedFile.isImageInput){
+      statusEl.textContent='Processing image…';
+
+      const img = new Image();
+      const imageUrl = URL.createObjectURL(selectedFile);
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = imageUrl;
+      });
+
+      const source = document.createElement('canvas');
+      source.width = img.naturalWidth || img.width;
+      source.height = img.naturalHeight || img.height;
+      source.getContext('2d').drawImage(img, 0, 0);
+      URL.revokeObjectURL(imageUrl);
+
+      const splitPct=(Number(document.getElementById('split').value)||50)/100;
+      const trim=document.getElementById('trim').checked;
+      let splitX=Math.round(source.width*splitPct);
+      const overall=getTrimBox(source);
+      if(overall.w < source.width*0.98){
+        splitX=Math.round(overall.x+overall.w*splitPct);
+      }
+
+      const front=makeCardCanvas(source,0,splitX,trim);
+      const back=makeCardCanvas(source,splitX,source.width-splitX,trim);
+
+      // Image input uses the same output page builder and DPI setting.
+      const fakeViewport={width:source.width*72/(Number(document.getElementById('dpi').value)||300),
+                          height:source.height*72/(Number(document.getElementById('dpi').value)||300)};
+      const sheet=await createSheet(front,back,1,fakeViewport);
+      outputPages.push(sheet);
+
+      const box=document.createElement('div');
+      box.className='preview';
+      box.innerHTML='<h3>Output page 1</h3>';
+      const im=document.createElement('img');
+      im.className='sheet';
+      im.src=sheet.canvas.toDataURL('image/jpeg',0.82);
+      im.alt='Output page 1';
+      box.appendChild(im);
+      previews.appendChild(box);
+
+      const dpiUsed=document.getElementById('dpi').value;
+      statusEl.textContent=`Done — image converted at ${dpiUsed} DPI.`;
+      saveBtn.disabled=false;
+      printBtn.disabled=false;
+      return;
+    }
+
+    statusEl.textContent='Loading PDF…';
+    const buf=await selectedFile.arrayBuffer();
+    sourcePdf=await pdfjsLib.getDocument({data:buf}).promise;
+    const splitPct=(Number(document.getElementById('split').value)||50)/100;
+    const trim=document.getElementById('trim').checked;
+
+    for(let p=1;p<=sourcePdf.numPages;p++){
+      statusEl.textContent=`Processing page ${p} of ${sourcePdf.numPages}…`;
+      const page=await sourcePdf.getPage(p);
+      // PDF.js renders the original PDF at print resolution, preserving
+      // vector/text detail as far as the source PDF allows.
+      const dpiSetting=Math.max(150, Number(document.getElementById('dpi').value)||300);
+      const viewport=page.getViewport({scale:dpiSetting/72});
+      const src=document.createElement('canvas');
+      src.width=Math.ceil(viewport.width);
+      src.height=Math.ceil(viewport.height);
+      await page.render({canvasContext:src.getContext('2d'),viewport}).promise;
+
+      // Detect the overall content and use its horizontal midpoint as the
+      // default split, while still respecting the user-selected split %
+      // when the page has large margins.
+      let splitX=Math.round(src.width*splitPct);
+      const overall=getTrimBox(src);
+      if(overall.w < src.width*0.98){
+        splitX=Math.round(overall.x+overall.w*splitPct);
+      }
+
+      const leftW=splitX, rightW=src.width-splitX;
+      const front=makeCardCanvas(src,0,leftW,trim);
+      const back=makeCardCanvas(src,splitX,rightW,trim);
+      const sheet=await createSheet(front,back,p,viewport);
+      outputPages.push(sheet);
+
+      const box=document.createElement('div');
+      box.className='preview';
+      box.innerHTML=`<h3>Output page ${p}</h3>`;
+      const im=document.createElement('img');
+      im.className='sheet';
+      // Preview is display-sized only; export resolution (300/450/600 DPI)
+      // does not affect its on-screen size.
+      im.src=sheet.canvas.toDataURL('image/jpeg',0.82);
+      im.alt=`Output page ${p}`;
+      box.appendChild(im);
+      previews.appendChild(box);
+    }
+
+    const dpiUsed=document.getElementById('dpi').value;
+    statusEl.textContent=`Done — ${outputPages.length} page(s) ready at ${dpiUsed} DPI. Lossless PNG export is enabled for maximum print sharpness.`;
+    saveBtn.disabled=false; printBtn.disabled=false;
+  }catch(err){
+    console.error(err);
+    statusEl.textContent='Could not process the PDF: '+err.message;
+  }finally{
+    processBtn.disabled=false;
+  }
+});
+
+saveBtn.addEventListener('click', ()=>{
+  if(!outputPages.length) return;
+  const {jsPDF}=window.jspdf;
+  const first=outputPages[0];
+  const doc=new jsPDF({
+    orientation:'portrait',
+    unit:'mm',
+    format:[first.pageWmm,first.pageHmm],
+    compress:true
+  });
+  outputPages.forEach((pg,i)=>{
+    if(i>0) doc.addPage([pg.pageWmm,pg.pageHmm],'portrait');
+    // PNG is lossless and avoids JPEG ringing around small text, QR codes,
+    // barcodes and fine security details.
+    doc.addImage(pg.canvas.toDataURL('image/png'),'PNG',0,0,pg.pageWmm,pg.pageHmm,undefined,'FAST');
+  });
+  const base=(selectedFile?.name||'id-cards').replace(/\.pdf$/i,'');
+  doc.save(base+'_front-back.pdf');
+});
+
+printBtn.addEventListener('click', ()=>{
+  if(!outputPages.length) return;
+  const win=window.open('','_blank');
+  if(!win){alert('Please allow pop-ups for printing.');return;}
+  const pages=outputPages.map(pg=>`
+    <div class="page">
+      <img src="${pg.canvas.toDataURL('image/png')}">
+    </div>`).join('');
+  win.document.write(`<!doctype html><html><head><title>Print ID Cards</title>
+    <style>
+      @page{size:${outputPages[0].pageWmm}mm ${outputPages[0].pageHmm}mm;margin:0}
+      html,body{margin:0;padding:0}
+      .page{width:${outputPages[0].pageWmm}mm;height:${outputPages[0].pageHmm}mm;page-break-after:always;display:flex}
+      img{width:100%;height:100%;display:block}
+    </style></head><body>${pages}</body></html>`);
+  win.document.close();
+  win.focus();
+  setTimeout(()=>win.print(),500);
+});
+</script>
+</body>
+</html>
