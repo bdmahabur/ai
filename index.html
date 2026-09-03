@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Based Service</title>
+    <meta name="description" content="Quick access to useful online services and tools.">
+    <meta name="theme-color" content="#2563eb">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232563eb'/%3E%3Cpath d='M28 50h44M50 28v44' stroke='white' stroke-width='10' stroke-linecap='round'/%3E%3C/svg%3E">
+
+    <style>
+        /* =========================
+           RESET
+        ========================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            min-height: 100vh;
+            transition:
+                background 0.25s ease,
+                color 0.25s ease;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* =========================
+           VARIABLES
+        ========================= */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-soft: #eff6ff;
+
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --border: #e2e8f0;
+
+            --shadow:
+                0 10px 30px rgba(15, 23, 42, 0.06);
+
+            --shadow-hover:
+                0 18px 40px rgba(15, 23, 42, 0.11);
+
+            --radius: 18px;
+        }
+
+        /* =========================
+           DARK MODE
+        ========================= */
+        body.dark {
+            --bg: #0b1120;
+            --card: #111827;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --border: #1e293b;
+
+            --primary-soft: #172554;
+
+            --shadow:
+                0 10px 30px rgba(0, 0, 0, 0.25);
+
+            --shadow-hover:
+                0 18px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        /* =========================
+           CONTAINER
+        ========================= */
+        .container {
+            width: min(1180px, calc(100% - 32px));
+            margin: auto;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+
+            background: rgba(248, 250, 252, 0.82);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        body.dark header {
+            background: rgba(11, 17, 32, 0.82);
+            border-color: rgba(30, 41, 59, 0.8);
+        }
+
+        .nav {
+            height: 70px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        /* =========================
+           LOGO
+        ========================= */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: -0.4px;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+
+            display: grid;
+            place-items: center;
+
+            background: var(--primary);
+            color: white;
+
+            border-radius: 11px;
+
+            font-weight: 800;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+
+            display: grid;
+            place-items: center;
+
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+
+            border-radius: 11px;
+
+            transition:
+                transform 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .icon-btn:hover {
+            transform: translateY(-2px);
+            background: var(--primary-soft);
+        }
+
+        /* =========================
+           HERO
+        ========================= */
+        .hero {
+            padding: 75px 0 45px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            padding: 7px 12px;
+
+            background: var(--primary-soft);
+            color: var(--primary);
+
+            border-radius: 999px;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            margin-bottom: 18px;
+        }
+
+        .hero-badge span {
+            width: 7px;
+            height: 7px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        .hero h1 {
+            max-width: 760px;
+            margin: auto;
+
+            font-size: clamp(34px, 5vw, 58px);
+            line-height: 1.05;
+
+            letter-spacing: -2.5px;
+            font-weight: 850;
+        }
+
+        .hero h1 strong {
+            color: var(--primary);
+        }
+
+        .hero p {
+            max-width: 620px;
+            margin: 20px auto 30px;
+
+            color: var(--muted);
+            font-size: 16px;
+        }
+
+        /* =========================
+           SEARCH
+        ========================= */
+        .search-box {
+            width: min(650px, 100%);
+            margin: auto;
+
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            height: 56px;
+
+            padding: 0 55px 0 20px;
+
+            border: 1px solid var(--border);
+            outline: none;
+
+            background: var(--card);
+            color: var(--text);
+
+            border-radius: 15px;
+
+            box-shadow: var(--shadow);
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .search-box input::placeholder {
+            color: var(--muted);
+            opacity: 1;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+
+            box-shadow:
+                0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: var(--muted);
+
+            pointer-events: none;
+        }
+
+        /* =========================
+           CATEGORIES
+        ========================= */
+        .categories {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+
+            margin: 10px 0 35px;
+        }
+
+        .category {
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--muted);
+
+            padding: 8px 14px;
+
+            border-radius: 999px;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            transition: all 0.2s ease;
+        }
+
+        .category:hover,
+        .category.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* =========================
+           SERVICES
+        ========================= */
+        .services-section {
+            padding: 10px 0 70px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 20px;
+
+            margin-bottom: 20px;
+        }
+
+        .section-title h2 {
+            font-size: 24px;
+            letter-spacing: -0.8px;
+        }
+
+        .section-title p {
+            color: var(--muted);
+            font-size: 14px;
+            margin-top: 3px;
+        }
+
+        .service-count {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        /* =========================
+           GRID
+        ========================= */
+        .service-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 16px;
+        }
+
+        /* =========================
+           CARD
+        ========================= */
+        .service-card {
+            position: relative;
+
+            background: var(--card);
+            border: 1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            padding: 20px;
+
+            box-shadow: var(--shadow);
+
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease,
+                border-color 0.25s ease;
+
+            animation: cardIn 0.45s ease both;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: rgba(37, 99, 235, 0.3);
+        }
+
+        .service-icon {
+            width: 46px;
+            height: 46px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 13px;
+
+            background: var(--primary-soft);
+            color: var(--primary);
+
+            margin-bottom: 15px;
+        }
+
+        .service-icon svg {
+            width: 23px;
+            height: 23px;
+        }
+
+        .service-card h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .service-card p {
+            color: var(--muted);
+            font-size: 13px;
+            min-height: 40px;
+        }
+
+        .service-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+
+            margin-top: 15px;
+
+            color: var(--primary);
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .service-link span {
+            transition: transform 0.2s ease;
+        }
+
+        .service-card:hover .service-link span {
+            transform: translateX(4px);
+        }
+
+        .favorite {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+
+            width: 30px;
+            height: 30px;
+
+            display: grid;
+            place-items: center;
+
+            border: 0;
+            background: transparent;
+
+            color: #94a3b8;
+
+            border-radius: 8px;
+        }
+
+        .favorite:hover {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+
+        .favorite.active {
+            color: #f59e0b;
+        }
+
+        /* =========================
+           EMPTY STATE
+        ========================= */
+        .empty {
+            display: none;
+
+            padding: 50px 20px;
+
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .empty-icon {
+            font-size: 35px;
+            margin-bottom: 10px;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 28px 0;
+
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 18px;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        /* =========================
+           ANIMATION
+        ========================= */
+        @keyframes cardIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+        @media (max-width: 950px) {
+            .service-grid {
+                grid-template-columns:
+                    repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 700px) {
+            .hero {
+                padding-top: 50px;
+            }
+
+            .hero h1 {
+                letter-spacing: -1.5px;
+            }
+
+            .service-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .section-header {
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                width: min(100% - 22px, 1180px);
+            }
+
+            .nav {
+                height: 62px;
+            }
+
+            .logo {
+                font-size: 16px;
+            }
+
+            .logo-icon {
+                width: 34px;
+                height: 34px;
+            }
+
+            .hero {
+                padding: 42px 0 30px;
+            }
+
+            .hero p {
+                font-size: 14px;
+            }
+
+            .service-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* =========================
+           REDUCED MOTION
+        ========================= */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+    <header>
+        <div class="container nav">
+
+            <a href="#" class="logo">
+                <div class="logo-icon">A</div>
+                <span>AI Based Service</span>
+            </a>
+
+            <div class="nav-right">
+
+                <button
+                    class="icon-btn"
+                    id="themeBtn"
+                    aria-label="Toggle dark mode"
+                    title="Toggle theme"
+                >
+                    <svg
+                        id="themeIcon"
+                        width="19"
+                        height="19"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <path d="M12 2v2"></path>
+                        <path d="M12 20v2"></path>
+                        <path d="m4.93 4.93 1.41 1.41"></path>
+                        <path d="m17.66 17.66 1.41 1.41"></path>
+                        <path d="M2 12h2"></path>
+                        <path d="M20 12h2"></path>
+                        <path d="m6.34 17.66-1.41 1.41"></path>
+                        <path d="m19.07 4.93-1.41 1.41"></path>
+                    </svg>
+                </button>
+
+            </div>
+
+        </div>
+    </header>
+
+
+    <!-- =========================
+         HERO
+    ========================= -->
+    <main>
+
+        <section class="hero">
+
+            <div class="container">
+
+                <div class="hero-badge">
+                    <span></span>
+                    All services in one place
+                </div>
+
+                <h1>
+                    Simple access to your
+                    <strong>favorite services.</strong>
+                </h1>
+
+                <p>
+                    A fast and clean service dashboard for accessing
+                    useful tools, websites and applications.
+                </p>
+
+                <!-- Search -->
+                <div class="search-box">
+
+                    <input
+                        type="search"
+                        id="searchInput"
+                        placeholder="Search services..."
+                        autocomplete="off"
+                        aria-label="Search services"
+                    >
+
+                    <div class="search-icon">
+                        <svg
+                            width="21"
+                            height="21"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <circle cx="11" cy="11" r="7"></circle>
+                            <path d="m20 20-3.5-3.5"></path>
+                        </svg>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             CATEGORIES
+        ========================= -->
+        <section class="container">
+
+            <div class="categories">
+
+                <button
+                    class="category active"
+                    data-category="all"
+                >
+                    All
+                </button>
+
+                <button
+                    class="category"
+                    data-category="tools"
+                >
+                    Tools
+                </button>
+
+                <button
+                    class="category"
+                    data-category="documents"
+                >
+                    Documents
+                </button>
+
+                <button
+                    class="category"
+                    data-category="web"
+                >
+                    Web
+                </button>
+
+                <button
+                    class="category"
+                    data-category="business"
+                >
+                    Business
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             SERVICES
+        ========================= -->
+        <section class="services-section">
+
+            <div class="container">
+
+                <div class="section-header">
+
+                    <div class="section-title">
+                        <h2>Services</h2>
+                        <p>Quick access to available services</p>
+                    </div>
+
+                    <div
+                        class="service-count"
+                        id="serviceCount"
+                    >
+                        12 services
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="service-grid"
+                    id="serviceGrid"
+                >
+
+                    <!-- SERVICE 1 -->
+                    <a
+                        href="nid-card-relayout"
+                        class="service-card"
+                        data-name="ID Card Re-Layout"
+                        data-category="documents"
+                    >
+
+                        <div class="service-icon">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                                <circle cx="8" cy="11" r="2"></circle>
+                                <path d="M5.5 16a3 3 0 0 1 5 0"></path>
+                                <path d="M14 9h4"></path>
+                                <path d="M14 13h4"></path>
+                                <path d="M14 16h3"></path>
+                            </svg>
+                        </div>
+
+                        <h3>NID Card Re-Layout</h3>
+
+                        <p>
+                            Re-Layout NID Card PDF documents.
+                        </p>
+
+                        <div class="service-link">
+                            Open service <span>→</span>
+                        </div>
+
+                    </a>
+
+
+                    <!-- SERVICE 2 -->
+                    <a
+                        href="url-cleaner"
+                        class="service-card"
+                        data-name="URL Cleaner"
+                        data-category="tools"
+                    >
+
+                        <div class="service-icon">
+                            <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path d="M10 13a5 5 0 0 0 7.07.07l2-2a5 5 0 0 0-7.07-7.07l-1.15 1.15"></path>
+                            <path d="M14 11a5 5 0 0 0-7.07-.07l-2 2A5 5 0 0 0 7 20l1.15-1.15"></path>
+                        </svg>
+                        </div>
+
+                        <h3>URL Cleaner</h3>
+
+                        <p>
+                            URL Cleaner for print reday file from pc.
+                        </p>
+
+                        <div class="service-link">
+                            Open service <span>→</span>
+                        </div>
+
+                    </a>
+
+                    <!-- SERVICE 3 -->
+                    <a
+                        href="nid-pdf-printable"
+                        class="service-card"
+                        data-name="ID Card Generator"
+                        data-category="tools"
+                    >
+
+                        <div class="service-icon">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                                <circle cx="8" cy="11" r="2"></circle>
+                                <path d="M13 10h5"></path>
+                                <path d="M13 14h4"></path>
+                            </svg>
+                        </div>
+
+                        <h3>NID Card Scan to PDF</h3>
+
+                        <p>
+                            Create printable NID cards for a4 page.
+                        </p>
+
+                        <div class="service-link">
+                            Open service <span>→</span>
+                        </div>
+
+                    </a>
+
+
+                    <!-- SERVICE 4 -->
+                    <a
+                        href="qr-code"
+                        class="service-card"
+                        data-name="QR Code Generator"
+                        data-category="tools"
+                    >
+
+                        <div class="service-icon">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                                <path d="M14 14h3v3h-3z"></path>
+                                <path d="M18 18h3v3h-3z"></path>
+                                <path d="M18 14h3"></path>
+                            </svg>
+                        </div>
+
+                        <h3>QR Code Generator</h3>
+
+                        <p>
+                            Generate QR codes for links and data.
+                        </p>
+
+                        <div class="service-link">
+                            Open service <span>→</span>
+                        </div>
+
+                    </a>
+
+
+                    <!-- SERVICE 5 -->
+                    <a
+                        href="age-calculator"
+                        class="service-card"
+                        data-name="Online Age Calculator"
+                        data-category="tools"
+                    >
+
+                        <div class="service-icon">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                                <path d="M8 6h8"></path>
+                                <path d="M8 10h2"></path>
+                                <path d="M14 10h2"></path>
+                                <path d="M8 14h2"></path>
+                                <path d="M14 14h2"></path>
+                                <path d="M8 18h2"></path>
+                                <path d="M14 18h2"></path>
+                            </svg>
+                        </div>
+
+                        <h3>Age Calculator</h3>
+
+                        <p>
+                            Useful age calculators for everyday work.
+                        </p>
+
+                        <div class="service-link">
+                            Open service <span>→</span>
+                        </div>
+
+                    </a>
+
+
+                    <!-- SERVICE 6 -->
+                     <a
+                        href="id-card-gen"
+                        class="service-card"
+                        data-name="ID Card Generator"
+                        data-category="tools"
+                    >
+
+                        <div class="service-icon">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                                <circle cx="8" cy="11" r="2"></circle>
+                                <path d="M13 10h5"></path>
+                                <path d="M13 14h4"></path>
+                            </svg>
+                        </div>
+
+                        <h3>ID Card Generator</h3>
+
+                        <p>
+                            Create printable ID cards quickly.
+                        </p>
+
+                        <div class="service-link">
+                            Open service <span>→</span>
+                        </div>
+
+                    </a>
+
+
+                    <!-- SERVICE 7 -->
+                    <a
+                        href="https://cloudconvert.com/"
+                        class="service-card"
+                        data-name="File Converter"
+                        data-category="documents"
+                    >
+
+                        <div class="service-icon">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path d="M7 7h10"></path>
+                                <path d="m13 3 4 4-4 4"></path>
+                                <path d="M17 17H7"></path>
+                                <path d="m11 13-4 4 4 4"></path>
+                            </svg>
+                        </div>
+
+                        <h3>File Converter</h3>
+
+                        <p>
+                            Convert files between popular formats.
+                        </p>
+
+                        <div class="service-link">
+                            Open service <span>→</span>
+                        </div>
+
+                    </a>
+
+
+                    <!-- SERVICE 8 -->
+                    <a
+                        href="https://deskscanner.lovable.app/"
+                        class="service-card"
+                        data-name="Document Generator"
+                        data-category="documents"
+                    >
+
+                        <div class="service-icon">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <!-- Scanner body -->
+                                    <rect x="4" y="4" width="16" height="8" rx="2"></rect>
+                            
+                                    <!-- Document -->
+                                    <path d="M7 12v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6"></path>
+                            
+                                    <!-- Scan glass -->
+                                    <path d="M7 7h10"></path>
+                            
+                                    <!-- Scan/document lines -->
+                                    <path d="M9 16h6"></path>
+                                    <path d="M9 18h4"></path>
+                                </svg>
+                            </div>
+
+                        <h3>Document Scanner</h3>
+
+                        <p>
+                            Scan Image for Print-Ready Output.
+                        </p>
+
+                        <div class="service-link">
+                            Open service <span>→</span>
+                        </div>
+
+                    </a>
+
+                </div>
+
+                <!-- EMPTY -->
+                <div
+                    class="empty"
+                    id="emptyState"
+                >
+                    <div class="empty-icon">⌕</div>
+                    <strong>No services found</strong>
+                    <p>Try another search or category.</p>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         FOOTER
+    ========================= -->
+    <footer>
+
+        <div class="container footer-inner">
+
+            <div>
+                © <span id="year"></span> AI Based Service
+            </div>
+
+            <div class="footer-links">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Contact</a>
+            </div>
+
+        </div>
+
+    </footer>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+    <script>
+
+        /* =========================
+           ELEMENTS
+        ========================= */
+
+        const searchInput =
+            document.getElementById("searchInput");
+
+        const serviceGrid =
+            document.getElementById("serviceGrid");
+
+        const serviceCards =
+            [...document.querySelectorAll(".service-card")];
+
+        const categories =
+            [...document.querySelectorAll(".category")];
+
+        const serviceCount =
+            document.getElementById("serviceCount");
+
+        const emptyState =
+            document.getElementById("emptyState");
+
+        const themeBtn =
+            document.getElementById("themeBtn");
+
+        const themeIcon =
+            document.getElementById("themeIcon");
+
+
+        /* =========================
+           YEAR
+        ========================= */
+
+        document.getElementById("year").textContent =
+            new Date().getFullYear();
+
+
+        /* =========================
+           SEARCH + FILTER
+        ========================= */
+
+        let activeCategory = "all";
+
+
+        function filterServices() {
+
+            const search =
+                searchInput.value
+                    .trim()
+                    .toLowerCase();
+
+            let visible = 0;
+
+
+            serviceCards.forEach((card) => {
+
+                const name =
+                    card.dataset.name.toLowerCase();
+
+                const category =
+                    card.dataset.category.toLowerCase();
+
+
+                const matchesSearch =
+                    !search ||
+                    name.includes(search);
+
+
+                const matchesCategory =
+                    activeCategory === "all" ||
+                    category === activeCategory;
+
+
+                const show =
+                    matchesSearch &&
+                    matchesCategory;
+
+
+                card.style.display =
+                    show ? "" : "none";
+
+
+                if (show) {
+                    visible++;
+                }
+
+            });
+
+
+            serviceCount.textContent =
+                `${visible} ${visible === 1 ? "service" : "services"}`;
+
+
+            emptyState.style.display =
+                visible === 0 ? "block" : "none";
+
+        }
+
+
+        searchInput.addEventListener(
+            "input",
+            filterServices
+        );
+
+
+        /* =========================
+           CATEGORY FILTER
+        ========================= */
+
+        categories.forEach((button) => {
+
+            button.addEventListener("click", () => {
+
+                categories.forEach((item) => {
+                    item.classList.remove("active");
+                });
+
+
+                button.classList.add("active");
+
+
+                activeCategory =
+                    button.dataset.category;
+
+
+                filterServices();
+
+            });
+
+        });
+
+
+        /* =========================
+           DARK MODE
+        ========================= */
+
+        const savedTheme =
+            localStorage.getItem("theme");
+
+
+        if (savedTheme === "dark") {
+            document.body.classList.add("dark");
+        }
+
+
+        function updateThemeIcon() {
+
+            if (
+                document.body.classList.contains("dark")
+            ) {
+
+                themeIcon.innerHTML = `
+                    <path d="M21 12.8A9 9 0 1 1 11.2 3
+                    7 7 0 0 0 21 12.8z"></path>
+                `;
+
+            } else {
+
+                themeIcon.innerHTML = `
+                    <circle cx="12" cy="12" r="4"></circle>
+                    <path d="M12 2v2"></path>
+                    <path d="M12 20v2"></path>
+                    <path d="m4.93 4.93 1.41 1.41"></path>
+                    <path d="m17.66 17.66 1.41 1.41"></path>
+                    <path d="M2 12h2"></path>
+                    <path d="M20 12h2"></path>
+                    <path d="m6.34 17.66-1.41 1.41"></path>
+                    <path d="m19.07 4.93-1.41 1.41"></path>
+                `;
+
+            }
+
+        }
+
+
+        updateThemeIcon();
+
+
+        themeBtn.addEventListener("click", () => {
+
+            document.body.classList.toggle("dark");
+
+
+            const theme =
+                document.body.classList.contains("dark")
+                    ? "dark"
+                    : "light";
+
+
+            localStorage.setItem(
+                "theme",
+                theme
+            );
+
+
+            updateThemeIcon();
+
+        });
+
+
+        /* =========================
+           FAVORITES
+        ========================= */
+
+        serviceCards.forEach((card) => {
+
+            const button =
+                document.createElement("button");
+
+            button.className = "favorite";
+
+            button.type = "button";
+
+            button.setAttribute(
+                "aria-label",
+                "Add to favorites"
+            );
+
+            button.innerHTML = "☆";
+
+
+            button.addEventListener(
+                "click",
+                (event) => {
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+
+                    button.classList.toggle("active");
+
+
+                    if (
+                        button.classList.contains("active")
+                    ) {
+
+                        button.innerHTML = "★";
+
+                    } else {
+
+                        button.innerHTML = "☆";
+
+                    }
+
+                }
+            );
+
+
+            card.appendChild(button);
+
+        });
+
+
+        /* =========================
+           KEYBOARD SHORTCUT
+        ========================= */
+
+        document.addEventListener(
+            "keydown",
+            (event) => {
+
+                if (
+                    event.key === "/" &&
+                    document.activeElement !== searchInput
+                ) {
+
+                    event.preventDefault();
+
+                    searchInput.focus();
+
+                }
+
+                if (event.key === "Escape") {
+
+                    searchInput.value = "";
+
+                    searchInput.blur();
+
+                    filterServices();
+
+                }
+
+            }
+        );
+
+
+        /* =========================
+           INITIAL FILTER
+        ========================= */
+
+        filterServices();
+
+    </script>
+
+</body>
+</html>
