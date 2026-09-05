@@ -1007,7 +1007,13 @@ button svg{
         grid-template-columns:1fr;
     }
 
-    /* SMART CROP — mobile only */
+    /*
+       SMART CROP — MOBILE ONLY
+       The uploaded image stays fully visible and scales down
+       to fit the available phone screen. The crop handles remain
+       interactive because the canvas covers the complete workspace.
+    */
+
     .modal{
 
         padding:0;
@@ -1019,15 +1025,18 @@ button svg{
 
         width:100vw;
         max-width:100vw;
+
         height:100dvh;
         max-height:100dvh;
+
         border-radius:0;
     }
 
     .crop-header{
 
-        min-height:auto;
+        min-height:0;
         padding:10px 12px;
+        align-items:flex-start;
         gap:8px;
         flex:none;
     }
@@ -1035,11 +1044,12 @@ button svg{
     .crop-header h3{
 
         font-size:18px;
+        line-height:1.25;
     }
 
     .crop-size-info{
 
-        gap:6px 10px;
+        gap:5px 9px;
         margin-top:4px;
         font-size:11px;
     }
@@ -1051,24 +1061,40 @@ button svg{
 
     .crop-work{
 
-        min-height:0;
-        flex:1 1 auto;
         width:100%;
-        height:auto;
+        min-width:0;
+        min-height:0;
+
+        flex:1 1 auto;
+
+        position:relative;
+        overflow:hidden;
     }
 
     #cropCanvas{
 
+        position:absolute;
+
+        left:0;
+        top:0;
+        right:0;
+        bottom:0;
+
         width:100% !important;
         height:100% !important;
+
         display:block;
+
         touch-action:none;
+        user-select:none;
+        -webkit-user-select:none;
     }
 
     .crop-footer{
 
-        min-height:auto;
+        min-height:0;
         padding:9px 10px calc(9px + env(safe-area-inset-bottom));
+
         gap:8px;
         flex:none;
     }
@@ -1077,6 +1103,7 @@ button svg{
 
         min-width:0;
         flex:1;
+
         padding:11px 8px;
         font-size:14px;
     }
@@ -2843,12 +2870,24 @@ function getDisplayGeometry(){
         cropImage.height;
 
 
+    /*
+       IMPORTANT:
+       cropCanvas.width / height are physical pixels (DPR scaled),
+       while all crop drawing and pointer coordinates use CSS pixels.
+
+       Use the displayed CSS size here so the uploaded image always
+       fits completely inside the responsive mobile crop workspace.
+    */
+
+    const canvasRect =
+        cropCanvas.getBoundingClientRect();
+
     const canvasWidth =
-        cropCanvas.width;
+        canvasRect.width;
 
 
     const canvasHeight =
-        cropCanvas.height;
+        canvasRect.height;
 
 
     /*
@@ -3152,70 +3191,65 @@ function detectCard(){
     try{
 
         /*
-           Read the image through a small offscreen canvas first.
+           Read image.
+        */
 
-           Phone cameras often produce very large images. Loading
-           the original directly into OpenCV can use too much memory
-           on mobile browsers and make Smart Crop fail. The detection
-           algorithm itself is unchanged; OpenCV simply receives a
-           maximum 1600px working copy.
+        let src =
+            cv.imread(
+                cropImage
+            );
+
+
+        /*
+           Limit processing size.
+           This keeps Smart Crop fast on
+           very large phone photographs.
         */
 
         const maxSide =
             1600;
 
-        const sourceWidth =
-            cropImage.naturalWidth ||
-            cropImage.width;
 
-        const sourceHeight =
-            cropImage.naturalHeight ||
-            cropImage.height;
-
-        const scale =
+        let scale =
             Math.min(
                 1,
                 maxSide /
                 Math.max(
-                    sourceWidth,
-                    sourceHeight
+                    src.cols,
+                    src.rows
                 )
             );
 
-        const workCanvas =
-            document.createElement("canvas");
 
-        workCanvas.width =
-            Math.max(
-                1,
-                Math.round(
-                    sourceWidth * scale
-                )
+        if(scale < 1){
+
+            const small =
+                new cv.Mat();
+
+
+            cv.resize(
+                src,
+                small,
+                new cv.Size(
+                    Math.round(
+                        src.cols * scale
+                    ),
+                    Math.round(
+                        src.rows * scale
+                    )
+                ),
+                0,
+                0,
+                cv.INTER_AREA
             );
 
-        workCanvas.height =
-            Math.max(
-                1,
-                Math.round(
-                    sourceHeight * scale
-                )
-            );
 
-        const workCtx =
-            workCanvas.getContext("2d");
+            src.delete();
 
-        workCtx.drawImage(
-            cropImage,
-            0,
-            0,
-            workCanvas.width,
-            workCanvas.height
-        );
+            src =
+                small;
 
-        let src =
-            cv.imread(
-                workCanvas
-            );
+        }
 
 
         /*
@@ -5886,47 +5920,51 @@ window.onload = function(){
    WINDOW RESIZE
 ========================================================= */
 
-function refreshSmartCropViewport(){
+function refreshSmartCrop(){
 
     if(
-        cropModal.classList.contains(
+        !cropModal.classList.contains(
             "show"
         )
     ){
 
-        requestAnimationFrame(
-            function(){
-
-                resizeCropCanvas();
-
-                clampAllPoints();
-
-                drawCrop();
-
-            }
-        );
+        return;
 
     }
+
+    requestAnimationFrame(
+        function(){
+
+            resizeCropCanvas();
+
+            clampAllPoints();
+
+            drawCrop();
+
+        }
+    );
 
 }
 
 
 window.addEventListener(
     "resize",
-    refreshSmartCropViewport
+    refreshSmartCrop
 );
+
 
 window.addEventListener(
     "orientationchange",
     function(){
 
         setTimeout(
-            refreshSmartCropViewport,
-            80
+            refreshSmartCrop,
+            100
         );
 
     }
 );
+
 
 if(
     window.visualViewport
@@ -5934,7 +5972,7 @@ if(
 
     window.visualViewport.addEventListener(
         "resize",
-        refreshSmartCropViewport
+        refreshSmartCrop
     );
 
 }
