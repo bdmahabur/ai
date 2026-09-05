@@ -52,6 +52,231 @@ input[type=range]{width:100%}
 #status{font-size:12px;color:var(--muted);margin-top:8px}
 .empty{padding:15px;color:var(--muted);text-align:center;border:1px dashed var(--line);border-radius:8px}
 @media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+/* =========================
+   MOBILE RESPONSIVE ONLY
+   No JavaScript/function changes
+   ========================= */
+@media (max-width: 600px){
+
+  .app{
+    width:100%;
+    max-width:none;
+    padding:10px;
+    overflow-x:hidden;
+  }
+
+  header{
+    display:block;
+    margin-bottom:10px;
+  }
+
+  h1{
+    font-size:20px;
+    line-height:1.25;
+  }
+
+  .subtitle{
+    font-size:11px;
+    line-height:1.4;
+  }
+
+  .card{
+    width:100%;
+    padding:10px;
+    margin-bottom:10px;
+    border-radius:10px;
+  }
+
+  /* Settings toolbar */
+  .toolbar{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+    align-items:end;
+  }
+
+  .toolbar .field{
+    min-width:0;
+    width:100%;
+  }
+
+  .toolbar .field:first-child{
+    grid-column:1 / -1;
+  }
+
+  .toolbar select,
+  .toolbar input[type=number]{
+    width:100%;
+    min-width:0;
+  }
+
+  .toolbar button{
+    width:100%;
+    min-width:0;
+    padding:0 8px;
+    white-space:nowrap;
+  }
+
+  .toolbar #print{
+    grid-column:1 / -1;
+  }
+
+  .legend{
+    gap:5px;
+  }
+
+  .pill{
+    font-size:10px;
+    padding:4px 7px;
+  }
+
+  /* Keep the existing one-column layout, but make every item fluid */
+  .layout{
+    grid-template-columns:minmax(0,1fr);
+    width:100%;
+    gap:10px;
+  }
+
+  .side,
+  .side .card,
+  main.card{
+    width:100%;
+    min-width:0;
+  }
+
+  .panel-title{
+    font-size:15px;
+  }
+
+  /* Upload area */
+  .upload{
+    width:100%;
+    min-width:0;
+    padding:16px 8px;
+  }
+
+  .upload-subtitle,
+  .upload-hint{
+    text-align:center;
+    max-width:100%;
+  }
+
+  /* Photo list */
+  .thumb-list{
+    width:100%;
+    max-width:100%;
+    overflow-x:hidden;
+  }
+
+  .thumb{
+    grid-template-columns:50px minmax(0,1fr) auto;
+    gap:7px;
+    min-width:0;
+  }
+
+  .thumb img{
+    width:50px;
+    height:62px;
+  }
+
+  .thumb .name{
+    max-width:100%;
+  }
+
+  .thumb .copies{
+    min-width:0;
+  }
+
+  .thumb .copies input{
+    width:52px;
+    min-width:52px;
+  }
+
+  .thumb button{
+    padding:0 8px;
+  }
+
+  /* Crop editor */
+  .crop-area{
+    width:100%;
+  }
+
+  .crop-box{
+    width:225px;
+    height:275px;
+    max-width:100%;
+    flex:0 0 auto;
+  }
+
+  .sliders{
+    width:100%;
+    min-width:0;
+  }
+
+  .zoom-control-row{
+    min-width:0;
+  }
+
+  .zoom-control-row input[type=range]{
+    min-width:0;
+    flex:1 1 auto;
+  }
+
+  /* Crop action buttons */
+  .side .card > div[style*="display:flex"]{
+    width:100%;
+    min-width:0;
+  }
+
+  .side .card > div[style*="display:flex"] button{
+    min-width:0;
+    padding:0 8px;
+  }
+
+  /* Preview: keep the exact page dimensions used by the existing JS.
+     It scrolls horizontally on small screens instead of breaking the page. */
+  .preview-wrap{
+    width:100%;
+    max-width:100%;
+    overflow-x:auto;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    padding:10px;
+  }
+
+  #page{
+    flex:0 0 auto;
+  }
+
+  main.card > .small{
+    line-height:1.4;
+  }
+}
+
+@media (max-width: 380px){
+  .app{
+    padding:7px;
+  }
+
+  .card{
+    padding:9px;
+  }
+
+  .toolbar{
+    gap:6px;
+  }
+
+  .toolbar button{
+    font-size:12px;
+  }
+
+  .crop-box{
+    width:210px;
+    height:257px;
+  }
+}
+
 @media print{
  @page{size:letter;margin:0!important}
  html,body{margin:0!important;padding:0!important;background:#fff!important}
