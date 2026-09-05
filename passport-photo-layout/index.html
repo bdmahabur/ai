@@ -4,60 +4,353 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Passport Photo Print Studio</title>
+
 <style>
 *{box-sizing:border-box}
-:root{--bg:#f3f4f6;--card:#fff;--line:#d7dbe0;--text:#111827;--muted:#6b7280;--blue:#2563eb;--dark:#111827}
-body{margin:0;background:var(--bg);color:var(--text);font:14px Arial,sans-serif}
+
+:root{
+  --bg:#f3f4f6;
+  --card:#fff;
+  --line:#d7dbe0;
+  --text:#111827;
+  --muted:#6b7280;
+  --blue:#2563eb;
+  --dark:#111827
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font:14px Arial,sans-serif
+}
+
 button,input,select{font:inherit}
-.app{max-width:1450px;margin:auto;padding:18px}
-header{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:15px}
-h1{font-size:24px;margin:0 0 4px}.subtitle{color:var(--muted)}
-.card{background:var(--card);border:1px solid #e5e7eb;border-radius:12px;padding:14px;box-shadow:0 2px 10px #0000000b;margin-bottom:14px}
-.toolbar{display:flex;flex-wrap:wrap;gap:9px;align-items:end}
-.field{display:flex;flex-direction:column;gap:5px}.field label{font-size:11px;font-weight:700;color:#4b5563}
-input[type=number],select,input[type=text]{height:38px;border:1px solid var(--line);border-radius:7px;padding:6px 9px;background:#fff}
+
+.app{
+  max-width:1450px;
+  margin:auto;
+  padding:18px
+}
+
+header{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  align-items:center;
+  margin-bottom:15px
+}
+
+h1{
+  font-size:24px;
+  margin:0 0 4px
+}
+
+.subtitle{color:var(--muted)}
+
+.card{
+  background:var(--card);
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:14px;
+  box-shadow:0 2px 10px #0000000b;
+  margin-bottom:14px
+}
+
+.toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  align-items:end
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:5px
+}
+
+.field label{
+  font-size:11px;
+  font-weight:700;
+  color:#4b5563
+}
+
+input[type=number],
+select,
+input[type=text]{
+  height:38px;
+  border:1px solid var(--line);
+  border-radius:7px;
+  padding:6px 9px;
+  background:#fff
+}
+
 input[type=number]{width:82px}
-button{border:0;border-radius:7px;height:38px;padding:0 13px;font-weight:700;cursor:pointer;background:var(--dark);color:#fff}
-button.secondary{background:#e5e7eb;color:#111827}button.blue{background:var(--blue)}button.red{background:#fee2e2;color:#991b1b}
-button:disabled{opacity:.45;cursor:not-allowed}
-.layout{display:grid;grid-template-columns:330px minmax(0,1fr);gap:14px}
+
+button{
+  border:0;
+  border-radius:7px;
+  height:38px;
+  padding:0 13px;
+  font-weight:700;
+  cursor:pointer;
+  background:var(--dark);
+  color:#fff
+}
+
+button.secondary{
+  background:#e5e7eb;
+  color:#111827
+}
+
+button.blue{background:var(--blue)}
+
+button.red{
+  background:#fee2e2;
+  color:#991b1b
+}
+
+button:disabled{
+  opacity:.45;
+  cursor:not-allowed
+}
+
+.layout{
+  display:grid;
+  grid-template-columns:330px minmax(0,1fr);
+  gap:14px
+}
+
 .side{min-width:0}
-.side h2,.panel-title{font-size:16px;margin:0 0 10px}
-.upload{border:2px dashed #cbd5e1;border-radius:10px;padding:18px;text-align:center;margin-bottom:12px}
+
+.side h2,
+.panel-title{
+  font-size:16px;
+  margin:0 0 10px
+}
+
+.upload{
+  border:2px dashed #cbd5e1;
+  border-radius:10px;
+  padding:18px;
+  text-align:center;
+  margin-bottom:12px
+}
+
 .upload input{max-width:100%}
-.thumb-list{display:flex;flex-direction:column;gap:8px;max-height:330px;overflow:auto}
-.thumb{border:1px solid var(--line);border-radius:9px;padding:8px;display:grid;grid-template-columns:54px 1fr auto;gap:8px;align-items:center}
-.thumb img{width:54px;height:66px;object-fit:cover;background:#eee}
-.thumb .name{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.thumb .copies{display:flex;align-items:center;gap:4px}.thumb .copies input{width:55px;height:31px}
-.thumb.active{border-color:var(--blue);box-shadow:0 0 0 2px #2563eb22}
-.crop-area{display:flex;flex-direction:column;align-items:center}
-.crop-box{width:225px;height:275px;background:#eee;position:relative;overflow:hidden;border:2px solid #111;touch-action:none;cursor:pointer}
+
+.thumb-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  max-height:330px;
+  overflow:auto
+}
+
+.thumb{
+  border:1px solid var(--line);
+  border-radius:9px;
+  padding:8px;
+  display:grid;
+  grid-template-columns:54px 1fr auto;
+  gap:8px;
+  align-items:center
+}
+
+.thumb img{
+  width:54px;
+  height:66px;
+  object-fit:cover;
+  background:#eee
+}
+
+.thumb .name{
+  font-size:12px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap
+}
+
+.thumb .copies{
+  display:flex;
+  align-items:center;
+  gap:4px
+}
+
+.thumb .copies input{
+  width:55px;
+  height:31px
+}
+
+.thumb.active{
+  border-color:var(--blue);
+  box-shadow:0 0 0 2px #2563eb22
+}
+
+.crop-area{
+  display:flex;
+  flex-direction:column;
+  align-items:center
+}
+
+.crop-box{
+  width:225px;
+  height:275px;
+  background:#eee;
+  position:relative;
+  overflow:hidden;
+  border:2px solid #111;
+  touch-action:none;
+  cursor:pointer
+}
+
 .crop-box:active{cursor:pointerbing}
-#editorImage{position:absolute;max-width:none;user-select:none;-webkit-user-drag:none}
-.crop-overlay{position:absolute;inset:0;pointer-events:none}
-.crop-overlay:before,.crop-overlay:after{content:"";position:absolute;background:#ffffff88}
-.crop-overlay:before{left:33.333%;top:0;width:1px;height:100%;box-shadow:75px 0 #ffffff88}
-.crop-overlay:after{top:33.333%;left:0;width:100%;height:1px;box-shadow:0 91px #ffffff88}
-.sliders{width:100%;margin-top:10px}.sliders label{display:flex;justify-content:space-between;font-size:11px;font-weight:bold;margin:8px 0 3px}
+
+#editorImage{
+  position:absolute;
+  max-width:none;
+  user-select:none;
+  -webkit-user-drag:none
+}
+
+.crop-overlay{
+  position:absolute;
+  inset:0;
+  pointer-events:none
+}
+
+.crop-overlay:before,
+.crop-overlay:after{
+  content:"";
+  position:absolute;
+  background:#ffffff88
+}
+
+.crop-overlay:before{
+  left:33.333%;
+  top:0;
+  width:1px;
+  height:100%;
+  box-shadow:75px 0 #ffffff88
+}
+
+.crop-overlay:after{
+  top:33.333%;
+  left:0;
+  width:100%;
+  height:1px;
+  box-shadow:0 91px #ffffff88
+}
+
+.sliders{
+  width:100%;
+  margin-top:10px
+}
+
+.sliders label{
+  display:flex;
+  justify-content:space-between;
+  font-size:11px;
+  font-weight:bold;
+  margin:8px 0 3px
+}
+
 input[type=range]{width:100%}
-.small{font-size:11px;color:var(--muted);line-height:1.4}
-.preview-wrap{background:#cfd4da;border-radius:10px;padding:15px;overflow:auto;min-height:600px}
-#page{background:white;position:relative;margin:auto;box-shadow:0 2px 12px #0004;pointer-events:auto}
-.page-photo{position:absolute;overflow:hidden;background:white;cursor:pointer;outline:.5px solid #aaa}
-.page-photo.selected{outline:2px solid var(--blue);z-index:99}
-.page-photo img{position:absolute;max-width:none;user-select:none;pointer-events:none}
-.photo-label{position:absolute;left:3px;top:2px;font-size:8px;background:#ffffffe0;padding:1px 3px;z-index:2;pointer-events:none}
-.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.pill{background:#f1f5f9;padding:5px 8px;border-radius:20px;font-size:11px}
-#status{font-size:12px;color:var(--muted);margin-top:8px}
-.empty{padding:15px;color:var(--muted);text-align:center;border:1px dashed var(--line);border-radius:8px}
-@media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+.small{
+  font-size:11px;
+  color:var(--muted);
+  line-height:1.4
+}
+
+.preview-wrap{
+  background:#cfd4da;
+  border-radius:10px;
+  padding:15px;
+  overflow:auto;
+  min-height:600px
+}
+
+#page{
+  background:white;
+  position:relative;
+  margin:auto;
+  box-shadow:0 2px 12px #0004;
+  pointer-events:auto
+}
+
+.page-photo{
+  position:absolute;
+  overflow:hidden;
+  background:white;
+  cursor:pointer;
+  outline:none
+}
+
+.page-photo.selected{
+  outline:none;
+  z-index:99
+}
+
+.page-photo img{
+  position:absolute;
+  max-width:none;
+  user-select:none;
+  pointer-events:none
+}
+
+.photo-label{
+  position:absolute;
+  left:3px;
+  top:2px;
+  font-size:8px;
+  background:#ffffffe0;
+  padding:1px 3px;
+  z-index:2;
+  pointer-events:none
+}
+
+.legend{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:10px
+}
+
+.pill{
+  background:#f1f5f9;
+  padding:5px 8px;
+  border-radius:20px;
+  font-size:11px
+}
+
+#status{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:8px
+}
+
+.empty{
+  padding:15px;
+  color:var(--muted);
+  text-align:center;
+  border:1px dashed var(--line);
+  border-radius:8px
+}
+
+@media(max-width:900px){
+  .layout{
+    grid-template-columns:1fr
+  }
+}
 
 /* =========================
    MOBILE RESPONSIVE ONLY
    No JavaScript/function changes
    ========================= */
-@media (max-width: 600px){
+
+@media (max-width:600px){
 
   .app{
     width:100%;
@@ -89,6 +382,7 @@ input[type=range]{width:100%}
   }
 
   /* Settings toolbar */
+
   .toolbar{
     display:grid;
     grid-template-columns:repeat(2,minmax(0,1fr));
@@ -131,7 +425,9 @@ input[type=range]{width:100%}
     padding:4px 7px;
   }
 
-  /* Keep the existing one-column layout, but make every item fluid */
+  /* Keep the existing one-column layout,
+     but make every item fluid */
+
   .layout{
     grid-template-columns:minmax(0,1fr);
     width:100%;
@@ -150,6 +446,7 @@ input[type=range]{width:100%}
   }
 
   /* Upload area */
+
   .upload{
     width:100%;
     min-width:0;
@@ -163,6 +460,7 @@ input[type=range]{width:100%}
   }
 
   /* Photo list */
+
   .thumb-list{
     width:100%;
     max-width:100%;
@@ -198,6 +496,7 @@ input[type=range]{width:100%}
   }
 
   /* Crop editor */
+
   .crop-area{
     width:100%;
   }
@@ -224,6 +523,7 @@ input[type=range]{width:100%}
   }
 
   /* Crop action buttons */
+
   .side .card > div[style*="display:flex"]{
     width:100%;
     min-width:0;
@@ -234,8 +534,8 @@ input[type=range]{width:100%}
     padding:0 8px;
   }
 
-  /* Preview: keep the exact page dimensions used by the existing JS.
-     It scrolls horizontally on small screens instead of breaking the page. */
+  /* Preview */
+
   .preview-wrap{
     width:100%;
     max-width:100%;
@@ -254,7 +554,8 @@ input[type=range]{width:100%}
   }
 }
 
-@media (max-width: 380px){
+@media (max-width:380px){
+
   .app{
     padding:7px;
   }
@@ -278,349 +579,1639 @@ input[type=range]{width:100%}
 }
 
 @media print{
- @page{size:letter;margin:0!important}
- html,body{margin:0!important;padding:0!important;background:#fff!important}
- .no-print{display:none!important}
- .app{padding:0!important;margin:0!important;max-width:none!important}
- .card{border:0!important;box-shadow:none!important;padding:0!important;margin:0!important}
- .preview-wrap{padding:0!important;margin:0!important;overflow:visible!important;background:#fff!important}
- #page{
-   position:fixed!important;
-   left:0!important;
-   top:0!important;
-   margin:0!important;
-   padding:0!important;
-   box-shadow:none!important;
- }
- .page-photo.selected{outline:.5px solid #aaa}
- .photo-label{display:none}
+
+  @page{
+    size:A4;
+    margin:0!important
+  }
+
+  html,body{
+    margin:0!important;
+    padding:0!important;
+    background:#fff!important
+  }
+
+  .no-print{
+    display:none!important
+  }
+
+  .app{
+    padding:0!important;
+    margin:0!important;
+    max-width:none!important
+  }
+
+  .card{
+    border:0!important;
+    box-shadow:none!important;
+    padding:0!important;
+    margin:0!important
+  }
+
+  .preview-wrap{
+    padding:0!important;
+    margin:0!important;
+    overflow:visible!important;
+    background:#fff!important
+  }
+
+  #page{
+    position:fixed!important;
+    left:0!important;
+    top:0!important;
+    margin:0!important;
+    padding:0!important;
+    box-shadow:none!important;
+  }
+
+  .page-photo.selected{
+    outline:none
+  }
+
+  .photo-label{
+    display:none
+  }
 }
 
-.upload{min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:18px;border:2px dashed #cbd5e1;border-radius:10px;background:#fafbfc;cursor:pointer;transition:.15s ease}
-.upload:hover,.upload.dragover{border-color:#2563eb;background:#eff6ff}
-.upload-icon{width:34px;height:34px;border-radius:50%;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;line-height:1}
-.upload-title{font-size:14px;font-weight:700;color:#111827}
-.upload-subtitle{font-size:12px;color:#4b5563}
-.upload-hint{font-size:10px;color:#9ca3af}
+.upload{
+  min-height:120px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:18px;
+  border:2px dashed #cbd5e1;
+  border-radius:10px;
+  background:#fafbfc;
+  cursor:pointer;
+  transition:.15s ease
+}
+
+.upload:hover,
+.upload.dragover{
+  border-color:#2563eb;
+  background:#eff6ff
+}
+
+.upload-icon{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  background:#2563eb;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  font-weight:700;
+  line-height:1
+}
+
+.upload-title{
+  font-size:14px;
+  font-weight:700;
+  color:#111827
+}
+
+.upload-subtitle{
+  font-size:12px;
+  color:#4b5563
+}
+
+.upload-hint{
+  font-size:10px;
+  color:#9ca3af
+}
 </style>
+
 <link
     rel="icon"
     type="image/svg+xml"
     href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%232563eb'/%3E%3Crect x='10' y='10' width='44' height='44' rx='5' fill='white'/%3E%3Crect x='15' y='15' width='14' height='16' rx='2' fill='%23dbeafe' stroke='%232563eb' stroke-width='2'/%3E%3Ccircle cx='22' cy='21' r='3' fill='%232563eb'/%3E%3Cpath d='M18 28c1-3 2-4 4-4s3 1 4 4' fill='none' stroke='%232563eb' stroke-width='1.8' stroke-linecap='round'/%3E%3Crect x='35' y='15' width='14' height='16' rx='2' fill='%23dbeafe' stroke='%232563eb' stroke-width='2'/%3E%3Ccircle cx='42' cy='21' r='3' fill='%232563eb'/%3E%3Cpath d='M38 28c1-3 2-4 4-4s3 1 4 4' fill='none' stroke='%232563eb' stroke-width='1.8' stroke-linecap='round'/%3E%3Crect x='15' y='35' width='14' height='16' rx='2' fill='%23dbeafe' stroke='%232563eb' stroke-width='2'/%3E%3Ccircle cx='22' cy='41' r='3' fill='%232563eb'/%3E%3Cpath d='M18 48c1-3 2-4 4-4s3 1 4 4' fill='none' stroke='%232563eb' stroke-width='1.8' stroke-linecap='round'/%3E%3Crect x='35' y='35' width='14' height='16' rx='2' fill='%23dbeafe' stroke='%232563eb' stroke-width='2'/%3E%3Ccircle cx='42' cy='41' r='3' fill='%232563eb'/%3E%3Cpath d='M38 48c1-3 2-4 4-4s3 1 4 4' fill='none' stroke='%232563eb' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E"/>
+
 </head>
+
 <body>
+
 <div class="app">
+
 <header class="no-print">
-  <div><h1>Passport Photo Print Studio</h1><div class="subtitle">US Letter — 8.5 × 11 in = <b>216 × 279 mm</b> · Photo = <b>45 × 55 mm</b></div></div>
+  <div>
+    <h1>Passport Photo Print Studio</h1>
+    <div class="subtitle">
+      A4 — 210 × 297 mm · Photo = <b>38 × 51 mm</b>
+    </div>
+  </div>
 </header>
 
 <div class="card no-print">
- <div class="toolbar">
-  <div class="field"><label>PAGE</label>
-   <select id="orientation"><option value="portrait">Letter Portrait 216×279 mm</option><option value="landscape">Letter Landscape 279×216 mm</option></select>
+
+  <div class="toolbar">
+
+    <div class="field">
+      <label>PAGE</label>
+      <select id="orientation">
+        <option value="portrait">A4 Portrait 210×297 mm</option>
+        <option value="landscape">A4 Landscape 297×210 mm</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>PHOTO WIDTH</label>
+      <input id="pw" type="number" value="38" min="10" max="100" step=".1">
+    </div>
+
+    <div class="field">
+      <label>PHOTO HEIGHT</label>
+      <input id="ph" type="number" value="51" min="10" max="100" step=".1">
+    </div>
+
+    <div class="field">
+      <label>GAP (MM)</label>
+      <input id="gap" type="number" value="1" min="0" max="20" step=".5">
+    </div>
+
+    <div class="field">
+      <label>MARGIN (MM)</label>
+      <input id="margin" type="number" value="0" min="0" max="20" step=".5">
+    </div>
+
+    <button class="blue" id="print">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        style="vertical-align:-3px;margin-right:6px;fill:currentColor">
+        <path d="M6 9V3h12v6h1a3 3 0 0 1 3 3v5h-4v4H6v-4H2v-5a3 3 0 0 1 3-3h1Zm2-4v4h8V5H8Zm6 15v-5H10v5h4Zm4-6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/>
+      </svg>
+      Print A4
+    </button>
+
+    <button class="secondary" id="fitPage">
+      Fit Page
+    </button>
+
+    <button class="secondary" id="clear">
+      Clear All
+    </button>
+
   </div>
-  <div class="field"><label>PHOTO WIDTH</label><input id="pw" type="number" value="45" min="10" max="100" step=".1"></div>
-  <div class="field"><label>PHOTO HEIGHT</label><input id="ph" type="number" value="55" min="10" max="100" step=".1"></div>
-  <div class="field"><label>GAP (MM)</label><input id="gap" type="number" value="0" min="0" max="20" step=".5"></div>
-  <div class="field"><label>MARGIN (MM)</label><input id="margin" type="number" value="0" min="0" max="20" step=".5"></div>
-  <button class="blue" id="print"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-3px;margin-right:6px;fill:currentColor">
-<path d="M6 9V3h12v6h1a3 3 0 0 1 3 3v5h-4v4H6v-4H2v-5a3 3 0 0 1 3-3h1Zm2-4v4h8V5H8Zm6 15v-5H10v5h4Zm4-6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/>
-</svg>Print Letter</button>
-  <button class="secondary" id="fitPage">Fit Page</button>
-  <button class="secondary" id="clear">Clear All</button>
- </div>
- <div class="legend">
-  <span class="pill">Click photo to select</span><span class="pill">Delete = remove</span>
-  <span class="pill">Arrow keys = move selected</span><span class="pill">Ctrl+Z = undo</span><span class="pill">Ctrl+Y = redo</span>
- </div>
- <div id="status"></div>
+
+  <div class="legend">
+    <span class="pill">Click photo to select</span>
+    <span class="pill">Delete = remove</span>
+    <span class="pill">Arrow keys = move selected</span>
+    <span class="pill">Ctrl+Z = undo</span>
+    <span class="pill">Ctrl+Y = redo</span>
+  </div>
+
+  <div id="status"></div>
+
 </div>
 
 <div class="layout">
- <aside class="side">
-  <div class="card no-print">
-   <div class="panel-title">1. Add Different Photos</div>
-   <div class="upload" id="uploadArea">
-  <div class="upload-icon">↑</div>
-  <div class="upload-title">Upload photos</div>
-  <div class="upload-subtitle">Click to choose files or drag & drop</div>
-  <div class="upload-hint">JPG, JPEG, PNG · Multiple photos supported</div>
-  <input id="files" type="file" accept="image/*" multiple hidden>
-</div>
-   <div id="thumbs" class="thumb-list"></div>
-   <button id="addCopies" class="secondary" style="width:100%;margin-top:9px">Add Selected Copies to Page</button>
-  </div>
 
-  <div class="card no-print">
-   <div class="panel-title">2. Crop / Zoom / Position</div>
-   <div class="crop-area">
-    <div class="crop-box" id="cropBox"><img id="editorImage"><div class="crop-overlay"></div></div>
-   </div>
-   <div class="sliders">
-    <label>Zoom <span id="zoomVal">100%</span></label>
-    <div class="zoom-control-row" style="display:flex;align-items:center;gap:6px;width:100%;"><button type="button" id="zoomMinusBtn" class="secondary" style="width:36px;min-width:36px;height:30px;padding:0;font-size:18px;line-height:1;flex:0 0 36px;">−</button><input id="zoom" type="range" min="0.5" max="4" value="1" step=".01"><button type="button" id="zoomPlusBtn" class="secondary" style="width:36px;min-width:36px;height:30px;padding:0;font-size:18px;line-height:1;flex:0 0 36px;">+</button></div>
-    <label>Rotate <span id="rotVal">0°</span></label>
-    <input id="rotate" type="range" min="-180" max="180" value="0" step="1">
-   </div>
-   <div style="display:flex;gap:6px;margin-top:9px">
-    <button id="resetCrop" class="secondary" style="flex:1">Reset Crop</button>
-    <button id="centerCrop" class="secondary" style="flex:1">Center</button>
-   </div>
-   <div class="small" style="margin-top:8px">Drag inside the crop box. Changes apply to every copy of the selected image.</div>
-  </div>
- </aside>
+  <aside class="side">
 
- <main class="card">
-  <div class="panel-title no-print">3. Letter Page — Preview</div>
-  <div class="preview-wrap"><div id="page"></div></div>
-  <div class="small no-print" style="margin-top:8px">For exact 45×55 mm output, print at <b>100% / Actual Size</b>. Turn off “Fit to page”.</div>
- </main>
+    <div class="card no-print">
+
+      <div class="panel-title">
+        1. Add Different Photos
+      </div>
+
+      <div class="upload" id="uploadArea">
+
+        <div class="upload-icon">↑</div>
+
+        <div class="upload-title">
+          Upload photos
+        </div>
+
+        <div class="upload-subtitle">
+          Click to choose files or drag & drop
+        </div>
+
+        <div class="upload-hint">
+          JPG, JPEG, PNG · Multiple photos supported
+        </div>
+
+        <input
+          id="files"
+          type="file"
+          accept="image/*"
+          multiple
+          hidden>
+
+      </div>
+
+      <div id="thumbs" class="thumb-list"></div>
+
+      <button
+        id="addCopies"
+        class="secondary"
+        style="width:100%;margin-top:9px">
+        Add Selected Copies to Page
+      </button>
+
+    </div>
+
+    <div class="card no-print">
+
+      <div class="panel-title">
+        2. Crop / Zoom / Position
+      </div>
+
+      <div class="crop-area">
+
+        <div class="crop-box" id="cropBox">
+          <img id="editorImage">
+          <div class="crop-overlay"></div>
+        </div>
+
+      </div>
+
+      <div class="sliders">
+
+        <label>
+          Zoom
+          <span id="zoomVal">100%</span>
+        </label>
+
+        <div
+          class="zoom-control-row"
+          style="display:flex;align-items:center;gap:6px;width:100%;">
+
+          <button
+            type="button"
+            id="zoomMinusBtn"
+            class="secondary"
+            style="width:36px;min-width:36px;height:30px;padding:0;font-size:18px;line-height:1;flex:0 0 36px;">
+            −
+          </button>
+
+          <input
+            id="zoom"
+            type="range"
+            min="0.5"
+            max="4"
+            value="1"
+            step=".01">
+
+          <button
+            type="button"
+            id="zoomPlusBtn"
+            class="secondary"
+            style="width:36px;min-width:36px;height:30px;padding:0;font-size:18px;line-height:1;flex:0 0 36px;">
+            +
+          </button>
+
+        </div>
+
+        <label>
+          Rotate
+          <span id="rotVal">0°</span>
+        </label>
+
+        <input
+          id="rotate"
+          type="range"
+          min="-180"
+          max="180"
+          value="0"
+          step="1">
+
+      </div>
+
+      <div style="display:flex;gap:6px;margin-top:9px">
+
+        <button
+          id="resetCrop"
+          class="secondary"
+          style="flex:1">
+          Reset Crop
+        </button>
+
+        <button
+          id="centerCrop"
+          class="secondary"
+          style="flex:1">
+          Center
+        </button>
+
+      </div>
+
+      <div
+        class="small"
+        style="margin-top:8px">
+        Drag inside the crop box. Changes apply to every copy of the selected image.
+      </div>
+
+    </div>
+
+  </aside>
+
+  <main class="card">
+
+    <div class="panel-title no-print">
+      3. A4 Page — Preview
+    </div>
+
+    <div class="preview-wrap">
+      <div id="page"></div>
+    </div>
+
+    <div
+      class="small no-print"
+      style="margin-top:8px">
+      For exact 38×51 mm output, print at <b>100% / Actual Size</b>.
+      Turn off “Fit to page”.
+    </div>
+
+  </main>
+
 </div>
+
 </div>
 
 <script>
+
 const $=id=>document.getElementById(id);
-let photos=[], selectedId=null, nextId=1, undoStack=[], redoStack=[];
+
+let photos=[],
+    selectedId=null,
+    nextId=1,
+    undoStack=[],
+    redoStack=[];
+
 const MM96=96/25.4;
 
+
 function pageDims(){
- const landscape=$('orientation').value==='landscape';
- return landscape?{w:279,h:216}:{w:216,h:279};
+
+  const landscape=$('orientation').value==='landscape';
+
+  return landscape
+    ? {w:297,h:210}
+    : {w:210,h:297};
+
 }
+
+
 function fitInfo(){
- const d=pageDims(), pw=Math.max(1,+$('pw').value||45), ph=Math.max(1,+$('ph').value||55);
- const gap=Math.max(0,+$('gap').value||0), margin=Math.max(0,+$('margin').value||0);
- const cols=Math.floor((d.w-2*margin+gap)/(pw+gap));
- const rows=Math.floor((d.h-2*margin+gap)/(ph+gap));
- return {d,pw,ph,gap,margin,cols,rows,capacity:Math.max(0,cols*rows)};
-}
-function snapshot(){
- return photos.map(p=>({id:p.id,copies:p.copies,x:p.x,y:p.y,zoom:p.zoom,rot:p.rot}));
-}
-function pushUndo(){undoStack.push(JSON.stringify(snapshot()));if(undoStack.length>50)undoStack.shift();redoStack=[]}
-function restore(s){
- const a=JSON.parse(s);
- a.forEach(x=>{let p=photos.find(q=>q.id===x.id);if(p)Object.assign(p,x)});
- render();
-}
-function selected(){return photos.find(p=>p.id===selectedId)}
 
-const uploadArea=document.getElementById('uploadArea');
-const fileInput=$('files');
+  const d=pageDims();
 
-uploadArea.addEventListener('click',e=>{
-  if(e.target!==fileInput) fileInput.click();
-});
-uploadArea.addEventListener('dragover',e=>{
-  e.preventDefault();
-  uploadArea.classList.add('dragover');
-});
-uploadArea.addEventListener('dragleave',e=>{
-  if(!uploadArea.contains(e.relatedTarget)) uploadArea.classList.remove('dragover');
-});
-uploadArea.addEventListener('drop',e=>{
-  e.preventDefault();
-  uploadArea.classList.remove('dragover');
-  if(e.dataTransfer.files && e.dataTransfer.files.length){
-    fileInput.files=e.dataTransfer.files;
-    fileInput.dispatchEvent(new Event('change',{bubbles:true}));
-  }
-});
-$('files').addEventListener('change',e=>{
- [...e.target.files].forEach(file=>{
-   const url=URL.createObjectURL(file);
-   const p={id:nextId++,name:file.name,file,url,copies:1,zoom:1,x:0,y:0,rot:0,nw:0,nh:0};
-   const im=new Image(); im.onload=()=>{p.nw=im.naturalWidth;p.nh=im.naturalHeight;resetPhoto(p);render()};
-   im.src=url; photos.push(p); selectedId=p.id;
- });
- renderThumbs();
- e.target.value='';
-});
-function resetPhoto(p){p.zoom=1;p.x=0;p.y=0;p.rot=0}
-function renderThumbs(){
- $('thumbs').innerHTML='';
- if(!photos.length){$('thumbs').innerHTML='<div class="empty">No photos added yet.</div>';return}
- photos.forEach((p,i)=>{
-  const d=document.createElement('div');d.className='thumb'+(p.id===selectedId?' active':'');
-  d.innerHTML=`<img src="${p.url}"><div><div class="name" title="${p.name}">${i+1}. ${p.name.slice(0,10)}</div><div class="copies"><span class="small">Copies:</span><input type="number" min="1" max="99" value="${p.copies}"></div></div><button class="red" style="height:31px;padding:0 8px">×</button>`;
-  d.addEventListener('click',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='BUTTON')return;selectedId=p.id;loadEditor();renderThumbs();render()});
-  d.querySelector('input').addEventListener('input',e=>{pushUndo();p.copies=Math.max(1,Math.min(99,+e.target.value||1));render()});
-  d.querySelector('button').addEventListener('click',()=>{pushUndo();if(p.url)URL.revokeObjectURL(p.url);photos=photos.filter(x=>x.id!==p.id);if(selectedId===p.id)selectedId=photos[0]?.id||null;renderThumbs();loadEditor();render()});
-  $('thumbs').appendChild(d);
- });
-}
-function loadEditor(){
- const p=selected();
- if(!p){$('editorImage').style.display='none';return}
- $('editorImage').style.display='block';$('editorImage').src=p.url;
- $('zoom').value=p.zoom;$rotate.value=p.rot;
- $('zoomVal').textContent=Math.round(p.zoom*100)+'%';$('rotVal').textContent=p.rot+'°';
- requestAnimationFrame(applyEditor);
-}
-const $rotate=$('rotate');
-function editorScale(){
- const p=selected();if(!p||!p.nw)return 1;
- return Math.max($('cropBox').clientWidth/p.nw,$('cropBox').clientHeight/p.nh)*p.zoom;
-}
-function applyEditor(){
- const p=selected();if(!p)return;
- const im=$('editorImage'),box=$('cropBox'),s=editorScale();
- // IMPORTANT: p.x / p.y are stored in physical millimetres.
- // This makes the crop editor and the Letter page use the exact same position.
- const pw=Math.max(1,+$('pw').value||45),ph=Math.max(1,+$('ph').value||55);
- const xPx=p.x*(box.clientWidth/pw);
- const yPx=p.y*(box.clientHeight/ph);
- im.style.width=p.nw*s+'px';im.style.height=p.nh*s+'px';
- im.style.left=(box.clientWidth-p.nw*s)/2+xPx+'px';
- im.style.top=(box.clientHeight-p.nh*s)/2+yPx+'px';
- im.style.transformOrigin='center';im.style.transform=`rotate(${p.rot}deg)`;
- $('zoomVal').textContent=Math.round(p.zoom*100)+'%';$('rotVal').textContent=p.rot+'°';
-}
-$('zoom').addEventListener('input',()=>{let p=selected();
-
-
-if(!p)return;pushUndo();p.zoom=+$('zoom').value;applyEditor();render()});
-$rotate.addEventListener('input',()=>{let p=selected();if(!p)return;pushUndo();p.rot=+$rotate.value;applyEditor();render()});
-$('resetCrop').addEventListener('click',()=>{let p=selected();if(!p)return;pushUndo();resetPhoto(p);loadEditor();render()});
-$('centerCrop').addEventListener('click',()=>{let p=selected();if(!p)return;pushUndo();p.x=0;p.y=0;applyEditor();render()});
-
-let drag=false,sx=0,sy=0,ox=0,oy=0;
-$('cropBox').addEventListener('pointerdown',e=>{
- let p=selected();if(!p)return;drag=true;sx=e.clientX;sy=e.clientY;ox=p.x;oy=p.y;
- $('cropBox').setPointerCapture(e.pointerId)
-});
-$('cropBox').addEventListener('pointermove',e=>{
- if(!drag)return;
- let p=selected();
- const pw=Math.max(1,+$('pw').value||45),ph=Math.max(1,+$('ph').value||55);
- // Convert editor-screen pixels to the same millimetre coordinates used by the page.
- p.x=ox+(e.clientX-sx)*(pw/$('cropBox').clientWidth);
- p.y=oy+(e.clientY-sy)*(ph/$('cropBox').clientHeight);
- applyEditor();render()
-});
-$('cropBox').addEventListener('pointerup',()=>drag=false);
-
-
-function totalRequested(){return photos.reduce((a,p)=>a+p.copies,0)}
-function render(){
- const {d,pw,ph,gap,margin,cols,rows,capacity}=fitInfo();
- $('page').style.width=(d.w===216?'816px':'1054px');
- $('page').style.height=(d.h===279?'1054px':'816px');
- const pageW=$('page').clientWidth,pageH=$('page').clientHeight;
- $('status').textContent=`Letter ${d.w}×${d.h} mm · capacity ${capacity} photos · requested ${totalRequested()} copies`;
- const sx=pageW/d.w,sy=pageH/d.h, px=pw*sx, py=ph*sy,gx=gap*sx,gy=gap*sy,mx=margin*sx,my=margin*sy;
- $('page').innerHTML='';
- let idx=0;
- // First use requested copies. Extra copies beyond page capacity are not shown.
- for(const p of photos){
-   for(let c=0;c<p.copies && idx<capacity;c++,idx++){
-     const col=idx%cols,row=Math.floor(idx/cols);
-     const box=document.createElement('div');box.className='page-photo'+(p.id===selectedId?' selected':'');
-     box.dataset.id=p.id;box.style.width=px+'px';box.style.height=py+'px';
-     box.style.left=(mx+col*(px+gx))+'px';box.style.top=(my+row*(py+gy))+'px';
-     const im=document.createElement('img');im.src=p.url;im.draggable=false;box.appendChild(im);
-     if(p.id===selectedId){const lab=document.createElement('div');lab.className='photo-label';lab.textContent='Selected';box.appendChild(lab)}
-     im.onload=()=>applyPageImage(im,box,p,sx,sy);
-     box.addEventListener('click',e=>{e.stopPropagation();selectedId=p.id;loadEditor();renderThumbs();render()});
-     $('page').appendChild(box);
-   }
- }
-}
-function applyPageImage(im,box,p,sx,sy){
- const bw=box.clientWidth,bh=box.clientHeight;
- const base=Math.max(bw/p.nw,bh/p.nh);
- const scale=base*p.zoom;
- im.style.width=p.nw*scale+'px';im.style.height=p.nh*scale+'px';
- im.style.left=(bw-p.nw*scale)/2+p.x*sx+'px';
- im.style.top=(bh-p.nh*scale)/2+p.y*sy+'px';
- im.style.transformOrigin='center';im.style.transform=`rotate(${p.rot}deg)`;
-}
-$('addCopies').addEventListener('click',()=>{
- const p=selected();if(!p)return;
- const info=fitInfo(),used=Math.min(info.capacity,totalRequested());
- if(used<info.capacity){pushUndo();p.copies++;renderThumbs();render()}
-});
-
-// GLOBAL DESELECT:
-// Clicking any blank area of the web app deselects the current photo.
-// Clicking a photo, a photo in the list, or an editing/control element
-// keeps the selection and lets its normal handler work.
-let globalPointerStartX = 0;
-let globalPointerStartY = 0;
-let globalPointerMoved = false;
-
-document.addEventListener('pointerdown', e => {
-  globalPointerStartX = e.clientX;
-  globalPointerStartY = e.clientY;
-  globalPointerMoved = false;
-}, true);
-
-document.addEventListener('pointermove', e => {
-  if (Math.abs(e.clientX - globalPointerStartX) > 4 ||
-      Math.abs(e.clientY - globalPointerStartY) > 4) {
-    globalPointerMoved = true;
-  }
-}, true);
-
-document.addEventListener('click', e => {
-  if (globalPointerMoved) {
-    globalPointerMoved = false;
-    return;
-  }
-
-  // These areas have their own selection/editing actions.
-  const keepSelected = e.target.closest(
-    '.page-photo, .thumb, .crop-box, button, input, select, label, a'
+  const pw=Math.max(
+    1,
+    +$('pw').value||38
   );
 
-  // If the click was on a photo/list item/control, do nothing here.
-  // Its existing handler will select or operate normally.
-  if (keepSelected) return;
+  const ph=Math.max(
+    1,
+    +$('ph').value||51
+  );
 
-  // Every other blank area of the web app deselects.
-  if (selectedId !== null) {
-    selectedId = null;
-    loadEditor();
-    renderThumbs();
-    render();
+  const gap=Math.max(
+    0,
+    +$('gap').value||0
+  );
+
+  const margin=Math.max(
+    0,
+    +$('margin').value||0
+  );
+
+  const cols=Math.floor(
+    (d.w-2*margin+gap)/(pw+gap)
+  );
+
+  const rows=Math.floor(
+    (d.h-2*margin+gap)/(ph+gap)
+  );
+
+  return {
+    d,
+    pw,
+    ph,
+    gap,
+    margin,
+    cols,
+    rows,
+    capacity:Math.max(0,cols*rows)
+  };
+
+}
+
+
+function snapshot(){
+
+  return photos.map(p=>({
+    id:p.id,
+    copies:p.copies,
+    x:p.x,
+    y:p.y,
+    zoom:p.zoom,
+    rot:p.rot
+  }));
+
+}
+
+
+function pushUndo(){
+
+  undoStack.push(
+    JSON.stringify(snapshot())
+  );
+
+  if(undoStack.length>50)
+    undoStack.shift();
+
+  redoStack=[];
+
+}
+
+
+function restore(s){
+
+  const a=JSON.parse(s);
+
+  a.forEach(x=>{
+
+    let p=photos.find(
+      q=>q.id===x.id
+    );
+
+    if(p)
+      Object.assign(p,x);
+
+  });
+
+  render();
+
+}
+
+
+function selected(){
+
+  return photos.find(
+    p=>p.id===selectedId
+  );
+
+}
+
+
+const uploadArea=
+  document.getElementById('uploadArea');
+
+const fileInput=$('files');
+
+
+uploadArea.addEventListener('click',e=>{
+
+  if(e.target!==fileInput)
+    fileInput.click();
+
+});
+
+
+uploadArea.addEventListener('dragover',e=>{
+
+  e.preventDefault();
+
+  uploadArea.classList.add('dragover');
+
+});
+
+
+uploadArea.addEventListener('dragleave',e=>{
+
+  if(!uploadArea.contains(e.relatedTarget))
+    uploadArea.classList.remove('dragover');
+
+});
+
+
+uploadArea.addEventListener('drop',e=>{
+
+  e.preventDefault();
+
+  uploadArea.classList.remove('dragover');
+
+  if(
+    e.dataTransfer.files &&
+    e.dataTransfer.files.length
+  ){
+
+    fileInput.files=
+      e.dataTransfer.files;
+
+    fileInput.dispatchEvent(
+      new Event(
+        'change',
+        {bubbles:true}
+      )
+    );
+
   }
-}, true);
-$('orientation').addEventListener('change',render);
-['pw','ph','gap','margin'].forEach(id=>$(id).addEventListener('input',render));
-$('print').addEventListener('click',()=>window.print());
-$('clear').addEventListener('click',()=>{if(!photos.length)return;pushUndo();photos.forEach(p=>p.url&&URL.revokeObjectURL(p.url));photos=[];selectedId=null;renderThumbs();loadEditor();render()});
-$('fitPage').addEventListener('click',()=>{const info=fitInfo();render()});
 
-document.addEventListener('keydown',e=>{
- if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();if(undoStack.length){redoStack.push(JSON.stringify(snapshot()));restore(undoStack.pop())}}
- else if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();if(redoStack.length){undoStack.push(JSON.stringify(snapshot()));restore(redoStack.pop())}}
- else if(e.key==='Delete'){const p=selected();if(p){pushUndo();if(p.url)URL.revokeObjectURL(p.url);photos=photos.filter(x=>x.id!==p.id);selectedId=photos[0]?.id||null;renderThumbs();loadEditor();render()}}
- else if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){const p=selected();if(p){e.preventDefault();p.x+=(e.key==='ArrowLeft'?-1:e.key==='ArrowRight'?1:0);p.y+=(e.key==='ArrowUp'?-1:e.key==='ArrowDown'?1:0);applyEditor();render()}}
-});
-window.addEventListener('resize',()=>{render();applyEditor()});
-renderThumbs();render();
-
-$('zoomMinusBtn').addEventListener('click', function(){
- const p=selected();
- if(!p) return;
- const currentPercent=Math.round(Number(p.zoom)*100);
- const newPercent=Math.max(50,currentPercent-1);
- p.zoom=newPercent/100;
- $('zoom').value=p.zoom;
- applyEditor();
- render();
 });
 
-$('zoomPlusBtn').addEventListener('click', function(){
- const p=selected();
- if(!p) return;
- const currentPercent=Math.round(Number(p.zoom)*100);
- const newPercent=Math.min(400,currentPercent+1);
- p.zoom=newPercent/100;
- $('zoom').value=p.zoom;
- applyEditor();
- render();
+
+$('files').addEventListener('change',e=>{
+
+  [...e.target.files].forEach(file=>{
+
+    const url=
+      URL.createObjectURL(file);
+
+    const p={
+      id:nextId++,
+      name:file.name,
+      file,
+      url,
+      copies:1,
+      zoom:1,
+      x:0,
+      y:0,
+      rot:0,
+      nw:0,
+      nh:0
+    };
+
+    const im=new Image();
+
+    im.onload=()=>{
+
+      p.nw=im.naturalWidth;
+      p.nh=im.naturalHeight;
+
+      resetPhoto(p);
+
+      render();
+
+    };
+
+    im.src=url;
+
+    photos.push(p);
+
+    selectedId=p.id;
+
+  });
+
+  renderThumbs();
+
+  e.target.value='';
+
 });
+
+
+function resetPhoto(p){
+
+  p.zoom=1;
+  p.x=0;
+  p.y=0;
+  p.rot=0;
+
+}
+
+
+function renderThumbs(){
+
+  $('thumbs').innerHTML='';
+
+  if(!photos.length){
+
+    $('thumbs').innerHTML=
+      '<div class="empty">No photos added yet.</div>';
+
+    return;
+
+  }
+
+  photos.forEach((p,i)=>{
+
+    const d=document.createElement('div');
+
+    d.className=
+      'thumb'+
+      (p.id===selectedId?' active':'');
+
+    d.innerHTML=`
+      <img src="${p.url}">
+      <div>
+        <div class="name" title="${p.name}">
+          ${i+1}. ${p.name.slice(0,10)}
+        </div>
+        <div class="copies">
+          <span class="small">Copies:</span>
+          <input
+            type="number"
+            min="1"
+            max="99"
+            value="${p.copies}">
+        </div>
+      </div>
+      <button
+        class="red"
+        style="height:31px;padding:0 8px">
+        ×
+      </button>
+    `;
+
+    d.addEventListener('click',e=>{
+
+      if(
+        e.target.tagName==='INPUT' ||
+        e.target.tagName==='BUTTON'
+      )
+        return;
+
+      selectedId=p.id;
+
+      loadEditor();
+      renderThumbs();
+      render();
+
+    });
+
+    d.querySelector('input')
+      .addEventListener('input',e=>{
+
+        pushUndo();
+
+        p.copies=Math.max(
+          1,
+          Math.min(
+            99,
+            +e.target.value||1
+          )
+        );
+
+        render();
+
+      });
+
+    d.querySelector('button')
+      .addEventListener('click',()=>{
+
+        pushUndo();
+
+        if(p.url)
+          URL.revokeObjectURL(p.url);
+
+        photos=
+          photos.filter(
+            x=>x.id!==p.id
+          );
+
+        if(selectedId===p.id)
+          selectedId=
+            photos[0]?.id||null;
+
+        renderThumbs();
+        loadEditor();
+        render();
+
+      });
+
+    $('thumbs').appendChild(d);
+
+  });
+
+}
+
+
+function loadEditor(){
+
+  const p=selected();
+
+  if(!p){
+
+    $('editorImage').style.display='none';
+
+    return;
+
+  }
+
+  $('editorImage').style.display='block';
+
+  $('editorImage').src=p.url;
+
+  $('zoom').value=p.zoom;
+
+  $rotate.value=p.rot;
+
+  $('zoomVal').textContent=
+    Math.round(p.zoom*100)+'%';
+
+  $('rotVal').textContent=
+    p.rot+'°';
+
+  requestAnimationFrame(
+    applyEditor
+  );
+
+}
+
+
+const $rotate=$('rotate');
+
+
+function editorScale(){
+
+  const p=selected();
+
+  if(!p||!p.nw)
+    return 1;
+
+  return Math.max(
+    $('cropBox').clientWidth/p.nw,
+    $('cropBox').clientHeight/p.nh
+  )*p.zoom;
+
+}
+
+
+function applyEditor(){
+
+  const p=selected();
+
+  if(!p)
+    return;
+
+  const im=$('editorImage'),
+        box=$('cropBox'),
+        s=editorScale();
+
+  const pw=Math.max(
+    1,
+    +$('pw').value||38
+  );
+
+  const ph=Math.max(
+    1,
+    +$('ph').value||51
+  );
+
+  const xPx=
+    p.x*
+    (box.clientWidth/pw);
+
+  const yPx=
+    p.y*
+    (box.clientHeight/ph);
+
+  im.style.width=
+    p.nw*s+'px';
+
+  im.style.height=
+    p.nh*s+'px';
+
+  im.style.left=
+    (box.clientWidth-p.nw*s)/2+
+    xPx+
+    'px';
+
+  im.style.top=
+    (box.clientHeight-p.nh*s)/2+
+    yPx+
+    'px';
+
+  im.style.transformOrigin='center';
+
+  im.style.transform=
+    `rotate(${p.rot}deg)`;
+
+  $('zoomVal').textContent=
+    Math.round(p.zoom*100)+'%';
+
+  $('rotVal').textContent=
+    p.rot+'°';
+
+}
+
+
+$('zoom').addEventListener(
+  'input',
+  ()=>{
+
+    let p=selected();
+
+    if(!p)
+      return;
+
+    pushUndo();
+
+    p.zoom=+$('zoom').value;
+
+    applyEditor();
+
+    render();
+
+  }
+);
+
+
+$rotate.addEventListener(
+  'input',
+  ()=>{
+
+    let p=selected();
+
+    if(!p)
+      return;
+
+    pushUndo();
+
+    p.rot=+$rotate.value;
+
+    applyEditor();
+
+    render();
+
+  }
+);
+
+
+$('resetCrop').addEventListener(
+  'click',
+  ()=>{
+
+    let p=selected();
+
+    if(!p)
+      return;
+
+    pushUndo();
+
+    resetPhoto(p);
+
+    loadEditor();
+
+    render();
+
+  }
+);
+
+
+$('centerCrop').addEventListener(
+  'click',
+  ()=>{
+
+    let p=selected();
+
+    if(!p)
+      return;
+
+    pushUndo();
+
+    p.x=0;
+    p.y=0;
+
+    applyEditor();
+
+    render();
+
+  }
+);
+
+
+let drag=false,
+    sx=0,
+    sy=0,
+    ox=0,
+    oy=0;
+
+
+$('cropBox').addEventListener(
+  'pointerdown',
+  e=>{
+
+    let p=selected();
+
+    if(!p)
+      return;
+
+    drag=true;
+
+    sx=e.clientX;
+    sy=e.clientY;
+
+    ox=p.x;
+    oy=p.y;
+
+    $('cropBox')
+      .setPointerCapture(
+        e.pointerId
+      );
+
+  }
+);
+
+
+$('cropBox').addEventListener(
+  'pointermove',
+  e=>{
+
+    if(!drag)
+      return;
+
+    let p=selected();
+
+    const pw=Math.max(
+      1,
+      +$('pw').value||38
+    );
+
+    const ph=Math.max(
+      1,
+      +$('ph').value||51
+    );
+
+    p.x=
+      ox+
+      (e.clientX-sx)*
+      (pw/$('cropBox').clientWidth);
+
+    p.y=
+      oy+
+      (e.clientY-sy)*
+      (ph/$('cropBox').clientHeight);
+
+    applyEditor();
+
+    render();
+
+  }
+);
+
+
+$('cropBox').addEventListener(
+  'pointerup',
+  ()=>drag=false
+);
+
+
+function totalRequested(){
+
+  return photos.reduce(
+    (a,p)=>a+p.copies,
+    0
+  );
+
+}
+
+
+/*
+===========================================================
+FIX:
+When GAP = 0, fractional CSS pixels can cause a tiny
+white seam between adjacent photos.
+
+We DO NOT increase the .page-photo box size.
+
+Instead, only the rendered image gets a tiny 1px overlap.
+Therefore the actual photo box keeps its exact calculated
+physical size.
+
+This works for any photo width/height when GAP = 0.
+===========================================================
+*/
+
+function render(){
+
+  const {
+    d,
+    pw,
+    ph,
+    gap,
+    margin,
+    cols,
+    rows,
+    capacity
+  }=fitInfo();
+
+  $('page').style.width=
+    (d.w===210?'794px':'1123px');
+
+  $('page').style.height=
+    (d.h===297?'1123px':'794px');
+
+  const pageW=
+    $('page').clientWidth;
+
+  const pageH=
+    $('page').clientHeight;
+
+  $('status').textContent=
+    `A4 ${d.w}×${d.h} mm · Capacity ${capacity} Photos · Requested ${totalRequested()} Copies`;
+
+  const sx=pageW/d.w;
+
+  const sy=pageH/d.h;
+
+  const px=pw*sx;
+
+  const py=ph*sy;
+
+  const gx=gap*sx;
+
+  const gy=gap*sy;
+
+  const mx=margin*sx;
+
+  const my=margin*sy;
+
+  $('page').innerHTML='';
+
+  let idx=0;
+
+  // First use requested copies.
+  // Extra copies beyond page capacity are not shown.
+
+  for(const p of photos){
+
+    for(
+      let c=0;
+      c<p.copies && idx<capacity;
+      c++,idx++
+    ){
+
+      const col=
+        idx%cols;
+
+      const row=
+        Math.floor(idx/cols);
+
+      const box=
+        document.createElement('div');
+
+      box.className=
+        'page-photo'+
+        (p.id===selectedId?' selected':'');
+
+      box.dataset.id=p.id;
+
+      /*
+       * IMPORTANT:
+       * Keep the photo box EXACTLY the requested size.
+       * Do not increase its width or height.
+       */
+
+      box.style.width=
+        px+'px';
+
+      box.style.height=
+        py+'px';
+
+      box.style.left=
+        (mx+
+         col*(px+gx))+
+        'px';
+
+      box.style.top=
+        (my+
+         row*(py+gy))+
+        'px';
+
+      const im=
+        document.createElement('img');
+
+      im.src=p.url;
+
+      im.draggable=false;
+
+      /*
+       * Tell applyPageImage whether GAP is zero.
+       * This is only used to remove the fractional
+       * rendering seam.
+       */
+
+      im.dataset.zeroGap=
+        gap===0?'1':'0';
+
+      box.appendChild(im);
+
+      if(p.id===selectedId){
+
+        const lab=
+          document.createElement('div');
+
+        lab.className=
+          'photo-label';
+
+        lab.textContent=
+          'Selected';
+
+        box.appendChild(lab);
+
+      }
+
+      im.onload=()=>{
+        applyPageImage(
+          im,
+          box,
+          p,
+          sx,
+          sy
+        );
+      };
+
+      box.addEventListener(
+        'click',
+        e=>{
+
+          e.stopPropagation();
+
+          selectedId=p.id;
+
+          loadEditor();
+
+          renderThumbs();
+
+          render();
+
+        }
+      );
+
+      $('page').appendChild(box);
+
+    }
+
+  }
+
+}
+
+
+function applyPageImage(
+  im,
+  box,
+  p,
+  sx,
+  sy
+){
+
+  const bw=
+    box.clientWidth;
+
+  const bh=
+    box.clientHeight;
+
+  const base=
+    Math.max(
+      bw/p.nw,
+      bh/p.nh
+    );
+
+  const scale=
+    base*p.zoom;
+
+  /*
+   * GAP = 0 fix:
+   *
+   * Increase only the rendered image by
+   * 1 CSS pixel in each direction.
+   *
+   * The .page-photo itself remains the
+   * exact requested physical size.
+   */
+
+  const zeroGap=
+    im.dataset.zeroGap==='1';
+
+  const overlap=
+    zeroGap?1:0;
+
+  const imageW=
+    p.nw*scale+
+    overlap;
+
+  const imageH=
+    p.nh*scale+
+    overlap;
+
+  im.style.width=
+    imageW+'px';
+
+  im.style.height=
+    imageH+'px';
+
+  im.style.left=
+    (bw-imageW)/2+
+    p.x*sx+
+    (zeroGap?-0.5:0)+
+    'px';
+
+  im.style.top=
+    (bh-imageH)/2+
+    p.y*sy+
+    (zeroGap?-0.5:0)+
+    'px';
+
+  im.style.transformOrigin=
+    'center';
+
+  im.style.transform=
+    `rotate(${p.rot}deg)`;
+
+}
+
+
+$('addCopies').addEventListener(
+  'click',
+  ()=>{
+
+    const p=selected();
+
+    if(!p)
+      return;
+
+    const info=fitInfo();
+
+    const used=
+      Math.min(
+        info.capacity,
+        totalRequested()
+      );
+
+    if(used<info.capacity){
+
+      pushUndo();
+
+      p.copies++;
+
+      renderThumbs();
+
+      render();
+
+    }
+
+  }
+);
+
+
+// GLOBAL DESELECT
+
+let globalPointerStartX=0;
+
+let globalPointerStartY=0;
+
+let globalPointerMoved=false;
+
+
+document.addEventListener(
+  'pointerdown',
+  e=>{
+
+    globalPointerStartX=
+      e.clientX;
+
+    globalPointerStartY=
+      e.clientY;
+
+    globalPointerMoved=false;
+
+  },
+  true
+);
+
+
+document.addEventListener(
+  'pointermove',
+  e=>{
+
+    if(
+      Math.abs(
+        e.clientX-
+        globalPointerStartX
+      )>4 ||
+
+      Math.abs(
+        e.clientY-
+        globalPointerStartY
+      )>4
+    ){
+
+      globalPointerMoved=true;
+
+    }
+
+  },
+  true
+);
+
+
+document.addEventListener(
+  'click',
+  e=>{
+
+    if(globalPointerMoved){
+
+      globalPointerMoved=false;
+
+      return;
+
+    }
+
+    const keepSelected=
+      e.target.closest(
+        '.page-photo, .thumb, .crop-box, button, input, select, label, a'
+      );
+
+    if(keepSelected)
+      return;
+
+    if(selectedId!==null){
+
+      selectedId=null;
+
+      loadEditor();
+
+      renderThumbs();
+
+      render();
+
+    }
+
+  },
+  true
+);
+
+
+$('orientation')
+  .addEventListener(
+    'change',
+    render
+  );
+
+
+['pw','ph','gap','margin']
+  .forEach(id=>{
+
+    $(id).addEventListener(
+      'input',
+      render
+    );
+
+  });
+
+
+$('print').addEventListener(
+  'click',
+  ()=>window.print()
+);
+
+
+$('clear').addEventListener(
+  'click',
+  ()=>{
+
+    if(!photos.length)
+      return;
+
+    pushUndo();
+
+    photos.forEach(
+      p=>{
+        if(p.url)
+          URL.revokeObjectURL(p.url);
+      }
+    );
+
+    photos=[];
+
+    selectedId=null;
+
+    renderThumbs();
+
+    loadEditor();
+
+    render();
+
+  }
+);
+
+
+$('fitPage').addEventListener(
+  'click',
+  ()=>{
+
+    const info=fitInfo();
+
+    render();
+
+  }
+);
+
+
+document.addEventListener(
+  'keydown',
+  e=>{
+
+    if(
+      (e.ctrlKey||e.metaKey)&&
+      e.key.toLowerCase()==='z'
+    ){
+
+      e.preventDefault();
+
+      if(undoStack.length){
+
+        redoStack.push(
+          JSON.stringify(
+            snapshot()
+          )
+        );
+
+        restore(
+          undoStack.pop()
+        );
+
+      }
+
+    }
+
+    else if(
+      (e.ctrlKey||e.metaKey)&&
+      e.key.toLowerCase()==='y'
+    ){
+
+      e.preventDefault();
+
+      if(redoStack.length){
+
+        undoStack.push(
+          JSON.stringify(
+            snapshot()
+          )
+        );
+
+        restore(
+          redoStack.pop()
+        );
+
+      }
+
+    }
+
+    else if(e.key==='Delete'){
+
+      const p=selected();
+
+      if(p){
+
+        pushUndo();
+
+        if(p.url)
+          URL.revokeObjectURL(p.url);
+
+        photos=
+          photos.filter(
+            x=>x.id!==p.id
+          );
+
+        selectedId=
+          photos[0]?.id||null;
+
+        renderThumbs();
+
+        loadEditor();
+
+        render();
+
+      }
+
+    }
+
+    else if(
+      [
+        'ArrowLeft',
+        'ArrowRight',
+        'ArrowUp',
+        'ArrowDown'
+      ].includes(e.key)
+    ){
+
+      const p=selected();
+
+      if(p){
+
+        e.preventDefault();
+
+        p.x+=
+          e.key==='ArrowLeft'
+            ?-1
+            :e.key==='ArrowRight'
+              ?1
+              :0;
+
+        p.y+=
+          e.key==='ArrowUp'
+            ?-1
+            :e.key==='ArrowDown'
+              ?1
+              :0;
+
+        applyEditor();
+
+        render();
+
+      }
+
+    }
+
+  }
+);
+
+
+window.addEventListener(
+  'resize',
+  ()=>{
+    render();
+    applyEditor();
+  }
+);
+
+
+renderThumbs();
+
+render();
+
+
+$('zoomMinusBtn')
+  .addEventListener(
+    'click',
+    function(){
+
+      const p=selected();
+
+      if(!p)
+        return;
+
+      const currentPercent=
+        Math.round(
+          Number(p.zoom)*100
+        );
+
+      const newPercent=
+        Math.max(
+          50,
+          currentPercent-1
+        );
+
+      p.zoom=
+        newPercent/100;
+
+      $('zoom').value=
+        p.zoom;
+
+      applyEditor();
+
+      render();
+
+    }
+  );
+
+
+$('zoomPlusBtn')
+  .addEventListener(
+    'click',
+    function(){
+
+      const p=selected();
+
+      if(!p)
+        return;
+
+      const currentPercent=
+        Math.round(
+          Number(p.zoom)*100
+        );
+
+      const newPercent=
+        Math.min(
+          400,
+          currentPercent+1
+        );
+
+      p.zoom=
+        newPercent/100;
+
+      $('zoom').value=
+        p.zoom;
+
+      applyEditor();
+
+      render();
+
+    }
+  );
+
 </script>
+
 </body>
 </html>
