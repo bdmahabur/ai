@@ -371,13 +371,13 @@ processBtn.addEventListener('click', async ()=>{
 
       const box=document.createElement('div');
       box.className='preview';
-      box.innerHTML=`<h3>Output page ${p}</h3>`;
+      box.innerHTML=`<h3>Preview</h3>`;
       const im=document.createElement('img');
       im.className='sheet';
       // Preview is display-sized only; export resolution (300/450/600 DPI)
       // does not affect its on-screen size.
       im.src=sheet.canvas.toDataURL('image/jpeg',0.82);
-      im.alt=`Output page ${p}`;
+      im.alt=`Preview`;
       box.appendChild(im);
       previews.appendChild(box);
     }
