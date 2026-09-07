@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -700,7 +701,7 @@ input[type=range]{width:100%}
   <div>
     <h1>Passport Photo Print Studio</h1>
     <div class="subtitle">
-      A4 — 210 × 297 mm · Photo = <b>38 × 51 mm</b>
+      A4 — 210 × 297 mm · Photo = <b>38.1 × 48.26 mm</b>
     </div>
   </div>
 </header>
@@ -719,12 +720,12 @@ input[type=range]{width:100%}
 
     <div class="field">
       <label>PHOTO WIDTH</label>
-      <input id="pw" type="number" value="38" min="10" max="100" step=".1">
+      <input id="pw" type="number" value="38.1" min="10" max="100" step=".1">
     </div>
 
     <div class="field">
       <label>PHOTO HEIGHT</label>
-      <input id="ph" type="number" value="51" min="10" max="100" step=".1">
+      <input id="ph" type="number" value="48.26" min="10" max="100" step=".1">
     </div>
 
     <div class="field">
@@ -926,7 +927,7 @@ input[type=range]{width:100%}
     <div
       class="small no-print"
       style="margin-top:8px">
-      For exact 38×51 mm output, print at <b>100% / Actual Size</b>.
+      For exact 38.1×48.26 mm output, print at <b>100% / Actual Size</b>.
       Turn off “Fit to page”.
     </div>
 
@@ -966,12 +967,12 @@ function fitInfo(){
 
   const pw=Math.max(
     1,
-    +$('pw').value||38
+    +$('pw').value||38.1
   );
 
   const ph=Math.max(
     1,
-    +$('ph').value||51
+    +$('ph').value||48.26
   );
 
   const gap=Math.max(
@@ -1349,12 +1350,12 @@ function applyEditor(){
 
   const pw=Math.max(
     1,
-    +$('pw').value||38
+    +$('pw').value||38.1
   );
 
   const ph=Math.max(
     1,
-    +$('ph').value||51
+    +$('ph').value||48.26
   );
 
   const xPx=
@@ -1524,12 +1525,12 @@ $('cropBox').addEventListener(
 
     const pw=Math.max(
       1,
-      +$('pw').value||38
+      +$('pw').value||38.1
     );
 
     const ph=Math.max(
       1,
-      +$('ph').value||51
+      +$('ph').value||48.26
     );
 
     p.x=
