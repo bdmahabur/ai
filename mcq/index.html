@@ -1,1 +1,87 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>বাংলাদেশ সংবিধান MCQ</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">🇧🇩 সংবিধান MCQ</div>
+    <div class="sub">বাংলাদেশের সংবিধানভিত্তিক পূর্ণাঙ্গ অনুশীলন</div>
+  </div>
+</header>
 
+<main class="wrap">
+<section id="home" class="screen">
+  <div class="hero card">
+    <div class="badge">১৫৩ অনুচ্ছেদ • বিষয়ভিত্তিক প্রশ্ন</div>
+    <h1>বাংলাদেশের সংবিধান MCQ</h1>
+    <p>প্রস্তাবনা, অনুচ্ছেদ, মৌলিক অধিকার, রাষ্ট্র পরিচালনার মূলনীতি, নির্বাহী বিভাগ, সংসদ, বিচার বিভাগ, নির্বাচন, জরুরি বিধান, সংশোধন ও বিবিধ বিষয় অনুশীলন করুন।</p>
+    <div class="controls">
+      <label>প্রশ্ন সংখ্যা
+        <select id="count">
+          <option value="20">২০</option><option value="50">৫০</option>
+          <option value="100">১০০</option><option value="200">২০০</option>
+          <option value="all">সব প্রশ্ন</option>
+        </select>
+      </label>
+      <label>ভাগ
+        <select id="part">
+          <option value="all">সব ভাগ</option>
+        </select>
+      </label>
+    </div>
+    <button class="primary" id="start">পরীক্ষা শুরু করুন</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat card"><b id="articleCount">0</b><span>অনুচ্ছেদ/উপ-অনুচ্ছেদ কভার</span></div>
+    <div class="stat card"><b id="questionCount">0</b><span>MCQ</span></div>
+    <div class="stat card"><b>১১</b><span>ভাগ/বিষয়ভিত্তিক কাভারেজ</span></div>
+  </div>
+
+  <div class="card note">
+    <b>নোট:</b> প্রশ্নগুলো সংবিধানের অনুচ্ছেদ-শিরোনাম ও বিষয়ভিত্তিক অনুশীলনের জন্য সাজানো। পরীক্ষামূলক/চাকরির প্রস্তুতির আগে সর্বশেষ সরকারি পাঠ মিলিয়ে নিন।
+  </div>
+</section>
+
+<section id="quiz" class="screen hidden">
+  <div class="quizbar">
+    <button id="homeBtn" class="ghost">← Home</button>
+    <span id="counter"></span>
+    <span id="score">স্কোর: ০</span>
+  </div>
+  <div class="progress"><i id="progress"></i></div>
+  <div class="card">
+    <div class="tags"><span id="partTag"></span><span id="articleTag"></span></div>
+    <h2 id="question"></h2>
+    <div id="options"></div>
+    <div id="explain" class="explain hidden"><b>ব্যাখ্যা</b><p id="explainText"></p></div>
+    <button id="next" class="primary hidden">পরবর্তী প্রশ্ন →</button>
+  </div>
+</section>
+
+<section id="result" class="screen hidden">
+  <div class="card result">
+    <div class="trophy">🏆</div>
+    <h2>পরীক্ষা শেষ</h2>
+    <div class="big" id="percent">০%</div>
+    <p id="message"></p>
+    <div class="resultGrid">
+      <div><b id="correct">০</b><span>সঠিক</span></div>
+      <div><b id="wrong">০</b><span>ভুল</span></div>
+      <div><b id="total">০</b><span>মোট</span></div>
+    </div>
+    <button id="again" class="primary">আবার দিন</button>
+    <button id="resultHome" class="secondary">Home</button>
+  </div>
+</section>
+</main>
+<footer>Bangladesh Constitution MCQ • Offline / GitHub Pages ready</footer>
+<script src="questions.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
