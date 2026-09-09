@@ -33,9 +33,10 @@ body {
     min-height: 100vh;
     background: var(--bg);
     color: var(--text);
-    font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-family: "Noto Sans Bengali", Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
     transition: .2s
 }
+
 
 button,
 input {
