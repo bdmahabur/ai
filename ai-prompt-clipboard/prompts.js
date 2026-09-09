@@ -20,4 +20,5 @@ const defaultPrompts = [
   {id:'photo',title:'বাংলা লেখা OCR',category:'Photo',prompt:``},
   {id:'photo',title:'বাংলা লেখা OCR',category:'Photo',prompt:``},
   {id:'photo',title:'বাংলা লেখা OCR',category:'Photo',prompt:``},
+
 */
