@@ -258,7 +258,7 @@ main {
     color: var(--muted);
     background: var(--soft);
     border-radius: 9px;
-    font: 12.5px/1.62 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace
+    font: 12.5px/1.62 Roboto
 }
 
 .copy {
