@@ -259,7 +259,6 @@ main {
     background: var(--soft);
     border-radius: 9px;
     font: 12.5px/1.62 Roboto;
-    text-align: justify;
 }
 
 .copy {
