@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -638,7 +639,7 @@ button{
 .info-item{
     margin-right:5mm;
 
-    margin-bottom:-0.45mm;
+    margin-bottom:-0.5mm;
 }
 
 .info-english{
@@ -665,11 +666,11 @@ button{
 
     top:50%;
 
-    transform:translateY(-50%);
+    transform:translateY(-30%);
 
     width:12mm;
 
-    height:3.8mm;
+    height:3.9mm;
 
     background:#111;
 
@@ -684,8 +685,6 @@ button{
     font-family:"SolaimanLipi",sans-serif;
 
     font-size:3.2mm;
-
-    margin-bottom:-1.5mm;
 }
 
 
@@ -2031,12 +2030,15 @@ async function downloadCardPNG(){
             );
 
 
-        const link =
-            document.createElement("a");
+       const now = new Date();
 
+const timestamp =
+    `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}_` +
+    `${String(now.getHours()).padStart(2, "0")}-${String(now.getMinutes()).padStart(2, "0")}-${String(now.getSeconds()).padStart(2, "0")}`;
 
-        link.download =
-            "card-86x54mm.png";
+const link = document.createElement("a");
+
+link.download = `nid_back_side_${timestamp}.png`;
 
 
         link.href =
