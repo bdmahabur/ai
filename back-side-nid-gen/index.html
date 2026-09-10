@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Back Side NID Card Generator</title>
+<script src="https://cdn.jsdelivr.net/npm/bwip-js@4.6.0/dist/bwip-js-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+ <!-- SVG Favicon -->
+    <link
+        rel="icon"
+        type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%236366f1'/%3E%3Crect x='17' y='10' width='30' height='44' rx='4' fill='none' stroke='white' stroke-width='4'/%3E%3Ccircle cx='32' cy='25' r='7' fill='white'/%3E%3Cpath d='M22 44c1-7 5-10 10-10s9 3 10 10' fill='none' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E"
+    >
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    background:#e9edf2;
+    color:#111;
+    font-family:"SolaimanLipi",sans-serif;
+}
+
+.app{
+    display:grid;
+    grid-template-columns:370px 1fr;
+    min-height:100vh;
+}
+
+.sidebar{
+    background:#fff;
+    border-right:1px solid #d5dae1;
+    padding:20px;
+    height:100vh;
+    overflow-y:auto;
+}
+
+.sidebar h1{
+    margin:0;
+    font-family:Arial,sans-serif;
+    font-size:23px;
+}
+
+.subtitle{
+    margin:5px 0 20px;
+    color:#687386;
+    font-family:Arial,sans-serif;
+    font-size:12px;
+}
+
+.section{margin-bottom:20px}
+
+.section-title{
+    font-family:Arial,sans-serif;
+    font-weight:bold;
+    font-size:14px;
+    border-bottom:1px solid #ddd;
+    padding-bottom:7px;
+    margin-bottom:12px;
+}
+
+.field{margin-bottom:11px}
+
+label{
+    display:block;
+    margin-bottom:5px;
+    font-size:13px;
+    font-weight:600;
+}
+
+input,textarea{
+    width:100%;
+    padding:9px 10px;
+    border:1px solid #ccd2db;
+    border-radius:6px;
+    outline:none;
+    background:#fff;
+    font-family:Arial,sans-serif;
+    font-size:13px;
+}
+
+textarea{
+    resize:vertical;
+    min-height:70px;
+}
+
+input:focus,textarea:focus{
+    border-color:#2468d8;
+    box-shadow:0 0 0 3px rgba(36,104,216,.1);
+}
+
+.row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+button{
+    border:none;
+    border-radius:6px;
+    padding:10px 14px;
+    cursor:pointer;
+    font-family:Arial,sans-serif;
+    font-weight:600;
+}
+
+.generate-btn{
+    width:100%;
+    background:#1769df;
+    color:#fff;
+}
+
+.action-buttons{
+    display:flex;
+    gap:8px;
+    margin-top:9px;
+}
+
+.action-buttons button{
+    flex:1;
+    background:#e8ecf2;
+}
+
+.remove-signature{
+    width:100%;
+    background:#f0f2f5;
+    color:#333;
+    padding:8px 10px;
+    font-size:12px;
+}
+
+.preview-area{
+    padding:30px;
+    overflow:auto;
+}
+
+.preview-heading{
+    text-align:center;
+    margin-bottom:25px;
+    font-family:Arial,sans-serif;
+}
+
+.preview-heading h2{
+    margin:0;
+    font-size:21px;
+}
+
+.preview-heading p{
+    margin:5px 0 0;
+    color:#6c7585;
+    font-size:12px;
+}
+
+.a4-page{
+    width:210mm;
+    min-height:297mm;
+    margin:auto;
+    background:#fff;
+    padding:20mm;
+    box-shadow:0 8px 30px rgba(0,0,0,.15);
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+}
+
+/* EXACT CARD SIZE */
+.card{
+    width:86mm;
+    height:54mm;
+    background:#fff;
+    border:0.6mm solid #222;
+    position:relative;
+    overflow:hidden;
+    color:#111;
+    font-family:"SolaimanLipi",sans-serif;
+    flex-shrink:0;
+}
+
+/* TOP NOTICE */
+.notice{
+    height:9mm;
+    border-bottom:0.6mm solid #222;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:0 2mm;
+    font-family:"SolaimanLipi",sans-serif;
+    font-size:3.2mm;
+    line-height:1.20;
+}
+
+.notice-line{white-space:nowrap}
+
+/* ADDRESS */
+.address{
+    height:13.8mm;
+    
+    padding:1mm 2.1mm;
+    font-family:"SolaimanLipi",sans-serif;
+    font-size:3.2mm;
+    line-height:1.5;
+}
+
+/*
+  INFO ROW:
+  Only ONE bottom border.
+  No top border and no extra border anywhere here.
+*/
+.info-row{
+    height:5.5mm;
+    border-bottom:0.6mm solid #222;
+    border-top:0;
+    outline:0;
+    display:flex;
+    align-items:center;
+    padding-left:2.1mm;
+    font-size:3.2mm;
+    white-space:nowrap;
+    position:relative;
+}
+
+.info-item{margin-right:5mm;
+margin-bottom: -0.45mm}
+
+.info-english{font-family:Arial,sans-serif}
+
+.blood{
+    color:#e32121;
+    font-family:Arial,sans-serif;
+    font-weight:bold;
+}
+
+.print-no {
+    position: absolute;
+    right: 0;
+    top: 50;
+
+    width: 12mm;
+    height: 3.8mm;
+
+    background: #111;
+    color: #fff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-family: "SolaimanLipi", sans-serif;
+    font-size: 3.2mm;
+    margin-bottom: -1.5mm;
+}
+
+/* SIGNATURE */
+.signature-row{
+    height:12.5mm;
+    display:flex;
+    align-items:flex-end;
+    padding:0 2.2mm 1mm;
+    border:0;
+}
+
+.signature-block{width:54%}
+
+.signature{
+    height:6.2mm;
+    padding-left:10mm;
+    display:flex;
+    align-items:center;
+    font-family:cursive;
+    font-size:3mm;
+    font-style:italic;
+    transform:rotate(-4deg);
+}
+
+.signature-image{
+    max-width:30mm;
+    max-height:7mm;
+    width:auto;
+    height:auto;
+    object-fit:contain;
+    display:none;
+}
+
+.signature-text{
+    display:flex;
+    align-items:center;
+    font-family:cursive;
+    font-size:5mm;
+    font-style:italic;
+    transform:rotate(-4deg);
+}
+
+.signature-line{
+    font-family:"SolaimanLipi",sans-serif;
+    font-size:3.2mm;
+    line-height:1;
+}
+
+.issue{
+    flex:1;
+    padding-bottom:.3mm;
+    font-family:"SolaimanLipi",sans-serif;
+    font-size:3.2mm;
+    white-space:nowrap;
+}
+
+/* PDF417 */
+.barcode-area{
+    position:absolute;
+    left:2.3mm;
+    right:2.3mm;
+    bottom:1.3mm;
+    height:8.4mm;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+#barcode{
+    display:block;
+    width:100%;
+    height:8.4mm;
+    object-fit:fill;
+}
+
+.data-area{
+    width:86mm;
+    margin:15px auto 0;
+}
+
+.data-area h3{
+    margin:0 0 7px;
+    font-family:Arial,sans-serif;
+    font-size:14px;
+}
+
+#encodedData{
+    width:100%;
+    height:110px;
+    font-family:Consolas,monospace;
+    font-size:11px;
+    padding:8px;
+    border:1px solid #ccd2db;
+    border-radius:6px;
+    resize:vertical;
+}
+
+@media(max-width:900px){
+    .app{display:block}
+    .sidebar{
+        height:auto;
+        border-right:0;
+        border-bottom:1px solid #ddd;
+    }
+    .preview-area{padding:15px}
+}
+
+@media print{
+    @page{
+        size:A4 portrait;
+        margin:0;
+    }
+
+    html,body{
+        width:210mm;
+        height:297mm;
+        margin:0;
+        padding:0;
+        background:#fff;
+    }
+
+    .sidebar,.preview-heading,.data-area{
+        display:none!important;
+    }
+
+    .app{
+        display:block;
+        width:210mm;
+        min-height:297mm;
+    }
+
+    .preview-area{
+        padding:0;
+        margin:0;
+        width:210mm;
+        height:297mm;
+        overflow:hidden;
+    }
+
+    .a4-page{
+        width:210mm;
+        height:297mm;
+        min-height:297mm;
+        padding:20mm;
+        margin:0;
+        box-shadow:none;
+        display:flex;
+        justify-content:center;
+        align-items:flex-start;
+    }
+
+    .card{
+        width:86mm;
+        height:54mm;
+    }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<aside class="sidebar">
+    <h1>NID Card Back Side</h1>
+    <div class="subtitle">86mm × 54mm A4 Page</div>
+
+    <div class="section">
+        <div class="section-title">Card Information</div>
+
+        <div class="field">
+            <label>নোটিশ — লাইন ১</label>
+            <input id="notice1" value="এই কার্ডটি গণপ্রজাতন্ত্রী বাংলাদেশ সরকারের সম্পত্তি। কার্ডটি ব্যবহারকারী ব্যতীত অন্য">
+        </div>
+
+        <div class="field">
+            <label>নোটিশ — লাইন ২</label>
+            <input id="notice2" value="কোথাও পাওয়া গেলে নিকটস্থ পোস্ট অফিসে জমা দেবার জন্য অনুরোধ করা হলো।">
+        </div>
+
+        <div class="field">
+            <label>ঠিকানা</label>
+            <textarea id="address">গ্রাম/রাস্তা: ক্ষেনপাড়া, ডাকঘর: কে কে বাড়ী - ৫১০০, ভুল্লী, ঠাকুরগাঁও</textarea>
+        </div>
+
+        <div class="row">
+            <div class="field">
+                <label>রক্তের গ্রুপ</label>
+                <input id="blood" value="B+">
+            </div>
+            <div class="field">
+                <label>জন্মস্থান</label>
+                <input id="birthplace" value="ঠাকুরগাঁও">
+            </div>
+        </div>
+
+        <div class="field">
+            <label>মূদ্রণ নম্বর</label>
+            <input id="printNo" value="০১">
+        </div>
+
+        <div class="field">
+            <label>স্বাক্ষর (Text)</label>
+            <input id="signature" value="স্বাক্ষর">
+        </div>
+
+        <div class="field">
+            <label>স্বাক্ষরের ছবি (Optional)</label>
+            <input id="signatureImageInput" type="file" accept="image/*">
+        </div>
+
+        <div class="field">
+            <button type="button" class="remove-signature" onclick="removeSignatureImage()">
+                Remove Signature Image
+            </button>
+        </div>
+
+        <div class="field">
+            <label>প্রদানের তারিখ</label>
+            <input id="issueDate" type="date" value="2026-09-10">
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">PDF417 Barcode Information</div>
+
+        <div class="field">
+            <label>PIN</label>
+            <input id="pin" placeholder="Enter PIN">
+        </div>
+
+        <div class="field">
+            <label>Name</label>
+            <input id="name" placeholder="Enter name">
+        </div>
+
+        <div class="field">
+            <label>Date of Birth</label>
+            <input id="dob" type="date">
+        </div>
+
+        <div class="row">
+            <div class="field">
+                <label>FP</label>
+                <input id="fp" value="Right Index">
+            </div>
+            <div class="field">
+                <label>F</label>
+                <input id="finger" value="Right Index">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="field">
+                <label>TYPE</label>
+                <input id="type" value="A">
+            </div>
+            <div class="field">
+                <label>Version</label>
+                <input id="version" value="2.0">
+            </div>
+        </div>
+
+        <div class="field">
+            <label>DS</label>
+            <textarea id="ds" placeholder="DS Code"></textarea>
+        </div>
+    </div>
+
+    <button class="generate-btn" onclick="generateCard()">Generate Card</button>
+
+    <div class="action-buttons">
+        <button onclick="window.print()">Print / PDF</button>
+        <button onclick="downloadBarcode()">Barcode PNG</button>
+        <button onclick="downloadCardPNG()">Card PNG</button>
+    </div>
+</aside>
+
+<main class="preview-area">
+
+    <div class="a4-page">
+        <div class="card">
+
+            <div class="notice">
+                <div id="previewNotice1" class="notice-line">কার্ডটি ব্যবহারকারী ব্যতীত অন্য</div>
+                <div id="previewNotice2" class="notice-line">কোথাও পাওয়া গেলে নিকটস্থ পোস্ট অফিসে জমা দেবার জন্য অনুরোধ করা হলো।</div>
+            </div>
+
+            <div class="address">
+                <span>ঠিকানা:</span>
+                <span id="previewAddress">গ্রাম/রাস্তা: কেন্নপাড়া, ডাকঘর: কে কে বাড়ী - ৫০০, ঠাকুরগাঁও সদর, ঠাকুরগাঁও</span>
+            </div>
+
+            <div class="info-row">
+                <div class="info-item">
+                    <span>রক্তের গ্রুপ / </span>
+                    <span class="info-english">Blood Group: </span>
+                    <span id="previewBlood" class="blood">B+</span>
+                </div>
+
+                <div class="info-item">
+                    <span>জন্মস্থান: </span>
+                    <span id="previewBirthplace">ঠাকুরগাঁও</span>
+                </div>
+
+                <div id="previewPrintNo" class="print-no">মূদ্রণ: ০১</div>
+            </div>
+
+            <div class="signature-row">
+                <div class="signature-block">
+                    <div id="previewSignature" class="signature">
+                        <span id="signatureText" class="signature-text">স্বাক্ষর</span>
+                        <img id="signatureImage" class="signature-image" alt="Signature">
+                    </div>
+                    <div class="signature-line">প্রদানকারী কর্তৃপক্ষের স্বাক্ষর</div>
+                </div>
+
+                <div class="issue">
+                    প্রদানের তারিখ:
+                    <span id="previewIssueDate">১৮/০৫/২০২৩</span>
+                </div>
+            </div>
+
+            <div class="barcode-area">
+                <canvas id="barcode"></canvas>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="data-area">
+        <h3>PDF417 Encoded Data</h3>
+        <textarea id="encodedData" readonly></textarea>
+    </div>
+
+</main>
+</div>
+
+<script>
+function $(id){
+    return document.getElementById(id);
+}
+
+function escapeXML(value){
+    return String(value || "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&apos;");
+}
+
+function formatDateBangla(value){
+    if(!value) return "";
+
+    const p=value.split("-");
+    if(p.length!==3) return value;
+
+    const bn={
+        "0":"০","1":"১","2":"২","3":"৩","4":"৪",
+        "5":"৫","6":"৬","7":"৭","8":"৮","9":"৯"
+    };
+
+    const convert=s=>s.replace(/[0-9]/g,d=>bn[d]);
+
+    return convert(p[2])+"/"+convert(p[1])+"/"+convert(p[0]);
+}
+
+function formatDOB(value){
+    if(!value) return "";
+
+    const date=new Date(value+"T00:00:00");
+
+    const months=[
+        "Jan","Feb","Mar","Apr","May","Jun",
+        "Jul","Aug","Sep","Oct","Nov","Dec"
+    ];
+
+    return String(date.getDate()).padStart(2,"0")
+        +" "+months[date.getMonth()]
+        +" "+date.getFullYear();
+}
+
+function buildBarcodeData(){
+
+    const pin=escapeXML($("pin").value.trim());
+    const name=escapeXML($("name").value.trim());
+    const dob=escapeXML(formatDOB($("dob").value));
+    const fp=escapeXML($("fp").value.trim());
+    const finger=escapeXML($("finger").value.trim());
+    const type=escapeXML($("type").value.trim());
+    const version=escapeXML($("version").value.trim());
+    const ds=escapeXML($("ds").value.trim());
+
+    return `<pin>${pin}</pin><name>${name}</name><DOB>${dob}</DOB><FP>${fp}</FP><F>${finger}</F><TYPE>${type}</TYPE><V>${version}</V><ds>${ds}</ds>`;
+}
+
+function generateBarcode(data){
+
+    try{
+        bwipjs.toCanvas($("barcode"),{
+            bcid:"pdf417",
+            text:data,
+            scale:3,
+            columns:12,
+            rows:0,
+            height:9,
+            padding:0,
+            includetext:false
+        });
+    }catch(error){
+        console.error(error);
+        alert("PDF417 generation error:\n\n"+error.message);
+    }
+}
+
+let signatureImageData = "";
+
+function updateSignaturePreview(){
+
+    const text = $("signature").value;
+    const textEl = $("signatureText");
+    const imageEl = $("signatureImage");
+
+    if(signatureImageData){
+        imageEl.src = signatureImageData;
+        imageEl.style.display = "block";
+        textEl.style.display = "none";
+    }else{
+        imageEl.removeAttribute("src");
+        imageEl.style.display = "none";
+        textEl.textContent = text;
+        textEl.style.display = "flex";
+    }
+}
+
+function handleSignatureImage(event){
+
+    const file = event.target.files && event.target.files[0];
+
+    if(!file){
+        signatureImageData = "";
+        updateSignaturePreview();
+        return;
+    }
+
+    if(!file.type.startsWith("image/")){
+        alert("Please select an image file.");
+        event.target.value = "";
+        signatureImageData = "";
+        updateSignaturePreview();
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+        signatureImageData = e.target.result;
+        updateSignaturePreview();
+    };
+
+    reader.onerror = function(){
+        alert("Could not read the signature image.");
+        event.target.value = "";
+        signatureImageData = "";
+        updateSignaturePreview();
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function removeSignatureImage(){
+
+    signatureImageData = "";
+
+    $("signatureImageInput").value = "";
+
+    updateSignaturePreview();
+}
+
+function generateCard(){
+
+    $("previewNotice1").textContent=$("notice1").value;
+    $("previewNotice2").textContent=$("notice2").value;
+    $("previewAddress").textContent=$("address").value;
+    $("previewBlood").textContent=$("blood").value;
+    $("previewBirthplace").textContent=$("birthplace").value;
+    $("previewPrintNo").textContent="মূদ্রণ: "+$("printNo").value;
+    updateSignaturePreview();
+    $("previewIssueDate").textContent=formatDateBangla($("issueDate").value);
+
+    const data=buildBarcodeData();
+
+    $("encodedData").value=data;
+
+    generateBarcode(data);
+}
+
+function downloadBarcode(){
+
+    const canvas=$("barcode");
+
+    if(!canvas.width){
+        alert("Please generate the card first.");
+        return;
+    }
+
+    const link=document.createElement("a");
+    link.download="PDF417-BarCode.png";
+    link.href=canvas.toDataURL("image/png");
+    link.click();
+}
+
+async function downloadCardPNG(){
+
+    const card=document.querySelector(".card");
+
+    if(!card){
+        alert("Card preview not found.");
+        return;
+    }
+
+    try{
+        if(document.fonts && document.fonts.ready){
+            await document.fonts.ready;
+        }
+
+        const canvas=await html2canvas(card,{
+            scale:3,
+            backgroundColor:"#ffffff",
+            useCORS:true,
+            allowTaint:false,
+            logging:false
+        });
+
+        const link=document.createElement("a");
+        link.download="card-86x54mm.png";
+        link.href=canvas.toDataURL("image/png");
+        link.click();
+    }catch(error){
+        console.error(error);
+        alert("Could not download the card as PNG.\n\n"+error.message);
+    }
+}
+
+const fields=[
+    "notice1","notice2","address","blood","birthplace",
+    "printNo","signature","issueDate",
+    "pin","name","dob","fp","finger","type","version","ds"
+];
+
+$("signatureImageInput").addEventListener("change", handleSignatureImage);
+
+fields.forEach(id=>{
+    $(id).addEventListener("input",generateCard);
+    $(id).addEventListener("change",generateCard);
+});
+
+$("pin").value="";
+$("name").value="";
+$("dob").value="";
+
+updateSignaturePreview();
+generateCard();
+</script>
+
+</body>
+</html>
