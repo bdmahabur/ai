@@ -579,7 +579,7 @@ button{
 
     text-align:center;
 
-    padding:0 2mm;
+    padding:0 2.5mm;
 
     font-family:"SolaimanLipi",sans-serif;
 
@@ -591,6 +591,11 @@ button{
 .notice-line{
     white-space:nowrap;
 }
+.notice-line-2{
+    margin-left: -3.9mm;
+    white-space:nowrap;
+}
+
 
 
 /* =========================================================
@@ -644,6 +649,7 @@ button{
 
 .info-english{
     font-family:Arial,sans-serif;
+    font-size: 2.5mm;
 }
 
 .blood{
@@ -699,7 +705,7 @@ button{
 
     align-items:flex-end;
 
-    padding:0 2.2mm 1mm;
+    padding:0 2.5mm 0mm;
 
     border:0;
 }
@@ -723,11 +729,12 @@ button{
 
     font-style:italic;
 
-    transform:rotate(-4deg);
 }
 
 .signature-image{
     max-width:30mm;
+    margin-left: -3.80mm;
+    margin-bottom: 0.9mm;
 
     max-height:7mm;
 
@@ -1037,10 +1044,10 @@ button{
         <div class="field">
 
             <label>
-                নোটিশ — লাইন ১
+                 <!--নোটিশ — লাইন ১-->
             </label>
 
-            <input
+            <input type="hidden" 
                 id="notice1"
                 value="এই কার্ডটি গণপ্রজাতন্ত্রী বাংলাদেশ সরকারের সম্পত্তি। কার্ডটি ব্যবহারকারী ব্যতীত অন্য"
             >
@@ -1051,10 +1058,10 @@ button{
         <div class="field">
 
             <label>
-                নোটিশ — লাইন ২
+                <!--নোটিশ — লাইন ২-->
             </label>
 
-            <input
+            <input type="hidden" 
                 id="notice2"
                 value="কোথাও পাওয়া গেলে নিকটস্থ পোস্ট অফিসে জমা দেবার জন্য অনুরোধ করা হলো।"
             >
@@ -1068,7 +1075,7 @@ button{
                 ঠিকানা
             </label>
 
-            <textarea id="address">গ্রাম/রাস্তা: ক্ষেনপাড়া, ডাকঘর: কে কে বাড়ী - ৫১০০, ভুল্লী, ঠাকুরগাঁও</textarea>
+            <textarea id="address">গ্রাম/রাস্তা: ক্ষেনপাড়া, ডাকঘর: কে কে বাড়ী - ৫১০০, ভূল্লী, ঠাকুরগাঁও</textarea>
 
         </div>
 
@@ -1080,7 +1087,8 @@ button{
 
                 <input
                     id="blood"
-                    value="B+"
+                    value=""
+                    placeholder="B+"
                 >
 
             </div>
@@ -1098,7 +1106,8 @@ button{
 
                 <input
                     id="birthplace"
-                    value="ঠাকুরগাঁও"
+                    value="" 
+                    placeholder="ঠাকুরগাঁও"
                 >
 
             </div>
@@ -1123,14 +1132,14 @@ button{
 
 <div class="row">
         <div class="field">
-
             <label>
-                স্বাক্ষর (Text)
+                প্রদানের তারিখ
             </label>
 
             <input
-                id="signature"
-                value="স্বাক্ষর"
+                id="issueDate"
+                type="date"
+                value="2026-09-10"
             >
 
         </div>
@@ -1138,7 +1147,7 @@ button{
          <div class="field">
 
             <label>
-                স্বাক্ষরের ছবি
+                প্রদানকারী কর্তৃপক্ষের স্বাক্ষরের ছবি
             </label>
 
             <input
@@ -1154,14 +1163,9 @@ button{
 <div class="row">
     <div class="field">
 
-            <label>
-                প্রদানের তারিখ
-            </label>
-
-            <input
-                id="issueDate"
-                type="date"
-                value="2026-09-10"
+            <input type="hidden" 
+                id="signature"
+                value=""
             >
 
         </div>
@@ -1376,15 +1380,15 @@ button{
                     id="previewNotice1"
                     class="notice-line"
                 >
-                    কার্ডটি ব্যবহারকারী ব্যতীত অন্য
+                    এই কার্ডটি গণপ্রজাতন্ত্রী বাংলাদেশ সরকারের সম্পত্তি। কার্ডটি ব্যবহারকারী ব্যতীত অন্য
                 </div>
 
 
                 <div
                     id="previewNotice2"
-                    class="notice-line"
+                    class="notice-line-2"
                 >
-                    কোথাও পাওয়া গেলে নিকটস্থ পোস্ট অফিসে জমা দেবার জন্য অনুরোধ করা হলো।
+                    কোথাও পাওয়া গেলে নিকটস্থ পোস্ট অফিসে জমা দেবার জন্য অনুরোধ করা হলো ।
                 </div>
 
             </div>
