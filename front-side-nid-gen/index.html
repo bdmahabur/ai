@@ -413,7 +413,7 @@ async function downloadCardPNG(){
             const id = value("idNumber") || "ID-Card";
 
             link.href = url;
-            link.download = id + "-front.png";
+            link.download = "nid-front-" + id + ".png";
             document.body.appendChild(link);
             link.click();
             link.remove();
