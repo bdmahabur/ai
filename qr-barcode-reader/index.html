@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR & Barcode Scanner</title>
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234f46e5'/%3E%3Cg fill='none' stroke='white' stroke-width='4'%3E%3Cpath d='M10 23V10h13M41 10h13v13M54 41v13H41M23 54H10V41'/%3E%3C/g%3E%3Cg fill='white'%3E%3Crect x='18' y='18' width='8' height='8'/%3E%3Crect x='38' y='18' width='8' height='8'/%3E%3Crect x='18' y='38' width='8' height='8'/%3E%3Crect x='36' y='36' width='5' height='5'/%3E%3Crect x='44' y='36' width='5' height='5'/%3E%3Crect x='36' y='44' width='13' height='5'/%3E%3C/g%3E%3C/svg%3E">
+
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+<style>
+*{box-sizing:border-box}
+
+:root{
+    --bg:#f8fafc;
+    --card:#ffffff;
+    --text:#111827;
+    --muted:#667085;
+    --border:#e5e7eb;
+    --primary:#4f46e5;
+    --primary-hover:#4338ca;
+    --primary-soft:#eef2ff;
+    --success:#067647;
+    --danger:#b42318;
+    --input:#ffffff;
+}
+
+body.dark{
+    --bg:#0f1115;
+    --card:#181b21;
+    --text:#f5f5f6;
+    --muted:#a1a1aa;
+    --border:#2b3038;
+    --primary-soft:#25274a;
+    --input:#111318;
+}
+
+html{scroll-behavior:smooth}
+
+body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:Arial,Helvetica,sans-serif;
+    transition:background .2s,color .2s;
+}
+
+button,input{font:inherit}
+
+.container{
+    width:min(1040px,calc(100% - 32px));
+    margin:auto;
+}
+
+.header{
+    text-align:center;
+    padding:38px 0 25px;
+}
+
+.brand-icon{
+    width:58px;
+    height:58px;
+    margin:0 auto 15px;
+    border-radius:15px;
+    background:var(--primary);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.brand-icon svg{
+    width:32px;
+    height:32px;
+}
+
+h1{
+    margin:0;
+    font-size:31px;
+    line-height:1.2;
+    letter-spacing:-.6px;
+}
+
+.subtitle{
+    margin:10px auto 0;
+    max-width:680px;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.6;
+}
+
+.header-actions{
+    display:flex;
+    justify-content:center;
+    gap:9px;
+    margin-top:18px;
+}
+
+.icon-btn{
+    height:40px;
+    padding:0 13px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:var(--card);
+    color:var(--text);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    cursor:pointer;
+}
+
+.icon-btn svg{
+    width:17px;
+    height:17px;
+}
+
+.card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:23px;
+    margin-bottom:18px;
+}
+
+.card-header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:20px;
+    margin-bottom:20px;
+}
+
+.card-title{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.card-title-icon{
+    width:40px;
+    height:40px;
+    border-radius:10px;
+    background:var(--primary-soft);
+    color:var(--primary);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex:none;
+}
+
+.card-title-icon svg{
+    width:21px;
+    height:21px;
+}
+
+.card h2{
+    margin:0;
+    font-size:19px;
+    letter-spacing:-.2px;
+}
+
+.card-description{
+    margin:4px 0 0;
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.5;
+}
+
+.scanner-layout{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 280px;
+    gap:20px;
+    align-items:start;
+}
+
+.reader-wrap{
+    width:100%;
+}
+
+#reader{
+    width:100%;
+    min-height:330px;
+    overflow:hidden;
+    border:1px solid var(--border);
+    border-radius:13px;
+    background:var(--bg);
+}
+
+#reader video{
+    width:100%!important;
+    border-radius:12px;
+}
+
+#reader img{
+    max-width:100%;
+}
+
+.scan-placeholder{
+    min-height:330px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:25px;
+    color:var(--muted);
+}
+
+.scan-placeholder-icon{
+    width:62px;
+    height:62px;
+    border-radius:14px;
+    background:var(--primary-soft);
+    color:var(--primary);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:14px;
+}
+
+.scan-placeholder-icon svg{
+    width:31px;
+    height:31px;
+}
+
+.scan-placeholder strong{
+    color:var(--text);
+    font-size:15px;
+    margin-bottom:6px;
+}
+
+.scan-placeholder span{
+    max-width:330px;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.controls{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:9px;
+    margin-top:12px;
+}
+
+.btn{
+    min-height:43px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:10px 14px;
+    background:var(--card);
+    color:var(--text);
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    font-size:13px;
+    font-weight:600;
+}
+
+.btn svg{
+    width:17px;
+    height:17px;
+}
+
+.btn.primary{
+    background:var(--primary);
+    border-color:var(--primary);
+    color:#fff;
+}
+
+.btn.primary:hover{
+    background:var(--primary-hover);
+}
+
+.btn.danger{
+    color:var(--danger);
+}
+
+.btn:disabled{
+    opacity:.48;
+    cursor:not-allowed;
+}
+
+.status{
+    margin-top:10px;
+    padding:10px 12px;
+    border-radius:9px;
+    background:var(--primary-soft);
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.5;
+}
+
+.side-panel{
+    border:1px solid var(--border);
+    border-radius:13px;
+    padding:16px;
+}
+
+.side-panel h3{
+    margin:0 0 12px;
+    font-size:14px;
+}
+
+.side-item{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:9px 0;
+    border-bottom:1px solid var(--border);
+    color:var(--muted);
+    font-size:12px;
+}
+
+.side-item:last-child{border-bottom:0}
+
+.side-item svg{
+    width:17px;
+    height:17px;
+    color:var(--primary);
+    flex:none;
+}
+
+.result{
+    display:none;
+    margin-top:18px;
+    padding:17px;
+    border:1px solid var(--border);
+    border-radius:13px;
+}
+
+.result.show{display:block}
+
+.result-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    margin-bottom:9px;
+}
+
+.result-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:14px;
+    font-weight:700;
+}
+
+.result-title svg{
+    width:17px;
+    height:17px;
+    color:var(--success);
+}
+
+.badge{
+    font-size:11px;
+    font-weight:600;
+    color:var(--primary);
+    background:var(--primary-soft);
+    padding:6px 8px;
+    border-radius:7px;
+}
+
+.result-value{
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:9px;
+    padding:12px;
+    min-height:44px;
+    white-space:pre-wrap;
+    word-break:break-word;
+    font-size:13px;
+    line-height:1.55;
+}
+
+.result-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:10px;
+}
+
+.result-actions .btn{
+    min-height:38px;
+    padding:8px 12px;
+}
+
+.section-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+}
+
+.info-box{
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:15px;
+}
+
+.info-icon{
+    width:36px;
+    height:36px;
+    border-radius:9px;
+    background:var(--primary-soft);
+    color:var(--primary);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:11px;
+}
+
+.info-icon svg{
+    width:19px;
+    height:19px;
+}
+
+.info-box h3{
+    margin:0 0 5px;
+    font-size:14px;
+}
+
+.info-box p{
+    margin:0;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.55;
+}
+
+.note{
+    padding:12px 14px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.6;
+    margin-top:15px;
+}
+
+footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:12px;
+    padding:2px 0 30px;
+}
+
+@media(max-width:800px){
+    .scanner-layout{
+        grid-template-columns:1fr;
+    }
+
+    .side-panel{
+        display:grid;
+        grid-template-columns:repeat(2,1fr);
+        gap:0 15px;
+    }
+
+    .side-panel h3{
+        grid-column:1/-1;
+    }
+}
+
+@media(max-width:600px){
+    .container{
+        width:calc(100% - 20px);
+    }
+
+    .header{
+        padding:25px 0 18px;
+    }
+
+    h1{
+        font-size:26px;
+    }
+
+    .card{
+        padding:16px;
+        border-radius:14px;
+    }
+
+    .card-header{
+        margin-bottom:15px;
+    }
+
+    .scanner-layout{
+        gap:14px;
+    }
+
+    #reader,
+    .scan-placeholder{
+        min-height:270px;
+    }
+
+    .controls{
+        grid-template-columns:1fr;
+    }
+
+    .section-grid{
+        grid-template-columns:1fr;
+    }
+
+    .side-panel{
+        grid-template-columns:1fr;
+    }
+
+    .result-head{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .result-actions{
+        display:grid;
+        grid-template-columns:1fr;
+    }
+
+    .result-actions .btn{
+        width:100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header class="header">
+    <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"/>
+            <path d="M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7z"/>
+            <path d="M14 14h2v2h-2zM18 14h-2v2M14 18h4"/>
+        </svg>
+    </div>
+
+    <h1>QR & Barcode Scanner</h1>
+    <p class="subtitle">
+        Scan QR codes and barcodes instantly with your camera or upload an image.
+    </p>
+
+    <div class="header-actions">
+        <button class="icon-btn" id="themeBtn" type="button">
+            <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>
+                <circle cx="12" cy="12" r="4"/>
+            </svg>
+            <span id="themeText">Dark Mode</span>
+        </button>
+    </div>
+</header>
+
+<section class="card">
+
+    <div class="card-header">
+        <div class="card-title">
+            <div class="card-title-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"/>
+                    <path d="M8 8h2v2H8zM14 8h2v2h-2zM8 14h2v2H8z"/>
+                    <path d="M14 14h2v2h-2zM18 14h-2v2M14 18h4"/>
+                </svg>
+            </div>
+            <div>
+                <h2>Scan QR / Barcode</h2>
+                <p class="card-description">Use camera scanning or select an image from your device.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="scanner-layout">
+
+        <div class="reader-wrap">
+
+            <div id="reader">
+                <div class="scan-placeholder" id="placeholder">
+                    <div class="scan-placeholder-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+                            <rect x="3" y="5" width="18" height="14" rx="2"/>
+                            <path d="M7 9h2M15 9h2M7 15h2M15 15h2"/>
+                            <path d="M12 8v8"/>
+                        </svg>
+                    </div>
+                    <strong>Ready to scan</strong>
+                    <span>Start your camera or upload an image containing a QR code or barcode.</span>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn primary" id="startBtn" type="button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M4 7h4l2-2h4l2 2h4v12H4z"/>
+                        <circle cx="12" cy="13" r="3.5"/>
+                    </svg>
+                    Start Camera
+                </button>
+
+                <label class="btn" for="imageInput">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <rect x="3" y="4" width="18" height="16" rx="2"/>
+                        <circle cx="8" cy="9" r="1.5"/>
+                        <path d="m4 17 5-5 3 3 2-2 6 6"/>
+                    </svg>
+                    Scan Image
+                </label>
+
+                <input id="imageInput" type="file" accept="image/*" hidden>
+
+                <button class="btn danger" id="stopBtn" type="button" disabled>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <rect x="6" y="6" width="12" height="12" rx="2"/>
+                    </svg>
+                    Stop Camera
+                </button>
+            </div>
+
+            <div class="status" id="status">Ready to scan.</div>
+
+            <div class="result" id="result">
+                <div class="result-head">
+                    <div class="result-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="m5 12 4 4L19 6"/>
+                        </svg>
+                        Scanned Result
+                    </div>
+                    <span class="badge" id="formatBadge">Format: Unknown</span>
+                </div>
+
+                <div class="result-value" id="resultValue"></div>
+
+                <div class="result-actions">
+                    <button class="btn primary" id="copyBtn" type="button">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <rect x="8" y="8" width="11" height="12" rx="2"/>
+                            <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"/>
+                        </svg>
+                        Copy
+                    </button>
+
+                    <button class="btn" id="openBtn" type="button" style="display:none">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M14 4h6v6M20 4l-9 9"/>
+                            <path d="M18 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"/>
+                        </svg>
+                        Open Link
+                    </button>
+
+                    <button class="btn" id="clearBtn" type="button">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>
+                        </svg>
+                        Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="side-panel">
+            <h3>Supported Formats</h3>
+
+            <div class="side-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="4" y="4" width="6" height="6"/>
+                    <rect x="14" y="4" width="6" height="6"/>
+                    <rect x="4" y="14" width="6" height="6"/>
+                    <path d="M14 14h3v3h-3zM20 14v6M14 20h6"/>
+                </svg>
+                QR Code
+            </div>
+
+            <div class="side-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M4 5v14M7 5v14M10 5v14M14 5v14M17 5v14M20 5v14"/>
+                </svg>
+                Code 128 / 39
+            </div>
+
+            <div class="side-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M4 5v14M7 5v14M11 5v14M14 5v14M18 5v14M21 5v14"/>
+                </svg>
+                EAN / UPC
+            </div>
+
+            <div class="side-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M5 4h14v16H5z"/>
+                    <path d="M8 8h8M8 12h8M8 16h5"/>
+                </svg>
+                PDF417
+            </div>
+
+            <div class="side-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="5" y="5" width="14" height="14"/>
+                    <path d="M8 8h2v2H8zM14 8h2v2h-2zM8 14h2v2H8zM14 14h2v2h-2z"/>
+                </svg>
+                Data Matrix
+            </div>
+
+            <div class="side-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="m12 3 8 5v8l-8 5-8-5V8z"/>
+                    <path d="M8 9h3v3H8zM13 12h3v3h-3z"/>
+                </svg>
+                Aztec
+            </div>
+        </div>
+
+    </div>
+
+    <div class="note">
+        Camera scanning normally requires <strong>HTTPS</strong> or <strong>localhost</strong>.
+        When your browser asks for camera permission, choose Allow.
+    </div>
+</section>
+
+<section class="card">
+    <div class="card-header">
+        <div class="card-title">
+            <div class="card-title-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M12 8v5l3 2"/>
+                </svg>
+            </div>
+            <div>
+                <h2>How It Works</h2>
+                <p class="card-description">Simple and fast code scanning.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-grid">
+        <div class="info-box">
+            <div class="info-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M4 7h4l2-2h4l2 2h4v12H4z"/>
+                    <circle cx="12" cy="13" r="3.5"/>
+                </svg>
+            </div>
+            <h3>Use Camera</h3>
+            <p>Start the camera and place the code inside the scanning area.</p>
+        </div>
+
+        <div class="info-box">
+            <div class="info-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="3" y="4" width="18" height="16" rx="2"/>
+                    <circle cx="8" cy="9" r="1.5"/>
+                    <path d="m4 17 5-5 3 3 2-2 6 6"/>
+                </svg>
+            </div>
+            <h3>Upload Image</h3>
+            <p>Choose a photo or screenshot containing a QR code or barcode.</p>
+        </div>
+
+        <div class="info-box">
+            <div class="info-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="m5 12 4 4L19 6"/>
+                </svg>
+            </div>
+            <h3>Get Result</h3>
+            <p>Copy the decoded value or open it directly when it is a web link.</p>
+        </div>
+    </div>
+</section>
+
+<footer>
+    QR & Barcode Scanner
+</footer>
+
+</div>
+
+<script>
+const readerId = "reader";
+
+let scanner = null;
+let scanning = false;
+
+const reader = document.getElementById("reader");
+const placeholder = document.getElementById("placeholder");
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
+const imageInput = document.getElementById("imageInput");
+const statusBox = document.getElementById("status");
+
+const resultBox = document.getElementById("result");
+const resultValue = document.getElementById("resultValue");
+const formatBadge = document.getElementById("formatBadge");
+const copyBtn = document.getElementById("copyBtn");
+const openBtn = document.getElementById("openBtn");
+const clearBtn = document.getElementById("clearBtn");
+
+const themeBtn = document.getElementById("themeBtn");
+const themeText = document.getElementById("themeText");
+const themeIcon = document.getElementById("themeIcon");
+
+const supportedFormats = [
+    Html5QrcodeSupportedFormats.QR_CODE,
+    Html5QrcodeSupportedFormats.CODE_128,
+    Html5QrcodeSupportedFormats.CODE_39,
+    Html5QrcodeSupportedFormats.EAN_13,
+    Html5QrcodeSupportedFormats.EAN_8,
+    Html5QrcodeSupportedFormats.UPC_A,
+    Html5QrcodeSupportedFormats.ITF_14,
+    Html5QrcodeSupportedFormats.CODABAR,
+    Html5QrcodeSupportedFormats.PDF_417,
+    Html5QrcodeSupportedFormats.DATA_MATRIX,
+    Html5QrcodeSupportedFormats.AZTEC
+];
+
+function setStatus(text){
+    statusBox.textContent = text;
+}
+
+function showCameraArea(){
+    if(placeholder) placeholder.style.display = "none";
+}
+
+function showPlaceholder(){
+    if(placeholder) placeholder.style.display = "flex";
+}
+
+function getFormatName(decodedResult){
+    const format = decodedResult && decodedResult.result
+        ? decodedResult.result.format
+        : null;
+
+    if(format && typeof format.formatName === "string"){
+        return format.formatName;
+    }
+
+    return "Unknown";
+}
+
+function showResult(text, decodedResult){
+    const value = String(text || "");
+
+    resultValue.textContent = value;
+    formatBadge.textContent = "Format: " + getFormatName(decodedResult);
+    resultBox.classList.add("show");
+
+    if(/^https?:\/\/\S+$/i.test(value.trim())){
+        openBtn.style.display = "inline-flex";
+        openBtn.onclick = function(){
+            window.open(value.trim(), "_blank", "noopener,noreferrer");
+        };
+    }else{
+        openBtn.style.display = "none";
+        openBtn.onclick = null;
+    }
+}
+
+async function startCamera(){
+    if(scanning) return;
+
+    showCameraArea();
+    setStatus("Starting camera...");
+
+    try{
+        scanner = new Html5Qrcode(readerId);
+
+        const config = {
+            fps:10,
+            qrbox:{width:260,height:190},
+            aspectRatio:1.777778,
+            formatsToSupport:supportedFormats
+        };
+
+        try{
+            await scanner.start(
+                {facingMode:"environment"},
+                config,
+                async function(decodedText,decodedResult){
+                    showResult(decodedText,decodedResult);
+                    setStatus("Code detected successfully.");
+                    await stopCamera();
+                },
+                function(){}
+            );
+        }catch(firstError){
+            const cameras = await Html5Qrcode.getCameras();
+
+            if(!cameras || !cameras.length){
+                throw firstError;
+            }
+
+            await scanner.start(
+                cameras[0].id,
+                config,
+                async function(decodedText,decodedResult){
+                    showResult(decodedText,decodedResult);
+                    setStatus("Code detected successfully.");
+                    await stopCamera();
+                },
+                function(){}
+            );
+        }
+
+        scanning = true;
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+
+        setStatus("Camera is active. Point it at a QR code or barcode.");
+
+    }catch(error){
+        console.error(error);
+
+        scanner = null;
+        scanning = false;
+
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+
+        showPlaceholder();
+
+        setStatus(
+            "Unable to start camera. Allow camera permission and use HTTPS or localhost."
+        );
+    }
+}
+
+async function stopCamera(){
+    if(!scanner) return;
+
+    try{
+        if(scanning){
+            await scanner.stop();
+        }
+    }catch(error){
+        console.warn(error);
+    }
+
+    try{
+        scanner.clear();
+    }catch(error){
+        console.warn(error);
+    }
+
+    scanner = null;
+    scanning = false;
+
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+}
+
+imageInput.addEventListener("change", async function(event){
+    const file = event.target.files && event.target.files[0];
+
+    if(!file) return;
+
+    await stopCamera();
+
+    showPlaceholder();
+    setStatus("Reading the selected image...");
+
+    const imageScanner = new Html5Qrcode(readerId);
+
+    try{
+        const decodedText = await imageScanner.scanFile(file,true);
+
+        showResult(decodedText,null);
+        setStatus("Code detected from image.");
+
+    }catch(error){
+        console.error(error);
+        setStatus("No supported QR code or barcode was found in this image.");
+
+    }finally{
+        try{
+            imageScanner.clear();
+        }catch(error){}
+
+        imageInput.value = "";
+    }
+});
+
+startBtn.addEventListener("click",startCamera);
+
+stopBtn.addEventListener("click",async function(){
+    await stopCamera();
+    showPlaceholder();
+    setStatus("Camera stopped.");
+});
+
+copyBtn.addEventListener("click",async function(){
+    const text = resultValue.textContent;
+
+    if(!text) return;
+
+    try{
+        await navigator.clipboard.writeText(text);
+    }catch(error){
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+    }
+
+    copyBtn.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m5 12 4 4L19 6"/>
+        </svg>
+        Copied
+    `;
+
+    setTimeout(function(){
+        copyBtn.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="8" y="8" width="11" height="12" rx="2"/>
+                <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2"/>
+            </svg>
+            Copy
+        `;
+    },1200);
+});
+
+clearBtn.addEventListener("click",function(){
+    resultBox.classList.remove("show");
+    resultValue.textContent = "";
+    formatBadge.textContent = "Format: Unknown";
+    openBtn.style.display = "none";
+    openBtn.onclick = null;
+    setStatus("Ready to scan.");
+});
+
+themeBtn.addEventListener("click",function(){
+    document.body.classList.toggle("dark");
+
+    const dark = document.body.classList.contains("dark");
+
+    themeText.textContent = dark ? "Light Mode" : "Dark Mode";
+
+    themeIcon.innerHTML = dark
+        ? `
+            <path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5z"/>
+          `
+        : `
+            <path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>
+            <circle cx="12" cy="12" r="4"/>
+          `;
+
+    localStorage.setItem(
+        "scanner-theme",
+        dark ? "dark" : "light"
+    );
+});
+
+if(localStorage.getItem("scanner-theme") === "dark"){
+    document.body.classList.add("dark");
+    themeText.textContent = "Light Mode";
+
+    themeIcon.innerHTML = `
+        <path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5z"/>
+    `;
+}
+
+window.addEventListener("beforeunload",function(){
+    if(scanner && scanning){
+        scanner.stop().catch(function(){});
+    }
+});
+</script>
+
+</body>
+</html>
