@@ -322,7 +322,7 @@
             pointer-events: none;
         }
 
-        input[type="date"] {
+        input[type="text"] {
             width: 100%;
 
             height: 47px;
@@ -346,7 +346,7 @@
             transition: 0.2s;
         }
 
-        input[type="date"]:focus {
+        input[type="text"]:focus {
             border-color:
                 var(--primary);
 
@@ -911,8 +911,12 @@
                             </svg>
 
                             <input
-                                type="date"
+                                type="text"
                                 id="birthDate"
+                                inputmode="numeric"
+                                autocomplete="bday"
+                                placeholder="DD/MM/YYYY"
+                                maxlength="10"
                             >
 
                         </div>
@@ -953,8 +957,12 @@
                             </svg>
 
                             <input
-                                type="date"
+                                type="text"
                                 id="todayDate"
+                                inputmode="numeric"
+                                autocomplete="off"
+                                placeholder="DD/MM/YYYY"
+                                maxlength="10"
                             >
 
                         </div>
@@ -1401,16 +1409,62 @@
         }
 
 
+        function formatInputDate(date) {
+
+            const day = String(date.getDate()).padStart(2, "0");
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const year = date.getFullYear();
+
+            return `${day}/${month}/${year}`;
+
+        }
+
+
         function parseDate(value) {
 
-            const parts =
-                value.split("-").map(Number);
+            const parts = value.split("/").map(Number);
 
-            return new Date(
-                parts[0],
-                parts[1] - 1,
-                parts[2]
-            );
+            if (parts.length !== 3) {
+                return new Date(NaN);
+            }
+
+            const day = parts[0];
+            const month = parts[1];
+            const year = parts[2];
+
+            const date = new Date(year, month - 1, day);
+
+            if (
+                date.getFullYear() !== year ||
+                date.getMonth() !== month - 1 ||
+                date.getDate() !== day
+            ) {
+                return new Date(NaN);
+            }
+
+            return date;
+
+        }
+
+
+        function normalizeDateInput(input) {
+
+            let value = input.value.replace(/[^0-9]/g, "").slice(0, 8);
+
+            if (value.length > 4) {
+                value = value.slice(0, 2) + "/" + value.slice(2, 4) + "/" + value.slice(4);
+            } else if (value.length > 2) {
+                value = value.slice(0, 2) + "/" + value.slice(2);
+            }
+
+            input.value = value;
+
+        }
+
+
+        function setDateInput(input, date) {
+
+            input.value = formatInputDate(date);
 
         }
 
@@ -1422,9 +1476,7 @@
         const today =
             getLocalDate();
 
-        todayDate.value =
-            today.toISOString()
-                .split("T")[0];
+        setDateInput(todayDate, today);
 
 
         /* ========================================
@@ -1457,6 +1509,18 @@
 
             const end =
                 parseDate(todayValue);
+
+
+            if (
+                Number.isNaN(birth.getTime()) ||
+                Number.isNaN(end.getTime())
+            ) {
+                showError(
+                    "Please enter valid dates in DD/MM/YYYY format."
+                );
+
+                return;
+            }
 
 
             if (birth > end) {
@@ -1710,6 +1774,31 @@
 
 
         /* ========================================
+           FIXED DATE FORMAT: DD/MM/YYYY
+        ======================================== */
+
+        [birthDate, todayDate].forEach(input => {
+
+            input.addEventListener("input", () => {
+                normalizeDateInput(input);
+            });
+
+            input.addEventListener("blur", () => {
+
+                if (!input.value) return;
+
+                if (Number.isNaN(parseDate(input.value).getTime())) {
+                    showError(
+                        "Please enter a valid date in DD/MM/YYYY format."
+                    );
+                }
+
+            });
+
+        });
+
+
+        /* ========================================
            CALCULATE BUTTON
         ======================================== */
 
@@ -1729,10 +1818,7 @@
 
                 birthDate.value = "";
 
-                todayDate.value =
-                    getLocalDate()
-                        .toISOString()
-                        .split("T")[0];
+                setDateInput(todayDate, getLocalDate());
 
                 result.classList.remove(
                     "show"
