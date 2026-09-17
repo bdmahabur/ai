@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Photo Resizer - BPSC, Bank & Signature Photo Resizer Tool</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--ink:#172033;--muted:#707a8e;--line:#e2e7ef;--brand:#625bf6;--brand2:#5149df;--ok:#138654;--okbg:#e9f8f0;--shadow:0 16px 45px rgba(25,35,60,.08)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Arial,sans-serif}
+.wrap{max-width:1100px;margin:auto;padding:30px 18px 55px}
+.top{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.logo{width:43px;height:43px;border-radius:13px;background:var(--brand);display:grid;place-items:center;box-shadow:0 9px 22px #625bf633}
+.logo svg{width:24px;color:#fff}
+.brand b{font-size:19px}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.hero{text-align:center;margin-bottom:28px}.hero h1{font-size:clamp(27px,4vw,41px);letter-spacing:-1.5px;margin:0 0 8px}.hero p{font-size:14px;color:var(--muted);margin:0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:21px;padding:16px;box-shadow:var(--shadow)}
+.title{margin:0 0 5px;font-size:16px}.spec{font-size:11px;color:var(--muted);margin-bottom:13px}
+.mini-upload{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;box-sizing:border-box;min-height:26px;padding:4px 7px;margin:0 0 7px;border:1px dashed var(--line);border-radius:6px;background:#fafbfc;color:#667085;font-size:10px;font-weight:600;cursor:pointer;transition:.15s}.mini-upload:hover{border-color:#b7c0cf;background:#f5f7fa;color:#344054}.mini-upload svg{width:12px;height:12px;flex:0 0 auto}.mini-upload span{white-space:nowrap}.frame{width:100%;position:relative;overflow:hidden;border-radius:0;background:repeating-conic-gradient(#f0f2f6 0 25%,#fff 0 50%) 50%/18px 18px;border:1px solid var(--line);display:grid;place-items:center;cursor:default}
+.frame.sig{aspect-ratio:300/80}.frame.square{aspect-ratio:1/1}.frame.dragover{outline:2px dashed var(--brand);outline-offset:-2px}
+.frame canvas{width:100%;height:100%;display:block;touch-action:none}
+.empty{position:absolute;inset:0;display:none}
+
+.file{display:none}.mini-upload{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;box-sizing:border-box;min-height:26px;padding:4px 7px;margin:0 0 7px;border:1px dashed var(--line);border-radius:6px;background:#fafbfc;color:#667085;font-size:10px;font-weight:600;cursor:pointer;transition:.15s}.mini-upload:hover{border-color:#b7c0cf;background:#f5f7fa;color:#344054}.mini-upload svg{width:12px;height:12px;flex:0 0 auto}.mini-upload span{white-space:nowrap}
+.toolbar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.btn{border:0;border-radius:9px;padding:9px 5px;font:600 10px Inter;cursor:pointer;display:flex;justify-content:center;align-items:center;gap:4px;background:#eef1f6;color:#30394d}
+.btn svg{width:15px;height:15px}.btn.primary{background:var(--brand);color:#fff}.btn.primary:hover{background:var(--brand2)}.btn:disabled{opacity:.42;cursor:not-allowed}
+.zoom{display:flex;align-items:center;gap:8px;margin-top:9px}.zoom input{flex:1;accent-color:var(--brand)}.zoom span{width:40px;text-align:right;font-size:10px;color:var(--muted)}
+
+.quality{margin-top:10px;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:#fafbfc}
+.quality-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px;font-size:10px;color:var(--muted)}
+.quality-head b{font-size:9px;color:var(--ink);font-weight:700;text-align:right}
+.quality-row{display:grid;grid-template-columns:116px 1fr 35px;align-items:center;gap:7px}
+.quality select{width:100%;height:27px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);font:600 9px Inter;padding:0 5px;outline:none}
+.quality input{width:100%;accent-color:var(--brand)}
+.quality-row>span{font-size:9px;color:var(--muted);text-align:right}
+.quality select:disabled,.quality input:disabled{opacity:.45}
+.download{width:100%;margin-top:9px}.download.ready{background:var(--ok)}
+.size{text-align:center;font-size:10px;color:var(--muted);height:14px;margin-top:7px}.size strong{color:var(--ok)}
+.footer{text-align:center;color:#8b94a6;font-size:10px;margin-top:24px}
+@media(max-width:850px){.grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.wrap{padding:22px 12px 42px}}
+
+.preview-grid{position:absolute;inset:0;pointer-events:none;z-index:5;
+background-image:linear-gradient(to right,transparent 33.333%,rgba(255,255,255,.75) 33.333%,rgba(255,255,255,.75) 33.7%,transparent 33.7%,transparent 66.333%,rgba(255,255,255,.75) 66.333%,rgba(255,255,255,.75) 66.7%,transparent 66.7%),
+linear-gradient(to bottom,transparent 33.333%,rgba(255,255,255,.75) 33.333%,rgba(255,255,255,.75) 33.7%,transparent 33.7%,transparent 66.333%,rgba(255,255,255,.75) 66.333%,rgba(255,255,255,.75) 66.7%,transparent 66.7%)}
+
+.theme-switch{margin-left:auto;display:flex;gap:2px;padding:2px;border:1px solid var(--line);border-radius:7px;background:var(--card)}
+.theme-btn{border:0;background:transparent;color:var(--muted);font:600 9px Inter,Arial,sans-serif;padding:5px 7px;border-radius:5px;cursor:pointer}
+.theme-btn.active{background:var(--ink);color:var(--card)}
+:root.dark{--bg:#151922;--card:#1e2430;--ink:#f1f3f7;--muted:#aab3c2;--line:#353d4d;--brand:#9b8cff;--brand2:#897cf0;--ok:#31c48d;--okbg:#163a2d;--shadow:0 16px 45px rgba(0,0,0,.25)}
+.dark .mini-upload{background:#202734;color:#b9c1cf;border-color:#465166}
+.dark .mini-upload:hover{background:#252d3b;color:#eef1f6}
+.dark .quality{background:#202631}
+.dark .quality select{background:#1b212c;color:#eef1f6;border-color:#3b4557}
+.dark .btn{background:#252c38;color:#d5dbe5;border-color:#384355}
+.dark .btn.primary{background:#7f72e8;color:#fff}
+.dark .theme-btn.active{background:#f1f3f7;color:#151922}
+.dark .preview-grid{background-image:linear-gradient(to right,transparent 33.333%,rgba(255,255,255,.35) 33.333%,rgba(255,255,255,.35) 33.7%,transparent 33.7%,transparent 66.333%,rgba(255,255,255,.35) 66.333%,rgba(255,255,255,.35) 66.7%,transparent 66.7%),linear-gradient(to bottom,transparent 33.333%,rgba(255,255,255,.35) 33.333%,rgba(255,255,255,.35) 33.7%,transparent 33.7%,transparent 66.333%,rgba(255,255,255,.35) 66.333%,rgba(255,255,255,.35) 66.7%,transparent 66.7%)}
+.btn:disabled{opacity:1;cursor:not-allowed}
+.quality select:disabled,.quality input:disabled{opacity:1;cursor:not-allowed}
+@media(max-width:760px){.theme-switch{margin-left:auto}}
+
+.custom-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:7px}
+.custom-fields label{display:block;font-size:9px;color:var(--muted);margin:0 0 4px}
+.custom-fields input{width:100%;height:28px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);font:600 10px Inter,Arial,sans-serif;padding:0 7px;outline:none}
+.custom-apply{width:100%;margin-bottom:7px;padding:7px 5px}
+@media(max-width:600px){.custom-fields{grid-template-columns:1fr 1fr}.custom-fields>div:last-child{grid-column:1/-1}}
+
+
+/* Chrome, Edge, Safari */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+
+/* Hide preview area until an image is uploaded */
+.frame:not(.has-image){display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+<div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1.4"/><path d="m5 17 4.4-4.4 3.2 3.1 2.1-2.1L19 17.5"/></svg></div>
+<div class="brand"><b>PhotoResizer</b><small>Photo & signature preparation</small></div>
+</header>
+<section class="hero"><h1>Prepare your image perfectly</h1><p>Upload above, then drag the image to crop and adjust it.</p></section>
+<main class="grid" id="grid"></main>
+<div class="footer">Images are processed locally in your browser.</div>
+</div>
+<script>
+const S=[
+{id:'sig',name:'Signature',desc:'300 × 80 px · maximum 60 KB',w:300,h:80,max:60,cls:'sig'},
+{id:'bpsc',name:'BPSC Photo',desc:'300 × 300 px · maximum 100 KB',w:300,h:300,max:100,cls:'square'},
+{id:'bank',name:'Bank Photo',desc:'600 × 600 px · maximum 100 KB',w:600,h:600,max:100,cls:'square'}
+];
+const ICON={
+upload:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M5 14v2.5A3.5 3.5 0 0 0 8.5 20h7a3.5 3.5 0 0 0 3.5-3.5V14"/></svg>`,
+minus:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>`,
+plus:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>`,
+left:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 7H5v4"/><path d="M5.4 11A7 7 0 1 0 7 6.3"/></svg>`,
+right:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 7h4v4"/><path d="M18.6 11A7 7 0 1 1 17 6.3"/></svg>`,
+reset:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12a8 8 0 1 0 2.3-5.6"/><path d="M4 5v5h5"/></svg>`,
+download:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4v11m0 0-4-4m4 4 4-4"/><path d="M5 19h14"/></svg>`
+};
+function makeCard(s){
+return `<article class="card">
+<h2 class="title">${s.name}</h2><div class="spec">${s.desc}</div>
+<label class="mini-upload" title="Choose an image or drag it onto the preview">
+${ICON.upload}<span>Drag & Drop or Upload Image</span>
+<input class="file" id="${s.id}File" type="file" accept="image/jpeg,image/png,image/webp">
+</label>
+<div class="frame ${s.cls}" id="${s.id}Frame">
+<canvas id="${s.id}Canvas"></canvas>
+<div class="preview-grid" aria-hidden="true"></div>
+<div class="empty" id="${s.id}Empty"></div></div>
+</div>
+<div class="toolbar">
+<button class="btn" id="${s.id}Minus" disabled>${ICON.minus} Zoom</button>
+<button class="btn" id="${s.id}Plus" disabled>${ICON.plus} Zoom</button>
+<button class="btn" id="${s.id}Left" disabled>${ICON.left} Rotate</button>
+<button class="btn" id="${s.id}Right" disabled>${ICON.right} Rotate</button>
+</div>
+<div class="zoom"><input id="${s.id}Range" type="range" min="50" max="300" value="100" disabled><span id="${s.id}Zoom">100%</span></div>
+<div class="quality">
+  <div class="quality-head"><span>Image Quality</span><b id="${s.id}QualityLabel">Best Quality (Auto)</b></div>
+  <div class="quality-row">
+    <select id="${s.id}QualityMode" disabled>
+      <option value="auto">Best Quality (Auto)</option>
+      <option value="manual">Manual Quality</option>
+    </select>
+    <input id="${s.id}QualityRange" type="range" min="10" max="100" value="90" disabled>
+    <span id="${s.id}QualityValue">90%</span>
+  </div>
+</div>
+<button class="btn" id="${s.id}Reset" disabled>${ICON.reset} Reset</button>
+<div class="size" id="${s.id}Size"></div>
+<button class="btn primary download" id="${s.id}Download" disabled>${ICON.download} Download</button>
+</article>`;
+}
+
+const customCard = `<article class="card custom-card">
+<h2 class="title">Custom Size</h2>
+<div class="spec">Choose any image dimensions and file-size limit</div>
+<div class="custom-fields">
+<div><label>Width (px)</label><input id="customW" type="number" min="1" max="10000" value="500"></div>
+<div><label>Height (px)</label><input id="customH" type="number" min="1" max="10000" value="500"></div>
+<div><label>Maximum KB</label><input id="customKB" type="number" min="1" max="5000" value="100"></div>
+</div>
+<button class="btn primary custom-apply" id="customApply">Apply Custom Size</button>
+<div class="mini-upload" id="customUpload" title="Choose an image or drag it onto the custom preview">
+${ICON.upload}<span>Drag & Drop or Upload Image</span>
+</div>
+<input class="file" id="customFile" type="file" accept="image/jpeg,image/png,image/webp">
+<div class="frame square" id="customFrame">
+<canvas id="customCanvas"></canvas>
+<div class="preview-grid" aria-hidden="true"></div>
+</div>
+<div class="toolbar">
+<button class="btn" id="customMinus" disabled>${ICON.minus} Zoom</button>
+<button class="btn" id="customPlus" disabled>${ICON.plus} Zoom</button>
+<button class="btn" id="customLeft" disabled>${ICON.left} Rotate</button>
+<button class="btn" id="customRight" disabled>${ICON.right} Rotate</button>
+</div>
+<div class="zoom"><input id="customRange" type="range" min="50" max="300" value="100" disabled><span id="customZoom">100%</span></div>
+<div class="quality">
+<div class="quality-head"><span>Image Quality</span><b id="customQualityLabel">Best Quality (Auto)</b></div>
+<div class="quality-row">
+<select id="customQualityMode" disabled><option value="auto">Best Quality (Auto)</option><option value="manual">Manual Quality</option></select>
+<input id="customQualityRange" type="range" min="10" max="100" value="90" disabled><span id="customQualityValue">90%</span>
+</div>
+</div>
+<button class="btn" id="customReset" disabled>${ICON.reset} Reset</button>
+<div class="size" id="customSize"></div>
+<button class="btn primary download" id="customDownload" disabled>${ICON.download} Download</button>
+</article>`;
+
+grid.innerHTML = S.map(makeCard).join('') + customCard;
+
+
+const state={};
+for(const s of S){
+ const st=state[s.id]={...s,img:null,scale:1,rot:0,x:0,y:0,drag:false,lx:0,ly:0,blob:null,timer:null,qualityMode:'auto',quality:.90};
+ const c=document.getElementById(s.id+'Canvas');c.width=s.w;c.height=s.h;
+ const frame=document.getElementById(s.id+'Frame'),file=document.getElementById(s.id+'File');
+ file.addEventListener('change',e=>{if(e.target.files[0])load(st,e.target.files[0])});
+ frame.addEventListener('dragover',e=>{e.preventDefault();frame.classList.add('dragover')});
+ frame.addEventListener('dragleave',()=>frame.classList.remove('dragover'));
+ frame.addEventListener('drop',e=>{e.preventDefault();frame.classList.remove('dragover');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))load(st,f)});
+ c.addEventListener('pointerdown',e=>{if(!st.img)return;c.setPointerCapture(e.pointerId);st.drag=true;st.lx=e.clientX;st.ly=e.clientY});
+ c.addEventListener('pointermove',e=>{if(!st.drag)return;const r=c.getBoundingClientRect();st.x+=(e.clientX-st.lx)*c.width/r.width;st.y+=(e.clientY-st.ly)*c.height/r.height;st.lx=e.clientX;st.ly=e.clientY;draw(st)});
+ c.addEventListener('pointerup',()=>st.drag=false);c.addEventListener('pointercancel',()=>st.drag=false);
+ for(const a of ['Minus','Plus','Left','Right','Reset'])document.getElementById(s.id+a).onclick=()=>act(st,a);
+ document.getElementById(s.id+'Range').oninput=e=>{st.scale=+e.target.value/100;draw(st)};
+ document.getElementById(s.id+'QualityMode').onchange=e=>{
+   st.qualityMode=e.target.value;
+   document.getElementById(s.id+'QualityRange').disabled=e.target.value==='auto';
+   document.getElementById(s.id+'QualityLabel').textContent=e.target.value==='auto'?'Best Quality (Auto)':'Manual Quality';
+   updateQualityUI(st);
+   draw(st);
+ };
+ document.getElementById(s.id+'QualityRange').oninput=e=>{
+   st.quality=+e.target.value/100;
+   updateQualityUI(st);
+   draw(st);
+ };
+ document.getElementById(s.id+'Download').onclick=()=>download(st);
+}
+function load(st,file){const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{URL.revokeObjectURL(u);st.img=im;st.scale=1;st.rot=0;st.x=0;st.y=0;document.getElementById(st.id+'Empty').style.display='none';document.getElementById(st.id+'Frame').classList.add('has-image');['Minus','Plus','Left','Right','Reset','Range','QualityMode','QualityRange'].forEach(a=>document.getElementById(st.id+a).disabled=false);draw(st)};im.src=u}
+function act(st,a){if(!st.img)return;if(a==='Minus')st.scale=Math.max(.5,st.scale-.1);if(a==='Plus')st.scale=Math.min(3,st.scale+.1);if(a==='Left')st.rot-=90;if(a==='Right')st.rot+=90;if(a==='Reset'){st.scale=1;st.rot=0;st.x=0;st.y=0}sync(st);draw(st)}
+function sync(st){document.getElementById(st.id+'Range').value=Math.round(st.scale*100);document.getElementById(st.id+'Zoom').textContent=Math.round(st.scale*100)+'%'}
+function draw(st){const c=document.getElementById(st.id+'Canvas'),ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);if(!st.img)return;ctx.save();ctx.translate(c.width/2+st.x,c.height/2+st.y);ctx.rotate(st.rot*Math.PI/180);const sc=Math.max(c.width/st.img.width,c.height/st.img.height)*st.scale;ctx.drawImage(st.img,-st.img.width*sc/2,-st.img.height*sc/2,st.img.width*sc,st.img.height*sc);ctx.restore();sync(st);clearTimeout(st.timer);st.timer=setTimeout(()=>updateSize(st),120)}
+function updateQualityUI(st){
+ const mode=document.getElementById(st.id+'QualityMode');
+ const range=document.getElementById(st.id+'QualityRange');
+ const label=document.getElementById(st.id+'QualityLabel');
+ const value=document.getElementById(st.id+'QualityValue');
+ if(mode.value==='auto'){label.textContent='Best Quality (Auto)';value.textContent='Auto'}
+ else{label.textContent='Manual Quality';value.textContent=Math.round(st.quality*100)+'%'}
+ range.disabled=mode.value==='auto';
+}
+function updateSize(st){
+ compress(st).then(b=>{
+   st.blob=b;
+   const ok=b.size<=st.max*1024;
+   const size=(b.size/1024).toFixed(1);
+   document.getElementById(st.id+'Size').innerHTML=ok
+     ? `<strong>${size} KB ✓</strong>`
+     : `<span>${size} KB · over ${st.max} KB limit</span>`;
+   const d=document.getElementById(st.id+'Download');
+   d.disabled=!ok;
+   d.className='btn primary download'+(ok?' ready':'');
+ });
+}
+function compress(st){
+ return new Promise(resolve=>{
+   const c=document.getElementById(st.id+'Canvas'),limit=st.max*1024;
+   if(st.qualityMode==='manual'){
+     c.toBlob(b=>resolve(b),'image/jpeg',st.quality);
+     return;
+   }
+   // Auto mode: binary-search for the highest JPEG quality that fits the limit.
+   let lo=.01,hi=1,best=null,i=0;
+   function step(){
+     if(i++>=15){
+       if(best){resolve(best);return}
+       c.toBlob(b=>resolve(b),'image/jpeg',.01);
+       return;
+     }
+     const q=(lo+hi)/2;
+     c.toBlob(b=>{
+       if(b.size<=limit){best=b;lo=q}
+       else hi=q;
+       step();
+     },'image/jpeg',q);
+   }
+   step();
+ });
+}
+function download(st){if(!st.blob)return;const a=document.createElement('a');a.href=URL.createObjectURL(st.blob);a.download=`photo-${st.id}-${st.w}x${st.h}.jpg`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+
+const lightTheme=document.getElementById('lightTheme');
+const darkTheme=document.getElementById('darkTheme');
+if(lightTheme && darkTheme){
+ function setTheme(mode){
+   document.documentElement.classList.toggle('dark',mode==='dark');
+   lightTheme.classList.toggle('active',mode==='light');
+   darkTheme.classList.toggle('active',mode==='dark');
+   localStorage.setItem('photo-theme',mode);
+ }
+ lightTheme.onclick=()=>setTheme('light');
+ darkTheme.onclick=()=>setTheme('dark');
+ setTheme(localStorage.getItem('photo-theme')||'light');
+}
+
+(function(){
+const $=id=>document.getElementById(id);
+const W=$('customW'),H=$('customH'),KB=$('customKB'),apply=$('customApply');
+const file=$('customFile'),frame=$('customFrame'),c=$('customCanvas');
+const minus=$('customMinus'),plus=$('customPlus'),left=$('customLeft'),right=$('customRight'),reset=$('customReset');
+const range=$('customRange'),zoom=$('customZoom'),mode=$('customQualityMode'),qr=$('customQualityRange');
+const qlabel=$('customQualityLabel'),qvalue=$('customQualityValue'),size=$('customSize'),dl=$('customDownload');
+const st={w:500,h:500,max:100,img:null,scale:1,rot:0,x:0,y:0,drag:false,lx:0,ly:0,blob:null,timer:null,qualityMode:'auto',quality:.9};
+
+function applySize(){
+ st.w=Math.max(1,Math.min(10000,parseInt(W.value)||500));
+ st.h=Math.max(1,Math.min(10000,parseInt(H.value)||500));
+ st.max=Math.max(1,Math.min(5000,parseInt(KB.value)||100));
+ W.value=st.w;H.value=st.h;KB.value=st.max;
+ c.width=st.w;c.height=st.h;
+ frame.style.aspectRatio=st.w+'/'+st.h;
+ st.scale=1;st.rot=0;st.x=0;st.y=0;draw();
+}
+function sync(){range.value=Math.round(st.scale*100);zoom.textContent=Math.round(st.scale*100)+'%'}
+function enable(v){
+ [minus,plus,left,right,reset,range,mode,qr,dl].forEach(x=>x.disabled=!v);
+ qr.disabled=!v||mode.value==='auto';
+}
+function qualityUI(){
+ if(mode.value==='auto'){qlabel.textContent='Best Quality (Auto)';qvalue.textContent='Auto';qr.disabled=true}
+ else{qlabel.textContent='Manual Quality';qvalue.textContent=Math.round(st.quality*100)+'%';qr.disabled=!st.img}
+}
+function draw(){
+ const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);
+ if(!st.img){sync();return}
+ ctx.save();ctx.translate(c.width/2+st.x,c.height/2+st.y);ctx.rotate(st.rot*Math.PI/180);
+ const sc=Math.max(c.width/st.img.width,c.height/st.img.height)*st.scale;
+ ctx.drawImage(st.img,-st.img.width*sc/2,-st.img.height*sc/2,st.img.width*sc,st.img.height*sc);ctx.restore();
+ sync();clearTimeout(st.timer);st.timer=setTimeout(updateSize,120);
+}
+function compress(){
+ return new Promise(resolve=>{
+  const limit=st.max*1024;
+  if(st.qualityMode==='manual'){c.toBlob(resolve,'image/jpeg',st.quality);return}
+  let lo=.01,hi=1,best=null,i=0;
+  function step(){
+   if(i++>=15){resolve(best);return}
+   const q=(lo+hi)/2;
+   c.toBlob(b=>{if(b.size<=limit){best=b;lo=q}else hi=q;step()},'image/jpeg',q);
+  }
+  step();
+ });
+}
+function updateSize(){
+ if(!st.img)return;
+ compress().then(b=>{
+  if(!b)return;st.blob=b;const ok=b.size<=st.max*1024;
+  size.innerHTML=ok?'<strong>'+(b.size/1024).toFixed(1)+' KB ✓</strong>':'<span>'+(b.size/1024).toFixed(1)+' KB · over '+st.max+' KB limit</span>';
+  dl.disabled=!ok;dl.className='btn primary download'+(ok?' ready':'');
+ });
+}
+function loadCustom(f){
+ if(!f||!f.type.startsWith('image/'))return;
+ const u=URL.createObjectURL(f),im=new Image();
+ im.onload=()=>{URL.revokeObjectURL(u);st.img=im;st.scale=1;st.rot=0;st.x=0;st.y=0;frame.classList.add('has-image');enable(true);draw()};
+ im.src=u;
+}
+apply.onclick=applySize;
+const upload=$('customUpload');
+upload.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();file.click()});
+file.onchange=e=>{if(e.target.files[0])loadCustom(e.target.files[0])};
+upload.addEventListener('dragover',e=>{e.preventDefault();upload.classList.add('dragover')});
+upload.addEventListener('dragleave',()=>upload.classList.remove('dragover'));
+upload.addEventListener('drop',e=>{e.preventDefault();upload.classList.remove('dragover');if(e.dataTransfer.files[0])loadCustom(e.dataTransfer.files[0])});
+frame.ondragover=e=>{e.preventDefault();frame.classList.add('dragover')};
+frame.ondragleave=()=>frame.classList.remove('dragover');
+frame.ondrop=e=>{e.preventDefault();frame.classList.remove('dragover');if(e.dataTransfer.files[0])loadCustom(e.dataTransfer.files[0])};
+c.onpointerdown=e=>{if(!st.img)return;c.setPointerCapture(e.pointerId);st.drag=true;st.lx=e.clientX;st.ly=e.clientY};
+c.onpointermove=e=>{if(!st.drag)return;const r=c.getBoundingClientRect();st.x+=(e.clientX-st.lx)*c.width/r.width;st.y+=(e.clientY-st.ly)*c.height/r.height;st.lx=e.clientX;st.ly=e.clientY;draw()};
+c.onpointerup=()=>st.drag=false;c.onpointercancel=()=>st.drag=false;
+minus.onclick=()=>{st.scale=Math.max(.5,st.scale-.1);draw()};
+plus.onclick=()=>{st.scale=Math.min(3,st.scale+.1);draw()};
+left.onclick=()=>{st.rot-=90;draw()};right.onclick=()=>{st.rot+=90;draw()};
+reset.onclick=()=>{st.scale=1;st.rot=0;st.x=0;st.y=0;draw()};
+range.oninput=e=>{st.scale=+e.target.value/100;draw()};
+mode.onchange=()=>{st.qualityMode=mode.value;qualityUI();draw()};
+qr.oninput=e=>{st.quality=+e.target.value/100;qualityUI();draw()};
+dl.onclick=()=>{if(!st.blob)return;const a=document.createElement('a');a.href=URL.createObjectURL(st.blob);a.download='custom-photo-'+st.w+'x'+st.h+'.jpg';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+applySize();enable(false);qualityUI();
+})();
+
+</script>
+</body>
+</html>
