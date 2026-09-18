@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chrome Extensions</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%236366f1'/%3E%3Cpath d='M32 10v13M32 41v13M10 32h13M41 32h13' stroke='white' stroke-width='5' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='32' r='12' fill='none' stroke='white' stroke-width='5'/%3E%3Cpath d='M32 20a12 12 0 0 1 10.4 6M42.4 38A12 12 0 0 1 32 44' stroke='white' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+    <meta name="description" content="Download Chrome extensions and learn how to install them manually.">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-2: #f8fafc;
+            --text: #111827;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --success: #16a34a;
+            --shadow: 0 20px 60px rgba(15, 23, 42, 0.10);
+        }
+
+        html.dark {
+            --bg: #0b1120;
+            --surface: #111827;
+            --surface-2: #172033;
+            --text: #f9fafb;
+            --muted: #9ca3af;
+            --border: #263247;
+            --primary: #818cf8;
+            --primary-hover: #6366f1;
+            --success: #4ade80;
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+                BlinkMacSystemFont, "Segoe UI", sans-serif;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        button, input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .header {
+            width: 100%;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        .header-inner {
+            max-width: 1100px;
+            margin: auto;
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 11px;
+            display: grid;
+            place-items: center;
+            background: var(--primary);
+            color: white;
+        }
+
+        .brand-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .brand-text h1 {
+            font-size: 18px;
+            line-height: 1.1;
+            font-weight: 750;
+        }
+
+        .brand-text span {
+            display: block;
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .theme-btn {
+            width: 42px;
+            height: 42px;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            display: grid;
+            place-items: center;
+            color: var(--text);
+            background: var(--surface);
+            transition: 0.2s;
+        }
+
+        .theme-btn:hover {
+            background: var(--surface-2);
+        }
+
+        .theme-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        main {
+            width: 100%;
+            padding: 55px 20px 70px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .hero h2 {
+            font-size: clamp(30px, 5vw, 48px);
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            max-width: 650px;
+            margin: auto;
+            color: var(--muted);
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .extension-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .extension-card {
+            padding: 22px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            transition: transform 0.18s ease, border-color 0.2s ease;
+        }
+
+        .extension-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .extension-info {
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .extension-icon {
+            flex: 0 0 54px;
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--primary);
+        }
+
+        .extension-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .extension-text h3 {
+            font-size: 17px;
+            margin-bottom: 5px;
+        }
+
+        .extension-text p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .extension-meta {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 8px;
+            border-radius: 7px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 650;
+        }
+
+        .download-wrap {
+            flex: 0 0 auto;
+        }
+
+        .btn {
+            min-height: 45px;
+            padding: 0 17px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 650;
+            transition: transform 0.15s ease, background 0.2s ease,
+                border 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        .empty-state {
+            padding: 35px 20px;
+            text-align: center;
+            color: var(--muted);
+            background: var(--surface);
+            border: 1px dashed var(--border);
+            border-radius: 18px;
+        }
+
+        .instructions {
+            margin-top: 28px;
+            padding: 26px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-heading {
+            margin-bottom: 20px;
+        }
+
+        .section-heading h3 {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .steps {
+            display: grid;
+            gap: 12px;
+        }
+
+        .step {
+            display: flex;
+            gap: 14px;
+            padding: 15px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .step-number {
+            flex: 0 0 32px;
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            display: grid;
+            place-items: center;
+            background: var(--primary);
+            color: white;
+            font-size: 13px;
+            font-weight: 750;
+        }
+
+        .step-content h4 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .step-content p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .step-content code {
+            display: inline-block;
+            margin-top: 7px;
+            padding: 5px 8px;
+            border-radius: 7px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 12px;
+        }
+
+        .note {
+            margin-top: 17px;
+            padding: 13px 15px;
+            border-radius: 12px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        footer {
+            padding: 25px 20px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 25px;
+            transform: translate(-50%, 20px);
+            padding: 11px 16px;
+            background: var(--text);
+            color: var(--surface);
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.25s;
+            z-index: 100;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        @media (max-width: 650px) {
+            main {
+                padding: 35px 15px 50px;
+            }
+
+            .header-inner {
+                padding: 14px 15px;
+            }
+
+            .brand-text span {
+                display: none;
+            }
+
+            .extension-card {
+                align-items: stretch;
+                flex-direction: column;
+                padding: 17px;
+            }
+
+            .download-wrap,
+            .download-wrap .btn {
+                width: 100%;
+            }
+
+            .instructions {
+                padding: 19px;
+            }
+        }
+
+        @media (max-width: 430px) {
+            .extension-info {
+                align-items: flex-start;
+            }
+
+            .extension-icon {
+                flex-basis: 46px;
+                width: 46px;
+                height: 46px;
+            }
+
+            .hero h2 {
+                letter-spacing: -1px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <a href="#" class="brand">
+                <div class="brand-icon">
+                    <!-- Chrome-style extension icon -->
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3a9 9 0 1 0 9 9"></path>
+                        <path d="M12 3a9 9 0 0 0 7.8 4.5H12a4.5 4.5 0 1 0 4.5 4.5"></path>
+                        <circle cx="12" cy="12" r="2.4"></circle>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>Chrome Extensions</h1>
+                    <span>Download & install your extensions</span>
+                </div>
+            </a>
+
+            <button class="theme-btn" id="themeBtn" type="button"
+                aria-label="Toggle dark mode">
+                <svg id="sunIcon" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <circle cx="12" cy="12" r="4"></circle>
+                    <path d="M12 2v2"></path>
+                    <path d="M12 20v2"></path>
+                    <path d="m4.93 4.93 1.41 1.41"></path>
+                    <path d="m17.66 17.66 1.41 1.41"></path>
+                    <path d="M2 12h2"></path>
+                    <path d="M20 12h2"></path>
+                    <path d="m6.34 17.66-1.41 1.41"></path>
+                    <path d="m19.07 4.93-1.41 1.41"></path>
+                </svg>
+
+                <svg id="moonIcon" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    style="display:none;">
+                    <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3A6.7 6.7 0 0 0 21 12.8Z"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+
+            <section class="hero">
+                <h2>Download Chrome Extensions</h2>
+                <p>
+                    Download your extension ZIP files anytime and install them
+                    easily in Google Chrome using Developer Mode.
+                </p>
+            </section>
+
+            <section class="extension-list" id="extensionList"></section>
+
+            <section class="instructions">
+                <div class="section-heading">
+                    <h3>How to Load an Extension in Chrome</h3>
+                    <p>
+                        Chrome extensions downloaded as ZIP files can be loaded
+                        manually with Developer Mode.
+                    </p>
+                </div>
+
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Download the ZIP file</h4>
+                            <p>
+                                Click the <strong>Download ZIP</strong> button
+                                above and save the extension file to your computer.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Extract the ZIP file</h4>
+                            <p>
+                                Right-click the downloaded ZIP file and extract
+                                it to a normal folder. Keep the extracted folder
+                                available on your computer.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Open Chrome Extensions</h4>
+                            <p>
+                                In Google Chrome, open the Extensions page or
+                                enter this address in the address bar:
+                            </p>
+                            <code>chrome://extensions/</code>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Turn on Developer Mode</h4>
+                            <p>
+                                Find the <strong>Developer mode</strong> switch
+                                on the Extensions page and turn it on.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Load the extension</h4>
+                            <p>
+                                Click <strong>Load unpacked</strong>, select the
+                                extracted extension folder, and click
+                                <strong>Select Folder</strong>.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Extension installed</h4>
+                            <p>
+                                The extension should now appear in Chrome.
+                                You can pin it from the Extensions menu in the
+                                Chrome toolbar.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="note">
+                    <strong>Important:</strong> Do not select the ZIP file
+                    directly in <strong>Load unpacked</strong>. Extract the ZIP
+                    first, then select the folder that contains the extension's
+                    <strong>manifest.json</strong> file.
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        Chrome Extensions · Made with HTML, CSS & JavaScript
+    </footer>
+
+    <div class="toast" id="toast" role="status"></div>
+
+    <script>
+        /*
+         * ============================================================
+         * ADD YOUR EXTENSION ZIP FILES HERE
+         * ============================================================
+         *
+         * Put your ZIP files in the same folder as this HTML file
+         * (or use a relative path such as "extensions/my-extension.zip").
+         *
+         * Example:
+         *
+         * {
+         *     name: "My QR Extension",
+         *     description: "Generate QR codes directly from Chrome.",
+         *     version: "1.0.0",
+         *     size: "2.4 MB",
+         *     file: "extensions/my-qr-extension.zip"
+         * }
+         *
+         * Add as many extensions as you need.
+         */
+        const extensions = [
+            {
+                name: "Teletalk Job Apply",
+                description: "Automatically fill out Bangladesh Government Job Application forms.",
+                version: "1.0.2",
+                size: "ZIP",
+                file: "teltalk_job_apply_1.0.2_extension.zip"
+            },
+
+            {
+                name: "Print-Only Bottom White Overlay",
+                description: "Shows a white bottom overlay only in browser print preview on www.idcardscannerpro.com website.",
+                version: "1.0.0",
+                size: "ZIP",
+                file: "print-only-overlay-extension.zip"
+            }
+            ,
+
+            {
+                name: "Birth Certificate A4 Printer",
+                description: "Adds a Print Certificate button on everify.bdris.gov.bd that runs the A4 birth registration print script on the current page.",
+                version: "1.3.0",
+                size: "ZIP",
+                file: "Birth_certificate_A4_printer_extension.zip"
+            },
+
+            {
+                name: "eVerify Captcha Calculator",
+                description: "Adds a simple arithmetic calculator to the everify.bdris.gov.bd page without modifying CAPTCHA fields",
+                version: "1.0.0",
+                size: "ZIP",
+                file: "eVerify_Captcha_Calculator_extension.zip"
+            },
+
+            {
+                name: "eBoardresults A4 Print",
+                description: "Adds a Print A4 button on eboardresults.com and formats the result for A4 portrait printing.",
+                version: "1.0.0",
+                size: "ZIP",
+                file: "eboardresult_a4_print_extension.zip"
+            }
+            ,
+
+            {
+                name: "Dinajpur eBoard Result Captcha",
+                description: "Automatically detects the results.dinajpurboard.gov.bd website Captcha and fills the Captcha field.",
+                version: "1.0.0",
+                size: "ZIP",
+                file: "Dinajpur_eBoard_Result_Captcha.zip"
+            }
+            ,
+
+            {
+                name: "Firebase Anonymous User Cleaner",
+                description: "Safely deletes Firebase Authentication anonymous users from the currently open Firebase Console Users page.",
+                version: "1.0.1",
+                size: "ZIP",
+                file: "firebase-anonymous-cleaner-extension.zip"
+            }
+
+
+            // Add more entries here:
+            // ,
+            // {
+            //     name: "Another Extension",
+            //     description: "Another Chrome extension.",
+            //     version: "2.0.0",
+            //     size: "3.1 MB",
+            //     file: "another-extension.zip"
+            // }
+        ];
+
+        const extensionList = document.getElementById("extensionList");
+        const toast = document.getElementById("toast");
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add("show");
+            clearTimeout(showToast.timer);
+            showToast.timer = setTimeout(() => {
+                toast.classList.remove("show");
+            }, 2200);
+        }
+
+        function renderExtensions() {
+            if (!extensions.length) {
+                extensionList.innerHTML = `
+                    <div class="empty-state">
+                        No extensions are available for download yet.
+                    </div>
+                `;
+                return;
+            }
+
+            extensionList.innerHTML = extensions.map((extension, index) => `
+                <article class="extension-card">
+                    <div class="extension-info">
+                        <div class="extension-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="1.8"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 3v5"></path>
+                                <path d="M8.5 5.2A8.5 8.5 0 1 0 19 9.5"></path>
+                                <path d="M12 8h5"></path>
+                                <path d="M12 8a4 4 0 1 0 4 4"></path>
+                            </svg>
+                        </div>
+
+                        <div class="extension-text">
+                            <h3>${escapeHtml(extension.name)}</h3>
+                            <p>${escapeHtml(extension.description)}</p>
+
+                            <div class="extension-meta">
+                                <span class="badge">Version ${escapeHtml(extension.version)}</span>
+                                <span class="badge">${escapeHtml(extension.size)}</span>
+                                <span class="badge">Chrome</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="download-wrap">
+                        <a
+                            class="btn btn-primary"
+                            href="${encodeURI(extension.file)}"
+                            download
+                            data-name="${escapeHtml(extension.name)}"
+                            data-index="${index}"
+                        >
+                            <svg viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 3v12"></path>
+                                <path d="m7 10 5 5 5-5"></path>
+                                <path d="M5 21h14"></path>
+                            </svg>
+                            Download ZIP
+                        </a>
+                    </div>
+                </article>
+            `).join("");
+
+            extensionList.querySelectorAll("[data-index]").forEach(link => {
+                link.addEventListener("click", () => {
+                    const name = link.dataset.name;
+                    showToast("Downloading " + name + "...");
+                });
+            });
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function setTheme(theme) {
+            if (theme === "dark") {
+                document.documentElement.classList.add("dark");
+                document.getElementById("sunIcon").style.display = "none";
+                document.getElementById("moonIcon").style.display = "block";
+                document.getElementById("themeBtn").setAttribute(
+                    "aria-label", "Switch to light mode"
+                );
+            } else {
+                document.documentElement.classList.remove("dark");
+                document.getElementById("sunIcon").style.display = "block";
+                document.getElementById("moonIcon").style.display = "none";
+                document.getElementById("themeBtn").setAttribute(
+                    "aria-label", "Switch to dark mode"
+                );
+            }
+
+            localStorage.setItem("extension-theme", theme);
+        }
+
+        document.getElementById("themeBtn").addEventListener("click", () => {
+            const isDark =
+                document.documentElement.classList.contains("dark");
+
+            setTheme(isDark ? "light" : "dark");
+        });
+
+        const savedTheme = localStorage.getItem("extension-theme");
+
+        if (savedTheme) {
+            setTheme(savedTheme);
+        } else if (
+            window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+        ) {
+            setTheme("dark");
+        } else {
+            setTheme("light");
+        }
+
+        renderExtensions();
+    </script>
+</body>
+</html>
