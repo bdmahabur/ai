@@ -31,6 +31,18 @@
   button.primary{background:#2563eb;color:#fff}
   button.secondary{background:#e9eef6;color:#172033}
   button:disabled{opacity:.5;cursor:not-allowed}
+  .save-loader{
+    display:inline-block;
+    width:14px;
+    height:14px;
+    margin-right:8px;
+    vertical-align:-2px;
+    border:2px solid currentColor;
+    border-right-color:transparent;
+    border-radius:50%;
+    animation:saveSpin .7s linear infinite;
+  }
+  @keyframes saveSpin{to{transform:rotate(360deg)}}
   .status{font-size:14px;color:#667085;margin-top:12px;min-height:20px}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
   .preview{background:#eef1f5;border-radius:12px;padding:10px;min-width:0}
@@ -377,24 +389,68 @@ processBtn.addEventListener('click', async ()=>{
   }
 });
 
-saveBtn.addEventListener('click', ()=>{
-  if(!outputPages.length) return;
-  const {jsPDF}=window.jspdf;
-  const first=outputPages[0];
-  const doc=new jsPDF({
-    orientation:'portrait',
-    unit:'mm',
-    format:[first.pageWmm,first.pageHmm],
-    compress:true
-  });
-  outputPages.forEach((pg,i)=>{
-    if(i>0) doc.addPage([pg.pageWmm,pg.pageHmm],'portrait');
-    // PNG is lossless and avoids JPEG ringing around small text, QR codes,
-    // barcodes and fine security details.
-    doc.addImage(pg.canvas.toDataURL('image/png'),'PNG',0,0,pg.pageWmm,pg.pageHmm,undefined,'FAST');
-  });
-  const base=(selectedFile?.name||'id-cards').replace(/\.pdf$/i,'');
-  doc.save(base+'_front-back.pdf');
+saveBtn.addEventListener('click', async ()=>{
+  if(!outputPages.length || saveBtn.disabled) return;
+
+  // Prevent accidental double-clicks while the PDF is being generated/downloaded.
+  saveBtn.disabled=true;
+  const originalText=saveBtn.textContent;
+  saveBtn.innerHTML='<span class="save-loader" aria-hidden="true"></span>Downloading…';
+  statusEl.textContent='Downloading PDF…';
+
+  // Let the UI update immediately so the spinner and "Downloading..." text
+  // are visible before PDF generation starts.
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+  try{
+    const {jsPDF}=window.jspdf;
+    const first=outputPages[0];
+    const doc=new jsPDF({
+      orientation:'portrait',
+      unit:'mm',
+      format:[first.pageWmm,first.pageHmm],
+      compress:true
+    });
+
+    outputPages.forEach((pg,i)=>{
+      if(i>0) doc.addPage([pg.pageWmm,pg.pageHmm],'portrait');
+      // PNG is lossless and avoids JPEG ringing around small text, QR codes,
+      // barcodes and fine security details.
+      doc.addImage(
+        pg.canvas.toDataURL('image/png'),
+        'PNG',
+        0,0,pg.pageWmm,pg.pageHmm,
+        undefined,'FAST'
+      );
+    });
+
+    const base=(selectedFile?.name||'id-cards').replace(/\.pdf$/i,'');
+    const fileName=base+'_front-back.pdf';
+
+    // Create a Blob and trigger a direct browser download.
+    const pdfBlob=doc.output('blob');
+    const downloadUrl=URL.createObjectURL(pdfBlob);
+    const link=document.createElement('a');
+    link.href=downloadUrl;
+    link.download=fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    // Give the browser time to start the download before restoring the button.
+    setTimeout(()=>{
+      URL.revokeObjectURL(downloadUrl);
+      saveBtn.disabled=false;
+      saveBtn.textContent=originalText;
+      statusEl.textContent=`Download started — ${fileName}`;
+    },800);
+
+  }catch(err){
+    console.error(err);
+    saveBtn.disabled=false;
+    saveBtn.textContent=originalText;
+    statusEl.textContent='Could not save the PDF: '+err.message;
+  }
 });
 
 printBtn.addEventListener('click', ()=>{
