@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -795,6 +794,12 @@
                 >
                     Web
                 </button>
+                <button
+                    class="category"
+                    data-category="extension"
+                >
+                    Extension Files
+                </button>
 
                 <button
                     class="category"
@@ -1250,11 +1255,11 @@
                     </a>
 
                     <!-- SERVICE 12 -->
-                    <a
-                        href="https://cloudconvert.com/"
-                        class="service-card"
-                        data-name="File Converter"
-                        data-category="web"
+                    <a 
+                        href="extension-files" 
+                        class="service-card" 
+                        data-name="Extension Files" 
+                        data-category="extension"
                     >
 
                         <div class="service-icon">
@@ -1263,18 +1268,24 @@
                                 fill="none"
                                 stroke="currentColor"
                                 stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
                             >
-                                <path d="M7 7h10"></path>
-                                <path d="m13 3 4 4-4 4"></path>
-                                <path d="M17 17H7"></path>
-                                <path d="m11 13-4 4 4 4"></path>
+                                <!-- Extension / puzzle icon -->
+                                <path d="M20 13.5V19a1 1 0 0 1-1 1h-5.5"></path>
+                                <path d="M13.5 20H5a1 1 0 0 1-1-1v-5.5"></path>
+                                <path d="M4 10.5V5a1 1 0 0 1 1-1h5.5"></path>
+                                <path d="M13.5 4H19a1 1 0 0 1 1 1v5.5"></path>
+
+                                <path d="M9 4v3a2 2 0 1 0 0 4h3"></path>
+                                <path d="M20 15h-3a2 2 0 1 0-4 0v3"></path>
                             </svg>
                         </div>
 
-                        <h3>File Converter</h3>
+                        <h3>Extension Files</h3>
 
                         <p>
-                            Convert files between popular formats.
+                            Download and manage useful Chrome extension files.
                         </p>
 
                         <div class="service-link">
