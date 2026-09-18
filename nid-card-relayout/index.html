@@ -53,12 +53,7 @@
     <div id="drop" class="drop">
       <strong>Upload PDF or Image</strong>
       <span>Drop a PDF/image here or click to choose</span>
-      <input id="file" type="file" accept="application/pdf,.pdf">
-      <input id="imageFile" type="file" accept="image/png,image/jpeg,image/jpg,image/webp,image/bmp,.png,.jpg,.jpeg,.webp,.bmp">
-    </div>
-    <div style="display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap">
-      <button type="button" id="pdfChoose" class="secondary">Choose PDF</button>
-      <button type="button" id="imageChoose" class="secondary">Choose Image</button>
+       <input id="file" type="file" accept="application/pdf,.pdf,image/*">
     </div>
 
     <div class="controls" style="margin-top:18px">
@@ -125,9 +120,6 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 const fileInput = document.getElementById('file');
-const imageInput = document.getElementById('imageFile');
-const pdfChoose = document.getElementById('pdfChoose');
-const imageChoose = document.getElementById('imageChoose');
 const drop = document.getElementById('drop');
 const processBtn = document.getElementById('process');
 const saveBtn = document.getElementById('save');
@@ -152,8 +144,8 @@ drop.addEventListener('drop', e => selectFile(e.dataTransfer.files[0]));
 function selectFile(file){
   if(!file) return;
   const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
-  const isImage = /^image\/(png|jpeg|jpg|webp|bmp)$/i.test(file.type) ||
-                  /\.(png|jpg|jpeg|webp|bmp)$/i.test(file.name);
+  const isImage = /^image\//i.test(file.type) ||
+                  /\.(avif|bmp|gif|heic|heif|ico|j2c|j2k|jp2|jpf|jpm|jpx|jpeg|jpg|png|svg|tif|tiff|webp)$/i.test(file.name);
 
   if(!isPdf && !isImage){
     statusEl.textContent = 'Please choose a PDF or supported image file.';
@@ -170,15 +162,7 @@ function selectFile(file){
   statusEl.textContent = `Selected: ${file.name} (${isImage ? 'Image' : 'PDF'})`;
 }
 
-pdfChoose.addEventListener('click', e => {
-  e.stopPropagation();
-  fileInput.click();
-});
-imageChoose.addEventListener('click', e => {
-  e.stopPropagation();
-  imageInput.click();
-});
-imageInput.addEventListener('change', e => selectFile(e.target.files[0]));
+// Single upload button/file picker is used for both PDF and image files.
 
 function getTrimBox(canvas){
   const ctx = canvas.getContext('2d');
