@@ -9,548 +9,128 @@
 
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
+
 <style>
-*{box-sizing:border-box}
-
-:root{
-    --bg:#f8fafc;
-    --card:#ffffff;
-    --text:#111827;
-    --muted:#667085;
-    --border:#e5e7eb;
-    --primary:#4f46e5;
-    --primary-hover:#4338ca;
-    --primary-soft:#eef2ff;
-    --success:#067647;
-    --danger:#b42318;
-    --input:#ffffff;
-}
-
-body.dark{
-    --bg:#0f1115;
-    --card:#181b21;
-    --text:#f5f5f6;
-    --muted:#a1a1aa;
-    --border:#2b3038;
-    --primary-soft:#25274a;
-    --input:#111318;
-}
-
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f5f7fb;--surface:#fff;--surface-2:#f8fafc;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--primary:#6366f1;--primary-hover:#4f46e5;--primary-soft:#eef2ff;--success:#067647;--danger:#ef4444;--input:#fff;--shadow:0 20px 60px rgba(15,23,42,.10)}
+html.dark{--bg:#0b1120;--surface:#111827;--surface-2:#172033;--text:#f9fafb;--muted:#9ca3af;--border:#263247;--primary:#818cf8;--primary-hover:#6366f1;--primary-soft:#202849;--success:#34d399;--danger:#f87171;--input:#111827;--shadow:0 20px 60px rgba(0,0,0,.35)}
 html{scroll-behavior:smooth}
-
-body{
-    margin:0;
-    background:var(--bg);
-    color:var(--text);
-    font-family:Arial,Helvetica,sans-serif;
-    transition:background .2s,color .2s;
-}
-
-button,input{font:inherit}
-
-.container{
-    width:min(1040px,calc(100% - 32px));
-    margin:auto;
-}
-
-.header{
-    text-align:center;
-    padding:38px 0 25px;
-}
-
-.brand-icon{
-    width:58px;
-    height:58px;
-    margin:0 auto 15px;
-    border-radius:15px;
-    background:var(--primary);
-    color:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-
-.brand-icon svg{
-    width:32px;
-    height:32px;
-}
-
-h1{
-    margin:0;
-    font-size:31px;
-    line-height:1.2;
-    letter-spacing:-.6px;
-}
-
-.subtitle{
-    margin:10px auto 0;
-    max-width:680px;
-    color:var(--muted);
-    font-size:14px;
-    line-height:1.6;
-}
-
-.header-actions{
-    display:flex;
-    justify-content:center;
-    gap:9px;
-    margin-top:18px;
-}
-
-.icon-btn{
-    height:40px;
-    padding:0 13px;
-    border:1px solid var(--border);
-    border-radius:10px;
-    background:var(--card);
-    color:var(--text);
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    cursor:pointer;
-}
-
-.icon-btn svg{
-    width:17px;
-    height:17px;
-}
-
-.card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:16px;
-    padding:23px;
-    margin-bottom:18px;
-}
-
-.card-header{
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    gap:20px;
-    margin-bottom:20px;
-}
-
-.card-title{
-    display:flex;
-    align-items:center;
-    gap:12px;
-}
-
-.card-title-icon{
-    width:40px;
-    height:40px;
-    border-radius:10px;
-    background:var(--primary-soft);
-    color:var(--primary);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex:none;
-}
-
-.card-title-icon svg{
-    width:21px;
-    height:21px;
-}
-
-.card h2{
-    margin:0;
-    font-size:19px;
-    letter-spacing:-.2px;
-}
-
-.card-description{
-    margin:4px 0 0;
-    color:var(--muted);
-    font-size:13px;
-    line-height:1.5;
-}
-
-.scanner-layout{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) 280px;
-    gap:20px;
-    align-items:start;
-}
-
-.reader-wrap{
-    width:100%;
-}
-
-#reader{
-    width:100%;
-    min-height:330px;
-    overflow:hidden;
-    border:1px solid var(--border);
-    border-radius:13px;
-    background:var(--bg);
-}
-
-#reader video{
-    width:100%!important;
-    border-radius:12px;
-}
-
-#reader img{
-    max-width:100%;
-}
-
-.scan-placeholder{
-    min-height:330px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    padding:25px;
-    color:var(--muted);
-}
-
-.scan-placeholder-icon{
-    width:62px;
-    height:62px;
-    border-radius:14px;
-    background:var(--primary-soft);
-    color:var(--primary);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    margin-bottom:14px;
-}
-
-.scan-placeholder-icon svg{
-    width:31px;
-    height:31px;
-}
-
-.scan-placeholder strong{
-    color:var(--text);
-    font-size:15px;
-    margin-bottom:6px;
-}
-
-.scan-placeholder span{
-    max-width:330px;
-    font-size:13px;
-    line-height:1.5;
-}
-
-.controls{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:9px;
-    margin-top:12px;
-}
-
-.btn{
-    min-height:43px;
-    border:1px solid var(--border);
-    border-radius:10px;
-    padding:10px 14px;
-    background:var(--card);
-    color:var(--text);
-    cursor:pointer;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    font-size:13px;
-    font-weight:600;
-}
-
-.btn svg{
-    width:17px;
-    height:17px;
-}
-
-.btn.primary{
-    background:var(--primary);
-    border-color:var(--primary);
-    color:#fff;
-}
-
-.btn.primary:hover{
-    background:var(--primary-hover);
-}
-
-.btn.danger{
-    color:var(--danger);
-}
-
-.btn:disabled{
-    opacity:.48;
-    cursor:not-allowed;
-}
-
-.status{
-    margin-top:10px;
-    padding:10px 12px;
-    border-radius:9px;
-    background:var(--primary-soft);
-    color:var(--muted);
-    font-size:12px;
-    line-height:1.5;
-}
-
-.side-panel{
-    border:1px solid var(--border);
-    border-radius:13px;
-    padding:16px;
-}
-
-.side-panel h3{
-    margin:0 0 12px;
-    font-size:14px;
-}
-
-.side-item{
-    display:flex;
-    align-items:center;
-    gap:9px;
-    padding:9px 0;
-    border-bottom:1px solid var(--border);
-    color:var(--muted);
-    font-size:12px;
-}
-
+body{min-height:100vh;margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;transition:background-color .25s ease,color .25s ease}
+button,input{font:inherit}button{cursor:pointer}
+.container{width:min(1000px,calc(100% - 40px));margin:auto;padding-top:28px}
+.header{width:100%;padding:18px 0;border-bottom:1px solid var(--border);background:var(--surface)}
+.header-inner{width:min(1000px,calc(100% - 40px));margin:auto;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-icon{width:42px;height:42px;margin:0;border-radius:11px;background:var(--primary);color:#fff;display:grid;place-items:center;flex:none}
+.brand-icon svg{width:25px;height:25px}
+.brand-text h1{margin:0;font-size:18px;line-height:1.1;font-weight:750;letter-spacing:0}
+.brand-text span{display:block;margin-top:3px;color:var(--muted);font-size:12px}
+.header-actions{display:flex;gap:9px;margin:0}
+.icon-btn{width:42px;height:42px;padding:0;border:1px solid var(--border);border-radius:11px;background:var(--surface);color:var(--text);display:grid;place-items:center;transition:.2s}
+.icon-btn:hover{background:var(--surface-2)}
+.icon-btn svg{width:20px;height:20px}
+main{padding:48px 0 60px}
+.hero{text-align:center;margin-bottom:30px}
+.hero h2{font-size:clamp(30px,5vw,44px);line-height:1.1;letter-spacing:-1.5px;margin-bottom:10px}
+.hero p{max-width:650px;margin:auto;color:var(--muted);font-size:14px;line-height:1.6}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:22px;margin-bottom:18px;box-shadow:var(--shadow)}
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:18px}
+.card-title{display:flex;align-items:center;gap:12px}
+.card-title-icon{width:40px;height:40px;border-radius:11px;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;flex:none}
+.card-title-icon svg{width:21px;height:21px}
+.card h2{margin:0;font-size:18px;letter-spacing:0}
+.card-description{margin:4px 0 0;color:var(--muted);font-size:13px;line-height:1.5}
+.scanner-layout{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:18px;align-items:start}
+.reader-wrap{width:100%}
+#reader{width:100%;min-height:330px;overflow:hidden;border:1px solid var(--border);border-radius:15px;background:var(--surface-2)}
+#reader video{width:100%!important;border-radius:14px}
+#reader img{max-width:100%}
+.scan-placeholder{min-height:330px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:25px;color:var(--muted)}
+.scan-placeholder-icon{width:62px;height:62px;border-radius:14px;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;margin-bottom:14px}
+.scan-placeholder-icon svg{width:31px;height:31px}
+.scan-placeholder strong{color:var(--text);font-size:15px;margin-bottom:6px}
+.scan-placeholder span{max-width:330px;font-size:13px;line-height:1.5}
+.controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-top:12px}
+.btn{min-height:43px;border:1px solid var(--border);border-radius:12px;padding:10px 14px;background:var(--surface);color:var(--text);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:650;transition:transform .15s ease,background .2s ease,border .2s ease}
+.btn:active{transform:scale(.98)}
+.btn svg{width:17px;height:17px}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn.primary:hover{background:var(--primary-hover);border-color:var(--primary-hover)}
+.btn.danger{color:var(--danger)}
+.btn:disabled{opacity:.48;cursor:not-allowed}
+.status{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--primary-soft);color:var(--muted);font-size:12px;line-height:1.5}
+.side-panel{border:1px solid var(--border);border-radius:15px;padding:15px;background:var(--surface)}
+.side-panel h3{margin:0 0 10px;font-size:14px}
+.side-item{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--border);color:var(--muted);font-size:12px}
 .side-item:last-child{border-bottom:0}
-
-.side-item svg{
-    width:17px;
-    height:17px;
-    color:var(--primary);
-    flex:none;
-}
-
-.result{
-    display:none;
-    margin-top:18px;
-    padding:17px;
-    border:1px solid var(--border);
-    border-radius:13px;
-}
-
+.side-item svg{width:17px;height:17px;color:var(--primary);flex:none}
+.result{display:none;margin-top:18px;padding:16px;border:1px solid var(--border);border-radius:15px;background:var(--surface)}
 .result.show{display:block}
-
-.result-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-    margin-bottom:9px;
-}
-
-.result-title{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    font-size:14px;
-    font-weight:700;
-}
-
-.result-title svg{
-    width:17px;
-    height:17px;
-    color:var(--success);
-}
-
-.badge{
-    font-size:11px;
-    font-weight:600;
-    color:var(--primary);
-    background:var(--primary-soft);
-    padding:6px 8px;
-    border-radius:7px;
-}
-
-.result-value{
-    background:var(--bg);
-    border:1px solid var(--border);
-    border-radius:9px;
-    padding:12px;
-    min-height:44px;
-    white-space:pre-wrap;
-    word-break:break-word;
-    font-size:13px;
-    line-height:1.55;
-}
-
-.result-actions{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-top:10px;
-}
-
-.result-actions .btn{
-    min-height:38px;
-    padding:8px 12px;
-}
-
-.section-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:12px;
-}
-
-.info-box{
-    border:1px solid var(--border);
-    border-radius:12px;
-    padding:15px;
-}
-
-.info-icon{
-    width:36px;
-    height:36px;
-    border-radius:9px;
-    background:var(--primary-soft);
-    color:var(--primary);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    margin-bottom:11px;
-}
-
-.info-icon svg{
-    width:19px;
-    height:19px;
-}
-
-.info-box h3{
-    margin:0 0 5px;
-    font-size:14px;
-}
-
-.info-box p{
-    margin:0;
-    color:var(--muted);
-    font-size:12px;
-    line-height:1.55;
-}
-
-.note{
-    padding:12px 14px;
-    border:1px solid var(--border);
-    border-radius:10px;
-    color:var(--muted);
-    font-size:12px;
-    line-height:1.6;
-    margin-top:15px;
-}
-
-footer{
-    text-align:center;
-    color:var(--muted);
-    font-size:12px;
-    padding:2px 0 30px;
-}
-
-@media(max-width:800px){
-    .scanner-layout{
-        grid-template-columns:1fr;
-    }
-
-    .side-panel{
-        display:grid;
-        grid-template-columns:repeat(2,1fr);
-        gap:0 15px;
-    }
-
-    .side-panel h3{
-        grid-column:1/-1;
-    }
-}
-
-@media(max-width:600px){
-    .container{
-        width:calc(100% - 20px);
-    }
-
-    .header{
-        padding:25px 0 18px;
-    }
-
-    h1{
-        font-size:26px;
-    }
-
-    .card{
-        padding:16px;
-        border-radius:14px;
-    }
-
-    .card-header{
-        margin-bottom:15px;
-    }
-
-    .scanner-layout{
-        gap:14px;
-    }
-
-    #reader,
-    .scan-placeholder{
-        min-height:270px;
-    }
-
-    .controls{
-        grid-template-columns:1fr;
-    }
-
-    .section-grid{
-        grid-template-columns:1fr;
-    }
-
-    .side-panel{
-        grid-template-columns:1fr;
-    }
-
-    .result-head{
-        align-items:flex-start;
-        flex-direction:column;
-    }
-
-    .result-actions{
-        display:grid;
-        grid-template-columns:1fr;
-    }
-
-    .result-actions .btn{
-        width:100%;
-    }
-}
+.result-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px}
+.result-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700}
+.result-title svg{width:17px;height:17px;color:var(--success)}
+.badge{font-size:11px;font-weight:600;color:var(--primary);background:var(--primary-soft);padding:6px 8px;border-radius:8px}
+.result-value{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px;min-height:44px;white-space:pre-wrap;word-break:break-word;font-size:13px;line-height:1.55}
+.result-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.result-actions .btn{min-height:38px;padding:8px 12px}
+.section-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.info-box{border:1px solid var(--border);border-radius:13px;padding:15px;background:var(--surface)}
+.info-icon{width:36px;height:36px;border-radius:10px;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;margin-bottom:11px}
+.info-icon svg{width:19px;height:19px}
+.info-box h3{margin:0 0 5px;font-size:14px}
+.info-box p{margin:0;color:var(--muted);font-size:12px;line-height:1.55}
+.note{padding:12px 14px;border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:12px;line-height:1.6;margin-top:15px;background:var(--surface-2)}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:0 0 30px}
+@media(max-width:800px){.scanner-layout{grid-template-columns:1fr}.side-panel{display:grid;grid-template-columns:repeat(2,1fr);gap:0 15px}.side-panel h3{grid-column:1/-1}}
+@media(max-width:600px){.container{width:calc(100% - 30px);padding-top:18px}.header{padding:14px 0}.brand-text span{display:none}main{padding:35px 0 50px}.hero{margin-bottom:25px}.card{padding:17px;border-radius:18px}.card-header{margin-bottom:15px}.scanner-layout{gap:14px}#reader,.scan-placeholder{min-height:270px}.controls{grid-template-columns:1fr}.section-grid{grid-template-columns:1fr}.side-panel{grid-template-columns:1fr}.result-head{align-items:flex-start;flex-direction:column}.result-actions{display:grid;grid-template-columns:1fr}.result-actions .btn{width:100%}}
 </style>
+
 </head>
 
 <body>
 
-<div class="container">
-
 <header class="header">
-    <div class="brand-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"/>
-            <path d="M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7z"/>
-            <path d="M14 14h2v2h-2zM18 14h-2v2M14 18h4"/>
-        </svg>
-    </div>
-
-    <h1>QR & Barcode Scanner</h1>
-    <p class="subtitle">
-        Scan QR codes and barcodes instantly with your camera or upload an image.
-    </p>
-
-    <div class="header-actions">
-        <button class="icon-btn" id="themeBtn" type="button">
-            <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>
-                <circle cx="12" cy="12" r="4"/>
-            </svg>
-            <span id="themeText">Dark Mode</span>
-        </button>
+    <div class="header-inner">
+        <div class="brand">
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                    <path d="M14 14h3v3h-3z"></path>
+                    <path d="M18 18h3v3h-3z"></path>
+                    <path d="M18 14h3"></path>
+                    <path d="M14 18v3"></path>
+                </svg>
+            </div>
+            <div class="brand-text">
+                <h1>QR &amp; Barcode Scanner</h1>
+                <span>Fast &amp; simple code scanning</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch to dark mode">
+                <svg id="themeIconLight" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round">
+                    <circle cx="12" cy="12" r="4"></circle>
+                    <path d="M12 2v2"></path><path d="M12 20v2"></path>
+                    <path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path>
+                    <path d="M2 12h2"></path><path d="M20 12h2"></path>
+                    <path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>
+                </svg>
+                <svg id="themeIconDark" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" style="display:none;">
+                    <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3A6.7 6.7 0 0 0 21 12.8Z"></path>
+                </svg>
+            </button>
+        </div>
     </div>
 </header>
+
+<div class="container">
+
+
 
 <section class="card">
 
@@ -797,8 +377,8 @@ const openBtn = document.getElementById("openBtn");
 const clearBtn = document.getElementById("clearBtn");
 
 const themeBtn = document.getElementById("themeBtn");
-const themeText = document.getElementById("themeText");
-const themeIcon = document.getElementById("themeIcon");
+const themeIconLight = document.getElementById("themeIconLight");
+const themeIconDark = document.getElementById("themeIconDark");
 
 const supportedFormats = [
     Html5QrcodeSupportedFormats.QR_CODE,
@@ -1033,35 +613,34 @@ clearBtn.addEventListener("click",function(){
     setStatus("Ready to scan.");
 });
 
+function setTheme(theme){
+    const dark = theme === "dark";
+    if(dark){
+        document.documentElement.classList.add("dark");
+        themeIconLight.style.display = "none";
+        themeIconDark.style.display = "block";
+        themeBtn.setAttribute("aria-label","Switch to light mode");
+    }else{
+        document.documentElement.classList.remove("dark");
+        themeIconLight.style.display = "block";
+        themeIconDark.style.display = "none";
+        themeBtn.setAttribute("aria-label","Switch to dark mode");
+    }
+    localStorage.setItem("qr-theme", theme);
+}
+
 themeBtn.addEventListener("click",function(){
-    document.body.classList.toggle("dark");
-
-    const dark = document.body.classList.contains("dark");
-
-    themeText.textContent = dark ? "Light Mode" : "Dark Mode";
-
-    themeIcon.innerHTML = dark
-        ? `
-            <path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5z"/>
-          `
-        : `
-            <path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>
-            <circle cx="12" cy="12" r="4"/>
-          `;
-
-    localStorage.setItem(
-        "scanner-theme",
-        dark ? "dark" : "light"
-    );
+    const isDark = document.documentElement.classList.contains("dark");
+    setTheme(isDark ? "light" : "dark");
 });
 
-if(localStorage.getItem("scanner-theme") === "dark"){
-    document.body.classList.add("dark");
-    themeText.textContent = "Light Mode";
-
-    themeIcon.innerHTML = `
-        <path d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5z"/>
-    `;
+const savedTheme = localStorage.getItem("qr-theme");
+if(savedTheme){
+    setTheme(savedTheme);
+}else if(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches){
+    setTheme("dark");
+}else{
+    setTheme("light");
 }
 
 window.addEventListener("beforeunload",function(){
