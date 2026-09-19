@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Photo Resizer - BPSC, Bank & Signature Photo Resizer Tool</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--ink:#172033;--muted:#707a8e;--line:#e2e7ef;--brand:#625bf6;--brand2:#5149df;--ok:#138654;--okbg:#e9f8f0;--shadow:0 16px 45px rgba(25,35,60,.08)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Arial,sans-serif}
+.wrap{max-width:1100px;margin:auto;padding:0 18px 55px}
+.top{
+  width:100vw;
+  max-width:none;
+  min-height:62px;
+  margin-left:calc((100% - 100vw)/2);
+  margin-bottom:28px;
+  padding:0 max(18px,calc((100vw - 1100px)/2 + 18px));
+  display:flex;
+  align-items:center;
+  gap:12px;
+  position:relative;
+  background:var(--card);
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  box-shadow:0 2px 10px rgba(25,35,60,.04);
+}
+:root.dark .top{
+  box-shadow:0 2px 10px rgba(0,0,0,.16);
+}
+.logo{width:43px;height:43px;border-radius:13px;background:var(--brand);display:grid;place-items:center;box-shadow:0 9px 22px #625bf633}
+.logo svg{width:24px;color:#fff}
+.theme-btn-ref{
+  margin-left:auto;
+  width:42px;
+  height:42px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  display:grid;
+  place-items:center;
+  color:var(--ink);
+  background:var(--card);
+  transition:.2s;
+}
+.theme-btn-ref:hover{background:#f8fafc}
+.theme-btn-ref svg{width:20px;height:20px}
+:root.dark .theme-btn-ref:hover{background:#252c38}
+
+.brand b{font-size:19px}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.hero{text-align:center;margin-top:30px;margin-bottom:28px}.hero h1{font-size:clamp(26px,4vw,35px);letter-spacing:-1.5px;margin:0 0 8px}.hero p{font-size:12px;color:var(--muted);margin:0}
+.grid{display:flex;justify-content:center;align-items:flex-start;gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:21px;padding:16px;box-shadow:var(--shadow)}
+.image-card{max-width:520px;margin:0 auto}
+.image-card-two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.image-card-col{min-width:0}
+.image-card-col-right{border-left:1px solid var(--line);padding-left:14px}
+.title{margin:0 0 6px;font-size:18px}.spec{font-size:12px;color:var(--muted);margin-bottom:13px}
+.mini-upload{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;box-sizing:border-box;height:120px;min-height:120px;padding:4px 7px;margin:0 0 7px;border:1px dashed var(--line);border-radius:6px;background:#fafbfc;color:#667085;font-size:10px;font-weight:600;cursor:pointer;transition:.15s}.mini-upload:hover{border-color:#b7c0cf;background:#f5f7fa;color:#344054}.mini-upload svg{width:13px;height:13px;flex:0 0 auto}.mini-upload span{white-space:nowrap;font-size: 12px;}.frame{width:100%;position:relative;overflow:hidden;border-radius:0;background:repeating-conic-gradient(#f0f2f6 0 25%,#fff 0 50%) 50%/18px 18px;border:1px solid var(--line);display:grid;place-items:center;cursor:default}
+.frame.sig{aspect-ratio:300/80}.frame.square{aspect-ratio:1/1}.frame.dragover{outline:2px dashed var(--brand);outline-offset:-2px}
+.frame canvas{width:100%;height:100%;display:block;touch-action:none}
+.empty{position:absolute;inset:0;display:none}
+
+.file{display:none}.mini-upload{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;box-sizing:border-box;height:120px;min-height:120px;padding:4px 7px;margin:0 0 7px;border:1px dashed var(--line);border-radius:6px;background:#fafbfc;color:#667085;font-size:10px;font-weight:600;cursor:pointer;transition:.15s}.mini-upload:hover{border-color:#b7c0cf;background:#f5f7fa;color:#344054}.mini-upload svg{width:13px;height:13px;flex:0 0 auto}.mini-upload span{white-space:nowrap}
+.toolbar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.btn{border:0;border-radius:9px;padding:9px 5px;font:600 11px Inter;cursor:pointer;display:flex;justify-content:center;align-items:center;gap:4px;background:#eef1f6;color:#30394d}
+.btn svg{width:15px;height:15px}.btn.primary{background:var(--brand);color:#fff}.btn.primary:hover{background:var(--brand2)}.btn:disabled{opacity:.42;cursor:not-allowed}
+.zoom{display:flex;align-items:center;gap:8px;margin-top:9px}.zoom input{flex:1;accent-color:var(--brand)}.zoom span{width:40px;text-align:right;font-size:10px;color:var(--muted)}
+
+.quality{margin-top:10px;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:#fafbfc}
+.quality-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px;font-size:11px;color:var(--muted)}
+.quality-head b{font-size:10px;color:var(--ink);font-weight:700;text-align:right}
+.quality-row{display:grid;grid-template-columns:116px 1fr 35px;align-items:center;gap:7px}
+.quality select{width:100%;height:29px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);font:600 10px Inter;padding:0 5px;outline:none}
+.quality input{width:100%;accent-color:var(--brand)}
+.quality-row>span{font-size:10px;color:var(--muted);text-align:right}
+.quality select:disabled,.quality input:disabled{opacity:.45}
+.download{width:100%;margin-top:9px}.download.ready{background:var(--ok)}
+.size{text-align:center;font-size:11px;color:var(--muted);height:14px;margin-top:7px}.size strong{color:var(--ok)}
+.footer{text-align:center;color:#8b94a6;font-size:11px;margin-top:24px}
+@media(max-width:600px){
+  .grid{display:flex;justify-content:center}
+  .wrap{padding:0 12px 42px}
+  .top{padding:0 12px;min-height:58px;margin-bottom:0}
+  .hero{margin-top:24px;margin-bottom:22px}
+  .image-card-two-col{grid-template-columns:1fr}
+  .image-card-col-right{border-left:0;border-top:1px solid var(--line);padding-left:0;padding-top:14px}
+}
+
+.preview-grid{position:absolute;inset:0;pointer-events:none;z-index:5;
+background-image:linear-gradient(to right,transparent 33.333%,rgba(255,255,255,.75) 33.333%,rgba(255,255,255,.75) 33.7%,transparent 33.7%,transparent 66.333%,rgba(255,255,255,.75) 66.333%,rgba(255,255,255,.75) 66.7%,transparent 66.7%),
+linear-gradient(to bottom,transparent 33.333%,rgba(255,255,255,.75) 33.333%,rgba(255,255,255,.75) 33.7%,transparent 33.7%,transparent 66.333%,rgba(255,255,255,.75) 66.333%,rgba(255,255,255,.75) 66.7%,transparent 66.7%)}
+
+.theme-switch{margin-left:auto;display:flex;gap:2px;padding:2px;border:1px solid var(--line);border-radius:7px;background:var(--card)}
+.theme-btn{border:0;background:transparent;color:var(--muted);font:600 9px Inter,Arial,sans-serif;padding:5px 7px;border-radius:5px;cursor:pointer}
+.theme-btn.active{background:var(--ink);color:var(--card)}
+:root.dark{--bg:#151922;--card:#1e2430;--ink:#f1f3f7;--muted:#aab3c2;--line:#353d4d;--brand:#9b8cff;--brand2:#897cf0;--ok:#31c48d;--okbg:#163a2d;--shadow:0 16px 45px rgba(0,0,0,.25)}
+.dark .mini-upload{background:#202734;color:#b9c1cf;border-color:#465166}
+.dark .mini-upload:hover{background:#252d3b;color:#eef1f6}
+.dark .quality{background:#202631}
+.dark .quality select{background:#1b212c;color:#eef1f6;border-color:#3b4557}
+.dark .btn{background:#252c38;color:#d5dbe5;border-color:#384355}
+.dark .btn.primary{background:#7f72e8;color:#fff}
+.dark .theme-btn.active{background:#f1f3f7;color:#151922}
+.dark .preview-grid{background-image:linear-gradient(to right,transparent 33.333%,rgba(255,255,255,.35) 33.333%,rgba(255,255,255,.35) 33.7%,transparent 33.7%,transparent 66.333%,rgba(255,255,255,.35) 66.333%,rgba(255,255,255,.35) 66.7%,transparent 66.7%),linear-gradient(to bottom,transparent 33.333%,rgba(255,255,255,.35) 33.333%,rgba(255,255,255,.35) 33.7%,transparent 33.7%,transparent 66.333%,rgba(255,255,255,.35) 66.333%,rgba(255,255,255,.35) 66.7%,transparent 66.7%)}
+.btn:disabled{opacity:1;cursor:not-allowed}
+.quality select:disabled,.quality input:disabled{opacity:1;cursor:not-allowed}
+@media(max-width:760px){.theme-switch{margin-left:auto}}
+
+.custom-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:7px}
+.custom-fields label{display:block;font-size:10px;color:var(--muted);margin:0 0 4px}
+.custom-fields input{width:100%;height:30px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);font:600 11px Inter,Arial,sans-serif;padding:0 7px;outline:none}
+.custom-apply{width:100%;margin-bottom:7px;padding:7px 5px}
+@media(max-width:600px){.custom-fields{grid-template-columns:1fr 1fr}.custom-fields>div:last-child{grid-column:1/-1}}
+
+
+/* Chrome, Edge, Safari */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+
+/* Hide preview area until an image is uploaded */
+.frame:not(.has-image){display:none!important}
+
+.image-card{max-width:520px;margin:0 auto}
+.image-card .custom-fields{margin-bottom:7px}
+.image-card .frame{max-width:100%}
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:28px;
+  transform:translate(-50%,20px);
+  z-index:9999;
+  min-width:240px;
+  max-width:90vw;
+  padding:12px 18px;
+  border-radius:10px;
+  background:var(--ink);
+  color:var(--card);
+  font:600 12px Inter,Arial,sans-serif;
+  text-align:center;
+  box-shadow:0 10px 30px rgba(0,0,0,.18);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .2s ease,transform .2s ease,visibility .2s ease;
+}
+.toast.show{
+  opacity:1;
+  visibility:visible;
+  transform:translate(-50%,0);
+}
+.toast.success{
+  background:var(--ok);
+  color:#fff;
+}
+
+.cropper{position:absolute;z-index:10;border:2px solid #fff;box-shadow:0 0 0 9999px rgba(0,0,0,.42);cursor:move;touch-action:none;display:none;min-width:12px;min-height:12px}
+.frame.has-image.crop-active .cropper{display:block}
+.crop-handle{position:absolute;width:16px;height:16px;background:#fff;border:2px solid var(--brand);border-radius:50%;z-index:2;touch-action:none;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.crop-handle.tl{left:-9px;top:-9px;cursor:nwse-resize}.crop-handle.tr{right:-9px;top:-9px;cursor:nesw-resize}.crop-handle.bl{left:-9px;bottom:-9px;cursor:nesw-resize}.crop-handle.br{right:-9px;bottom:-9px;cursor:nwse-resize}
+.crop-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px}.crop-actions .btn{width:100%}.crop-actions .btn:disabled{opacity:.45}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <rect x="4" y="4" width="16" height="16" rx="4"/>
+      <circle cx="9" cy="9" r="1.4"/>
+      <path d="m5 17 4.4-4.4 3.2 3.1 2.1-2.1L19 17.5"/>
+    </svg>
+  </div>
+  <div class="brand">
+    <b>PhotoResizer</b>
+    <small>Prepare images perfectly, in any size you need.</small>
+  </div>
+
+  <button class="theme-btn-ref" id="themeBtn" type="button" aria-label="Toggle dark mode">
+    <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round">
+      <circle cx="12" cy="12" r="4"/>
+      <path d="M12 2v2"/><path d="M12 20v2"/>
+      <path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/>
+      <path d="M2 12h2"/><path d="M20 12h2"/>
+      <path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+    </svg>
+    <svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" style="display:none;">
+      <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3A6.7 6.7 0 0 0 21 12.8Z"/>
+    </svg>
+  </button>
+</header>
+<section class="hero"><p>Upload above, then drag the image to crop and adjust it.</p></section>
+<main class="grid" id="grid"></main>
+<div class="footer">Images are processed locally in your browser.</div>
+</div>
+<div id="toast" class="toast success" role="status" aria-live="polite"></div>
+<script>
+const WORK_SCALE=3;
+
+const S=[
+ {id:'sig',name:'Signature',desc:'300 × 80 px · maximum 60 KB',w:300,h:80,max:60,cls:'sig'},
+ {id:'bpsc',name:'BPSC Photo',desc:'300 × 300 px · maximum 100 KB',w:300,h:300,max:100,cls:'square'},
+ {id:'bank',name:'Bank Photo',desc:'600 × 600 px · maximum 100 KB',w:600,h:600,max:100,cls:'square'}
+];
+
+const ICON={
+upload:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M5 14v2.5A3.5 3.5 0 0 0 8.5 20h7a3.5 3.5 0 0 0 3.5-3.5V14"/></svg>`,
+minus:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>`,
+plus:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>`,
+left:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 7H5v4"/><path d="M5.4 11A7 7 0 1 0 7 6.3"/></svg>`,
+right:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 7h4v4"/><path d="M18.6 11A7 7 0 1 1 17 6.3"/></svg>`,
+reset:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12a8 8 0 1 0 2.3-5.6"/><path d="M4 5v5h5"/></svg>`,
+download:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4v11m0 0-4-4m4 4 4-4"/><path d="M5 19h14"/></svg>`
+};
+function makeCard(){
+ return `<article class="card image-card">
+  <div class="image-card-two-col">
+    <div class="image-card-col">
+<article class="card image-card">
+ <h2 class="title" id="imageTitle">Photo Resizer</h2>
+ <div class="spec" id="imageSpec">Choose a photo size to begin</div>
+
+ <div class="custom-fields" id="presetSelectWrap" style="grid-template-columns:1fr;margin-bottom:7px">
+   <div>
+     <label>Photo Type / Size</label>
+     <select id="sizePreset" style="width:100%;height:30px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);font:600 11px Inter,Arial,sans-serif;padding:0 7px;outline:none">
+       <option value="sig">Signature-300x80px-60KB</option>
+       <option value="bpsc">BPSC Photo-300×300px-100KB</option>
+       <option value="bank">Bank Photo-600x600px-100KB</option>
+       <option value="custom">Custom Size</option>
+     </select>
+   </div>
+ </div>
+
+ <div class="custom-fields" id="customFields" style="display:none">
+   <div><label>Width (px)</label><input id="customW" type="number" min="1" max="10000" value="500"></div>
+   <div><label>Height (px)</label><input id="customH" type="number" min="1" max="10000" value="500"></div>
+   <div><label>Maximum KB</label><input id="customKB" type="number" min="1" max="5000" value="100"></div>
+ </div>
+
+ <button class="btn primary custom-apply" id="customApply" style="display:none">Apply Custom Size</button>
+
+ <label class="mini-upload" id="uploadLabel" title="Choose an image or drag it onto the preview">${ICON.upload}<span>Drag & Drop or Upload Image</span>
+ <input class="file" id="imageFile" type="file" accept="image/jpeg,image/png,image/webp">
+ </label>
+    </div>
+    <div class="image-card-col image-card-col-right">
+<div class="frame square" id="imageFrame">
+   <canvas id="imageCanvas"></canvas>
+   <div class="preview-grid" aria-hidden="true"></div>
+   <div class="cropper" id="cropper">
+     <div class="crop-handle tl" data-handle="tl"></div>
+     <div class="crop-handle tr" data-handle="tr"></div>
+     <div class="crop-handle bl" data-handle="bl"></div>
+     <div class="crop-handle br" data-handle="br"></div>
+   </div>
+ </div>
+
+ <div class="toolbar">
+   <button class="btn" id="imageMinus" disabled>${ICON.minus}</button>
+   <button class="btn" id="imagePlus" disabled>${ICON.plus}</button>
+   <button class="btn" id="imageLeft" disabled>${ICON.left}</button>
+   <button class="btn" id="imageRight" disabled>${ICON.right}</button>
+ </div>
+
+ <div class="crop-actions">
+   <button class="btn primary" id="startCrop" disabled>Crop</button>
+   <button class="btn primary" id="applyCrop" disabled style="display:none">Apply Crop</button>
+   <button class="btn" id="resetCrop" disabled style="display:none">Reset Crop</button>
+   <button class="btn" id="cancelCrop" disabled style="display:none">Cancel Crop</button>
+ </div>
+
+ <div class="zoom"><input id="imageRange" type="range" min="50" max="300" value="100" disabled><span id="imageZoom">100%</span></div>
+
+ <div class="quality">
+   <div class="quality-head"><span>Image Quality</span><b id="imageQualityLabel">Best Quality (Auto)</b></div>
+   <div class="quality-row">
+     <select id="imageQualityMode" disabled>
+       <option value="auto">Best Quality (Auto)</option>
+       <option value="manual">Manual Quality</option>
+     </select>
+     <input id="imageQualityRange" type="range" min="10" max="100" value="90" disabled>
+     <span id="imageQualityValue">90%</span>
+   </div>
+ </div>
+
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px"><button class="btn" id="imageReset" disabled>${ICON.reset} Reset</button><button class="btn" id="imageRedo" disabled>${ICON.reset} Reset Raw</button></div>
+ <div class="size" id="imageSize"></div>
+ <button class="btn primary download" id="imageDownload" disabled>${ICON.download} Download</button>
+ 
+    </div>
+  </div></article>`;
+}
+
+grid.innerHTML = makeCard();
+
+const st={
+ id:'image',
+ w:S[0].w,h:S[0].h,max:S[0].max,cls:S[0].cls,
+ img:null,originalImg:null,scale:1,rot:0,x:0,y:0,drag:false,lx:0,ly:0,
+ blob:null,timer:null,qualityMode:'auto',quality:.90,crop:{x:0,y:0,w:0,h:0},cropAction:null,cropStart:null
+};
+
+const $=id=>document.getElementById(id);
+const c=$('imageCanvas'), frame=$('imageFrame'), file=$('imageFile');
+const preset=$('sizePreset'), customFields=$('customFields'), customApply=$('customApply');
+const W=$('customW'),H=$('customH'),KB=$('customKB');
+const minus=$('imageMinus'),plus=$('imagePlus'),left=$('imageLeft'),right=$('imageRight'),reset=$('imageReset'),redo=$('imageRedo');
+const range=$('imageRange'),zoom=$('imageZoom'),mode=$('imageQualityMode'),qr=$('imageQualityRange');
+const qlabel=$('imageQualityLabel'),qvalue=$('imageQualityValue'),size=$('imageSize'),dl=$('imageDownload');
+const toast=$('toast');
+const cropper=$('cropper'),startCropBtn=$('startCrop'),applyCropBtn=$('applyCrop'),resetCropBtn=$('resetCrop'),cancelCropBtn=$('cancelCrop');
+let toastTimer=null;
+
+function showToast(message){
+  if(!toast)return;
+  toast.textContent=message;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>toast.classList.remove('show'),2200);
+}
+
+
+function initCrop(){
+ const mx=c.width*.10,my=c.height*.10;
+ st.crop={x:mx,y:my,w:Math.max(20,c.width-mx*2),h:Math.max(20,c.height-my*2)};
+ updateCropUI();
+}
+
+function setCropMode(active){
+ frame.classList.toggle('crop-active',active);
+ startCropBtn.style.display=active?'none':'flex';
+ applyCropBtn.style.display=active?'flex':'none';
+ resetCropBtn.style.display=active?'flex':'none';
+ cancelCropBtn.style.display=active?'flex':'none';
+
+ startCropBtn.disabled=!st.img;
+ applyCropBtn.disabled=!st.img;
+ resetCropBtn.disabled=!st.img;
+ cancelCropBtn.disabled=!st.img;
+}
+
+function startCrop(){
+ if(!st.img)return;
+ initCrop();
+ setCropMode(true);
+ showToast('Crop mode enabled — drag the four points or move the crop box');
+}
+
+function cancelCrop(){
+ if(!st.img)return;
+ setCropMode(false);
+ showToast('Crop cancelled');
+}
+function clampCrop(){
+ const minW=20,minH=20;
+ st.crop.w=Math.max(minW,Math.min(c.width,st.crop.w));
+ st.crop.h=Math.max(minH,Math.min(c.height,st.crop.h));
+ st.crop.x=Math.max(0,Math.min(c.width-st.crop.w,st.crop.x));
+ st.crop.y=Math.max(0,Math.min(c.height-st.crop.h,st.crop.y));
+}
+function updateCropUI(){
+ if(!cropper)return;
+ clampCrop();
+ cropper.style.left=(st.crop.x/c.width*100)+'%';
+ cropper.style.top=(st.crop.y/c.height*100)+'%';
+ cropper.style.width=(st.crop.w/c.width*100)+'%';
+ cropper.style.height=(st.crop.h/c.height*100)+'%';
+}
+function cropPointerPos(e){
+ const r=c.getBoundingClientRect();
+ return {x:(e.clientX-r.left)*c.width/r.width,y:(e.clientY-r.top)*c.height/r.height};
+}
+function startCropAction(e){
+ if(!st.img)return;
+ e.preventDefault();e.stopPropagation();
+ const handle=e.target.closest('.crop-handle'),p=cropPointerPos(e);
+ st.cropAction=handle?'resize-'+handle.dataset.handle:'move';
+ st.cropStart={pointerX:p.x,pointerY:p.y,cropX:st.crop.x,cropY:st.crop.y,cropW:st.crop.w,cropH:st.crop.h};
+ if(cropper.setPointerCapture)cropper.setPointerCapture(e.pointerId);
+}
+function moveCrop(e){
+ if(!st.cropAction)return;
+ e.preventDefault();
+ const p=cropPointerPos(e),s=st.cropStart,dx=p.x-s.pointerX,dy=p.y-s.pointerY,minW=20,minH=20;
+ if(st.cropAction==='move'){
+  st.crop.x=Math.max(0,Math.min(c.width-s.cropW,s.cropX+dx));
+  st.crop.y=Math.max(0,Math.min(c.height-s.cropH,s.cropY+dy));
+ }else{
+  const h=st.cropAction.slice(7);
+  let l=s.cropX,t=s.cropY,r=s.cropX+s.cropW,b=s.cropY+s.cropH;
+  if(h==='tl'){l=Math.max(0,Math.min(r-minW,p.x));t=Math.max(0,Math.min(b-minH,p.y))}
+  if(h==='tr'){r=Math.min(c.width,Math.max(l+minW,p.x));t=Math.max(0,Math.min(b-minH,p.y))}
+  if(h==='bl'){l=Math.max(0,Math.min(r-minW,p.x));b=Math.min(c.height,Math.max(t+minH,p.y))}
+  if(h==='br'){r=Math.min(c.width,Math.max(l+minW,p.x));b=Math.min(c.height,Math.max(t+minH,p.y))}
+  st.crop={x:l,y:t,w:r-l,h:b-t};
+ }
+ updateCropUI();
+}
+function endCropAction(){st.cropAction=null;st.cropStart=null}
+function applyCrop(){
+ if(!st.img)return;
+ const cr={...st.crop};
+ const source=document.createElement('canvas');
+ source.width=c.width;source.height=c.height;
+ source.getContext('2d').drawImage(c,0,0);
+ const cropped=document.createElement('canvas');
+ cropped.width=st.w*WORK_SCALE;cropped.height=st.h*WORK_SCALE;
+ cropped.getContext('2d').drawImage(source,cr.x,cr.y,cr.w,cr.h,0,0,st.w*WORK_SCALE,st.h*WORK_SCALE);
+ const im=new Image();
+ im.onload=()=>{
+   st.img=im;
+   st.scale=1;
+   st.rot=0;
+   st.x=0;
+   st.y=0;
+   st.blob=null;
+
+   // Keep the high-resolution cropped image as the working image.
+   // The canvas remains the same aspect ratio as the selected output,
+   // so the cropped result fills the whole preview instead of appearing small.
+   c.width=st.w*WORK_SCALE;
+   c.height=st.h*WORK_SCALE;
+   frame.style.aspectRatio=st.w+'/'+st.h;
+
+   initCrop();
+   draw();
+   setCropMode(false);
+   showToast(`Crop applied: ${Math.round(cr.w/WORK_SCALE)} × ${Math.round(cr.h/WORK_SCALE)} px`);
+ };
+ im.src=cropped.toDataURL('image/png');
+}
+function resetCrop(){if(!st.img)return;initCrop();showToast('Crop area reset — choose your crop again')}
+
+function setPreset(){
+ const selected=preset.value;
+ if(selected==='custom'){
+   customFields.style.display='grid';
+   customApply.style.display='flex';
+   st.w=Math.max(1,Math.min(10000,parseInt(W.value)||500));
+   st.h=Math.max(1,Math.min(10000,parseInt(H.value)||500));
+   st.max=Math.max(1,Math.min(5000,parseInt(KB.value)||100));
+   $('imageTitle').textContent='Photo Resizer';
+   $('imageSpec').textContent='Custom image dimensions and file-size limit';
+ }else{
+   customFields.style.display='none';
+   customApply.style.display='none';
+   const s=S.find(x=>x.id===selected);
+   st.w=s.w;st.h=s.h;st.max=s.max;st.cls=s.cls;
+   $('imageTitle').textContent=s.name;
+   $('imageSpec').textContent=s.desc;
+ }
+ c.width=st.w*WORK_SCALE;c.height=st.h*WORK_SCALE;
+ frame.className='frame '+st.cls+(st.img?' has-image':'');
+ frame.style.aspectRatio=st.w+'/'+st.h;
+ initCrop();
+ setCropMode(false);
+ st.scale=1;st.rot=0;st.x=0;st.y=0;st.blob=null;
+ size.innerHTML='';
+ dl.disabled=true;
+ dl.className='btn primary download';
+ if(st.img){draw()}else{c.getContext('2d').clearRect(0,0,c.width,c.height);sync()}
+}
+
+function applyCustom(){
+ if(preset.value!=='custom')return;
+
+ // Read, clamp, and store the custom values.
+ const newW=Math.max(1,Math.min(10000,parseInt(W.value)||500));
+ const newH=Math.max(1,Math.min(10000,parseInt(H.value)||500));
+ const newKB=Math.max(1,Math.min(5000,parseInt(KB.value)||100));
+
+ W.value=newW;
+ H.value=newH;
+ KB.value=newKB;
+
+ st.w=newW;
+ st.h=newH;
+ st.max=newKB;
+ st.cls=(newW===newH)?'square':'sig';
+
+ // Apply the new output dimensions.
+ c.width=st.w;
+ c.height=st.h;
+ frame.className='frame '+st.cls+(st.img?' has-image':'');
+ frame.style.aspectRatio=st.w+'/'+st.h;
+ initCrop();
+ applyCropBtn.disabled=!st.img;resetCropBtn.disabled=!st.img;
+
+ // Reset crop position/zoom for the newly selected output size.
+ st.scale=1;
+ st.rot=0;
+ st.x=0;
+ st.y=0;
+ st.blob=null;
+
+ $('imageTitle').textContent='Photo Resizer';
+ $('imageSpec').textContent=`Custom: ${st.w} × ${st.h} px · maximum ${st.max} KB`;
+
+ size.innerHTML='';
+ dl.disabled=true;
+ dl.className='btn primary download';
+
+ if(st.img){
+   draw();
+ }else{
+   c.getContext('2d').clearRect(0,0,c.width,c.height);
+   sync();
+ }
+
+ // IMPORTANT: show the toast after the custom settings have been applied.
+ showToast(`Custom size applied: ${st.w} × ${st.h} px · ${st.max} KB`);
+}
+
+function sync(){
+ range.value=Math.round(st.scale*100);
+ zoom.textContent=Math.round(st.scale*100)+'%';
+}
+
+function enable(v){
+ [minus,plus,left,right,reset,range,mode,qr,dl].forEach(x=>x.disabled=!v);
+ redo.disabled=!st.originalImg;
+ qr.disabled=!v||mode.value==='auto';
+}
+
+function qualityUI(){
+ if(mode.value==='auto'){
+   qlabel.textContent='Best Quality (Auto)';
+   qvalue.textContent='Auto';
+   qr.disabled=true;
+ }else{
+   qlabel.textContent='Manual Quality';
+   qvalue.textContent=Math.round(st.quality*100)+'%';
+   qr.disabled=!st.img;
+ }
+}
+
+function draw(){
+ const ctx=c.getContext('2d');
+ ctx.clearRect(0,0,c.width,c.height);
+ if(!st.img){sync();return}
+ ctx.save();
+ ctx.translate(c.width/2+st.x,c.height/2+st.y);
+ ctx.rotate(st.rot*Math.PI/180);
+ const sc=Math.max(c.width/st.img.width,c.height/st.img.height)*st.scale;
+ ctx.drawImage(st.img,-st.img.width*sc/2,-st.img.height*sc/2,st.img.width*sc,st.img.height*sc);
+ ctx.restore();
+ sync();
+ clearTimeout(st.timer);
+ st.timer=setTimeout(updateSize,120);
+}
+
+/* Add 300 DPI (300 PPI) metadata to a JPEG.
+   Canvas.toBlob() does not provide a DPI option, so we update the
+   JPEG JFIF density fields after encoding. This does not change pixels. */
+function setJpegDpi300(blob){
+  return blob.arrayBuffer().then(buf=>{
+    const bytes=new Uint8Array(buf);
+
+    // Find the APP0/JFIF segment.
+    for(let i=0;i<bytes.length-9;i++){
+      if(bytes[i]===0xFF && bytes[i+1]===0xE0 &&
+         bytes[i+4]===0x4A && bytes[i+5]===0x46 &&
+         bytes[i+6]===0x49 && bytes[i+7]===0x46 && bytes[i+8]===0x00){
+
+        // JFIF density unit: 1 = dots per inch.
+        bytes[i+11]=0x01;
+
+        // X density = 300 (big-endian).
+        bytes[i+12]=0x01;
+        bytes[i+13]=0x2C;
+
+        // Y density = 300 (big-endian).
+        bytes[i+14]=0x01;
+        bytes[i+15]=0x2C;
+
+        return new Blob([bytes],{type:'image/jpeg'});
+      }
+    }
+
+    // If no JFIF APP0 segment was found, return the original JPEG.
+    return blob;
+  });
+}
+
+function compress(){
+  return new Promise(resolve=>{
+    const limit=st.max*1024;
+
+    // Export at the exact requested pixel dimensions. The working canvas is
+    // higher resolution, so this is the only final downsampling step.
+    const out=document.createElement('canvas');
+    out.width=st.w;
+    out.height=st.h;
+
+    const octx=out.getContext('2d');
+    octx.imageSmoothingEnabled=true;
+    octx.imageSmoothingQuality='high';
+    octx.fillStyle='#fff';
+    octx.fillRect(0,0,st.w,st.h);
+    octx.drawImage(c,0,0,c.width,c.height,0,0,st.w,st.h);
+
+    const makeBlob=(q,done)=>{
+      out.toBlob(b=>{
+        if(!b){done(null);return}
+        setJpegDpi300(b).then(done);
+      },'image/jpeg',q);
+    };
+
+    if(st.qualityMode==='manual'){
+      makeBlob(st.quality,resolve);
+      return;
+    }
+
+    let lo=.01,hi=1,best=null,i=0;
+    function step(){
+      if(i++>=15){resolve(best);return}
+      const q=(lo+hi)/2;
+      makeBlob(q,jpeg=>{
+        if(!jpeg){resolve(best);return}
+        if(jpeg.size<=limit){best=jpeg;lo=q}else hi=q;
+        step();
+      });
+    }
+    step();
+  });
+}
+
+function updateSize(){
+ if(!st.img)return;
+ compress().then(b=>{
+   if(!b)return;
+   st.blob=b;
+   const ok=b.size<=st.max*1024;
+   size.innerHTML=ok
+     ? '<strong>'+(b.size/1024).toFixed(1)+' KB ✓</strong>'
+     : '<span>'+(b.size/1024).toFixed(1)+' KB · over '+st.max+' KB limit</span>';
+   dl.disabled=!ok;
+   dl.className='btn primary download'+(ok?' ready':'');
+ });
+}
+
+function loadImage(f){
+ if(!f||!f.type.startsWith('image/'))return;
+ const u=URL.createObjectURL(f),im=new Image();
+ im.onload=()=>{
+   URL.revokeObjectURL(u);
+   st.originalImg=im;
+   st.img=im;
+   st.scale=1;st.rot=0;st.x=0;st.y=0;
+   frame.classList.add('has-image');
+   enable(true);
+   initCrop();
+   setCropMode(false);
+   draw();
+ };
+ im.src=u;
+}
+
+preset.onchange=()=>{file.value='';
+ st.img=null;
+ frame.classList.remove('has-image');
+ setCropMode(false);
+ enable(false);
+ redo.disabled=!st.originalImg;
+ setPreset();
+};
+
+customApply.onclick=applyCustom;
+
+file.onchange=e=>{
+ if(e.target.files[0]){
+   loadImage(e.target.files[0]);
+   file.value='';
+ }
+};
+
+$('uploadLabel').addEventListener('click',e=>{
+ if(e.target!==file){e.preventDefault();file.click()}
+});
+
+$('uploadLabel').addEventListener('dragover',e=>{
+ e.preventDefault();
+ $('uploadLabel').classList.add('dragover');
+});
+$('uploadLabel').addEventListener('dragleave',()=>{
+ $('uploadLabel').classList.remove('dragover');
+});
+$('uploadLabel').addEventListener('drop',e=>{
+ e.preventDefault();
+ $('uploadLabel').classList.remove('dragover');
+ if(e.dataTransfer.files[0])loadImage(e.dataTransfer.files[0]);
+});
+
+frame.ondragover=e=>{e.preventDefault();frame.classList.add('dragover')};
+frame.ondragleave=()=>frame.classList.remove('dragover');
+frame.ondrop=e=>{
+ e.preventDefault();
+ frame.classList.remove('dragover');
+ if(e.dataTransfer.files[0])loadImage(e.dataTransfer.files[0]);
+};
+
+cropper.addEventListener('pointerdown',startCropAction);
+cropper.addEventListener('pointermove',moveCrop);
+cropper.addEventListener('pointerup',endCropAction);
+cropper.addEventListener('pointercancel',endCropAction);
+cropper.addEventListener('lostpointercapture',endCropAction);
+startCropBtn.onclick=startCrop;
+applyCropBtn.onclick=applyCrop;
+resetCropBtn.onclick=resetCrop;
+cancelCropBtn.onclick=cancelCrop;
+
+c.onpointerdown=e=>{
+ if(!st.img || e.target.closest('.cropper'))return;
+ c.setPointerCapture(e.pointerId);
+ st.drag=true;st.lx=e.clientX;st.ly=e.clientY;
+};
+c.onpointermove=e=>{
+ if(!st.drag)return;
+ const r=c.getBoundingClientRect();
+ st.x+=(e.clientX-st.lx)*c.width/r.width;
+ st.y+=(e.clientY-st.ly)*c.height/r.height;
+ st.lx=e.clientX;st.ly=e.clientY;
+ draw();
+};
+c.onpointerup=()=>st.drag=false;
+c.onpointercancel=()=>st.drag=false;
+
+minus.onclick=()=>{if(st.img){st.scale=Math.max(.5,st.scale-.1);draw()}};
+plus.onclick=()=>{if(st.img){st.scale=Math.min(3,st.scale+.1);draw()}};
+left.onclick=()=>{if(st.img){st.rot-=90;draw()}};
+right.onclick=()=>{if(st.img){st.rot+=90;draw()}};
+reset.onclick=()=>{if(st.img){st.scale=1;st.rot=0;st.x=0;st.y=0;draw()}};
+
+function restoreOriginal(){
+ if(!st.originalImg)return;
+ st.img=st.originalImg;
+ st.scale=1;
+ st.rot=0;
+ st.x=0;
+ st.y=0;
+ st.blob=null;
+ frame.classList.add('has-image');
+ setCropMode(false);
+ initCrop();
+ draw();
+ enable(true);
+ showToast('Original raw image restored');
+}
+redo.onclick=restoreOriginal;
+
+range.oninput=e=>{st.scale=+e.target.value/100;draw()};
+mode.onchange=()=>{
+ st.qualityMode=mode.value;
+ qualityUI();
+ draw();
+};
+qr.oninput=e=>{
+ st.quality=+e.target.value/100;
+ qualityUI();
+ draw();
+};
+dl.onclick=()=>{
+ if(!st.blob)return;
+ const a=document.createElement('a');
+ a.href=URL.createObjectURL(st.blob);
+ a.download='photo-'+preset.value+'-'+st.w+'x'+st.h+'.jpg';
+ document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+
+setPreset();
+enable(false);
+qualityUI();
+
+const themeBtn=document.getElementById('themeBtn');
+const sunIcon=document.getElementById('sunIcon');
+const moonIcon=document.getElementById('moonIcon');
+
+function setTheme(mode){
+  const dark=mode==='dark';
+  document.documentElement.classList.toggle('dark',dark);
+  sunIcon.style.display=dark?'none':'block';
+  moonIcon.style.display=dark?'block':'none';
+  themeBtn.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');
+  localStorage.setItem('photo-theme',mode);
+}
+
+themeBtn.addEventListener('click',()=>{
+  const dark=document.documentElement.classList.contains('dark');
+  setTheme(dark?'light':'dark');
+});
+
+const savedPhotoTheme=localStorage.getItem('photo-theme');
+if(savedPhotoTheme){
+  setTheme(savedPhotoTheme);
+}else if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches){
+  setTheme('dark');
+}else{
+  setTheme('light');
+}
+</script>
+</body>
+</html>
