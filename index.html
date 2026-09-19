@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AI Based Service</title>
+    <title>ToolNest</title>
     <meta name="description" content="Quick access to useful online services and tools.">
     <meta name="theme-color" content="#2563eb">
 
     <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232563eb'/%3E%3Cpath d='M28 50h44M50 28v44' stroke='white' stroke-width='10' stroke-linecap='round'/%3E%3C/svg%3E">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='2' y='2' width='60' height='60' rx='14' fill='%232563EB'/%3E%3Cpath d='M17 31L32 18L47 31V43C47 45.2 45.2 47 43 47H21C18.8 47 17 45.2 17 43V31Z' fill='white'/%3E%3Cpath d='M12 32L32 15L52 32' fill='none' stroke='white' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Crect x='26' y='32' width='5' height='5' rx='1' fill='%232563EB'/%3E%3Crect x='33' y='32' width='5' height='5' rx='1' fill='%232563EB'/%3E%3Crect x='26' y='39' width='5' height='5' rx='1' fill='%232563EB'/%3E%3Crect x='33' y='39' width='5' height='5' rx='1' fill='%232563EB'/%3E%3Cpath d='M12 45C18 53 26 56 32 56C38 56 46 53 52 45' fill='none' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M17 49C22 53 27 54 32 54C37 54 42 53 47 49' fill='none' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M48 14V19M45.5 16.5H50.5' stroke='white' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M53 22V25M51.5 23.5H54.5' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
 
     <style>
         /* =========================
@@ -151,19 +151,22 @@
         }
 
         .logo-icon {
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #2563eb;
+            color: #ffffff;
 
-            display: grid;
-            place-items: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-            background: var(--primary);
-            color: white;
+            flex-shrink: 0;
+        }
 
-            border-radius: 11px;
-
-            font-weight: 800;
-            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+        .logo-icon svg {
+            width: 30px;
+            height: 30px;
         }
 
         .nav-right {
@@ -658,8 +661,78 @@
         <div class="container nav">
 
             <a href="#" class="logo">
-                <div class="logo-icon">A</div>
-                <span>AI Based Service</span>
+                <div class="logo-icon">
+                    <svg
+                    viewBox="0 0 64 64"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                >
+                    <!-- Background -->
+                    <rect
+                        x="2"
+                        y="2"
+                        width="60"
+                        height="60"
+                        rx="14"
+                        fill="#2563EB"
+                    />
+
+                    <!-- House -->
+                    <path
+                        d="M17 31L32 18L47 31V43C47 45.2 45.2 47 43 47H21C18.8 47 17 45.2 17 43V31Z"
+                        fill="white"
+                    />
+
+                    <!-- Roof -->
+                    <path
+                        d="M12 32L32 15L52 32"
+                        fill="none"
+                        stroke="white"
+                        stroke-width="5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+
+                    <!-- Window -->
+                    <rect x="26" y="32" width="5" height="5" rx="1" fill="#2563EB"/>
+                    <rect x="33" y="32" width="5" height="5" rx="1" fill="#2563EB"/>
+                    <rect x="26" y="39" width="5" height="5" rx="1" fill="#2563EB"/>
+                    <rect x="33" y="39" width="5" height="5" rx="1" fill="#2563EB"/>
+
+                    <!-- Nest / curved layers -->
+                    <path
+                        d="M12 45C18 53 26 56 32 56C38 56 46 53 52 45"
+                        fill="none"
+                        stroke="white"
+                        stroke-width="4"
+                        stroke-linecap="round"
+                    />
+
+                    <path
+                        d="M17 49C22 53 27 54 32 54C37 54 42 53 47 49"
+                        fill="none"
+                        stroke="white"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                    />
+
+                    <!-- Sparkle -->
+                    <path
+                        d="M48 14V19M45.5 16.5H50.5"
+                        stroke="white"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                    />
+
+                    <path
+                        d="M53 22V25M51.5 23.5H54.5"
+                        stroke="white"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                    />
+                </svg>
+</div>
+                <span>ToolNest</span>
             </a>
 
             <div class="nav-right">
@@ -1560,13 +1633,13 @@
         <div class="container footer-inner">
 
             <div>
-                © <span id="year"></span> AI Based Service
+                © <span id="year"></span> ToolNest
             </div>
 
             <div class="footer-links">
-                <a href="#">Privacy</a>
-                <a href="#">Terms</a>
-                <a href="#">Contact</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
+                <a href="contact.html">Contact</a>
             </div>
 
         </div>
