@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us - ToolNest</title>
+<meta name="description" content="Contact ToolNest for support, questions, suggestions, or service-related assistance.">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='2' y='2' width='60' height='60' rx='14' fill='%232563EB'/%3E%3Cpath d='M17 31L32 18L47 31V43C47 45.2 45.2 47 43 47H21C18.8 47 17 45.2 17 43V31Z' fill='white'/%3E%3Cpath d='M12 32L32 15L52 32' fill='none' stroke='white' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Crect x='26' y='32' width='5' height='5' rx='1' fill='%232563EB'/%3E%3Crect x='33' y='32' width='5' height='5' rx='1' fill='%232563EB'/%3E%3Crect x='26' y='39' width='5' height='5' rx='1' fill='%232563EB'/%3E%3Crect x='33' y='39' width='5' height='5' rx='1' fill='%232563EB'/%3E%3Cpath d='M12 45C18 53 26 56 32 56C38 56 46 53 52 45' fill='none' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M17 49C22 53 27 54 32 54C37 54 42 53 47 49' fill='none' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M48 14V19M45.5 16.5H50.5' stroke='white' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M53 22V25M51.5 23.5H54.5' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f5f7fb;--surface:#fff;--surface-2:#f8fafc;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--primary:#6366f1;--primary-hover:#4f46e5;--success:#16a34a;--danger:#ef4444;--shadow:0 20px 60px rgba(15,23,42,.10)}
+html.dark{--bg:#0b1120;--surface:#111827;--surface-2:#172033;--text:#f9fafb;--muted:#9ca3af;--border:#263247;--primary:#818cf8;--primary-hover:#6366f1;--success:#4ade80;--danger:#f87171;--shadow:0 20px 60px rgba(0,0,0,.35)}
+body{min-height:100vh;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;transition:.25s}
+button,input,textarea{font:inherit}button{cursor:pointer}
+.header{width:100%;border-bottom:1px solid var(--border);background:var(--surface)}
+.header-inner{max-width:1100px;margin:auto;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text)}
+.brand-icon{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;background:var(--primary);overflow:hidden}
+.brand-icon svg{width:42px;height:42px}
+.brand-text h1{font-size:18px;line-height:1.1;font-weight:750}.brand-text span{display:block;margin-top:3px;color:var(--muted);font-size:12px}
+.theme-btn{width:42px;height:42px;border:1px solid var(--border);border-radius:11px;display:grid;place-items:center;color:var(--text);background:var(--surface);transition:.2s}
+.theme-btn:hover{background:var(--surface-2)}.theme-btn svg{width:20px;height:20px}
+main{width:100%;padding:45px 20px 70px}.container{max-width:1000px;margin:auto}
+.hero{text-align:center;margin-bottom:25px}.hero h2{font-size:clamp(30px,5vw,46px);line-height:1.1;letter-spacing:-1.5px;margin-bottom:12px}.hero p{max-width:720px;margin:auto;color:var(--muted);font-size:14px;line-height:1.6}
+.contact-card{background:var(--surface);border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow);padding:32px}
+.form-header{margin-bottom:25px}.form-header h3{font-size:20px;margin-bottom:6px}.form-header p{color:var(--muted);font-size:13px;line-height:1.6}
+.contact-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.form-group{min-width:0}.form-group.full{grid-column:1/-1}
+.form-group label{display:block;margin-bottom:7px;font-size:13px;font-weight:650}.form-group label span{color:var(--danger)}
+.form-control{width:100%;min-height:46px;padding:10px 13px;border:1px solid var(--border);border-radius:12px;outline:none;color:var(--text);background:var(--surface-2);font-size:14px;transition:.2s}
+.form-control::placeholder{color:var(--muted)}.form-control:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(99,102,241,.12);background:var(--surface)}
+textarea.form-control{min-height:145px;resize:vertical;line-height:1.6}
+.form-actions{grid-column:1/-1;display:flex;align-items:center;flex-wrap:wrap;gap:15px;margin-top:2px}
+.submit-btn{min-height:46px;padding:0 20px;border:1px solid var(--primary);border-radius:999px;background:var(--primary);color:#fff;font-size:14px;font-weight:650;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+.submit-btn:hover{background:var(--primary-hover);border-color:var(--primary-hover);transform:translateY(-1px)}.submit-btn:active{transform:scale(.98)}
+.form-note{color:var(--muted);font-size:12px;line-height:1.5}.form-note i{margin-right:4px}
+.privacy-note{margin-top:25px;padding:15px 17px;border:1px solid rgba(22,163,74,.22);background:rgba(22,163,74,.07);border-radius:14px;color:var(--muted);font-size:12px;line-height:1.6}.privacy-note strong{color:var(--success)}
+footer{padding:25px 20px;text-align:center;color:var(--muted);font-size:12px}
+@media(max-width:700px){.header-inner{padding:14px 15px}.brand-text span{display:none}main{padding:35px 15px 50px}.contact-card{padding:21px;border-radius:18px}.contact-form{grid-template-columns:1fr}.form-group.full,.form-actions{grid-column:1}.form-actions{align-items:flex-start;flex-direction:column}.submit-btn{width:100%}}
+</style>
+</head>
+<body>
+
+<header class="header">
+<div class="header-inner">
+<a href="index.html" class="brand" aria-label="ToolNest home">
+<div class="brand-icon">
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<rect x="2" y="2" width="60" height="60" rx="14" fill="#2563EB"/>
+<path d="M17 31L32 18L47 31V43C47 45.2 45.2 47 43 47H21C18.8 47 17 45.2 17 43V31Z" fill="white"/>
+<path d="M12 32L32 15L52 32" fill="none" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="26" y="32" width="5" height="5" rx="1" fill="#2563EB"/><rect x="33" y="32" width="5" height="5" rx="1" fill="#2563EB"/>
+<rect x="26" y="39" width="5" height="5" rx="1" fill="#2563EB"/><rect x="33" y="39" width="5" height="5" rx="1" fill="#2563EB"/>
+<path d="M12 45C18 53 26 56 32 56C38 56 46 53 52 45" fill="none" stroke="white" stroke-width="4" stroke-linecap="round"/>
+<path d="M17 49C22 53 27 54 32 54C37 54 42 53 47 49" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+<path d="M48 14V19M45.5 16.5H50.5" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M53 22V25M51.5 23.5H54.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+</svg>
+</div>
+<div class="brand-text"><h1>ToolNest</h1><span>Useful Tools. One Nest.</span></div>
+</a>
+
+<button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle dark mode">
+<svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+</svg>
+<svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none;">
+<path d="M21 12.8A8.5 8.5 0 1 1 11.2 3A6.7 6.7 0 0 0 21 12.8Z"/>
+</svg>
+</button>
+</div>
+</header>
+
+<main>
+<div class="container">
+<section class="hero">
+<h2>Contact Us</h2>
+<p>Have a question, suggestion, problem, or need help with one of our services? Send us a message.</p>
+</section>
+
+<div class="contact-card">
+<div class="form-header">
+<h3>Send Us a Message</h3>
+<p>Fill out the form below. On desktop, your message will open in Gmail. On mobile, your default email application will be opened with the message prepared.</p>
+</div>
+
+<form id="contactForm" novalidate>
+<div class="contact-form">
+
+<div class="form-group">
+<label for="name">Name <span>*</span></label>
+<input id="name" name="name" class="form-control" type="text" required maxlength="100" autocomplete="name" placeholder="Your name">
+</div>
+
+<div class="form-group">
+<label for="phone">Mobile Number <span>*</span></label>
+<input id="phone" name="phone" class="form-control" type="tel" required maxlength="25" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX">
+</div>
+
+<div class="form-group full">
+<label for="email">Email <span>*</span></label>
+<input id="email" name="email" class="form-control" type="email" required maxlength="150" autocomplete="email" placeholder="Your email address">
+</div>
+
+<div class="form-group full">
+<label for="subject">Your Complaints/Suggestions</label>
+<input id="subject" name="subject" class="form-control" type="text" maxlength="150" placeholder="e.g. NID Generator not working">
+</div>
+
+<div class="form-group full">
+<label for="message">Message <span>*</span></label>
+<textarea id="message" name="message" class="form-control" required maxlength="3000" rows="5" placeholder="Please briefly describe your complaints/suggestions..."></textarea>
+</div>
+
+<div class="form-actions">
+<button class="submit-btn" type="submit">Send Message <i class="bi bi-send ms-1"></i></button>
+<small class="form-note"><i class="bi bi-lock"></i> Your information will be kept private.</small>
+</div>
+
+</div>
+</form>
+
+<div class="privacy-note">
+<strong>Privacy:</strong> ToolNest's browser-based tools are designed to process supported files locally in your browser. For this contact form, information you enter is passed to your selected email application or Gmail compose window for sending.
+</div>
+</div>
+</div>
+</main>
+
+<footer>ToolNest · Useful Tools. One Nest.</footer>
+
+<script>
+document.getElementById("contactForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const subject = document.getElementById("subject").value.trim();
+    const message = document.getElementById("message").value.trim();
+
+    if (!name) {
+        alert("Please enter your name.");
+        document.getElementById("name").focus();
+        return;
+    }
+
+    if (!phone) {
+        alert("Please enter your mobile number.");
+        document.getElementById("phone").focus();
+        return;
+    }
+
+    if (!email) {
+        alert("Please enter your email address.");
+        document.getElementById("email").focus();
+        return;
+    }
+
+    if (!message) {
+        alert("Please enter your message.");
+        document.getElementById("message").focus();
+        return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(email)) {
+        alert("Please enter a valid email address.");
+        document.getElementById("email").focus();
+        return;
+    }
+
+    const receiverEmail = "mahaburhossain8@gmail.com";
+
+    const mailSubject = "New Contact Message - " + name;
+
+    const mailBody =
+`A new contact message has been received.
+
+========================================
+
+Name:
+${name}
+
+Mobile Number:
+${phone}
+
+Email:
+${email}
+
+Your Requirement:
+${subject || "Not specified"}
+
+Message:
+${message}
+
+========================================
+
+This message was sent from the ToolNest Website Contact Form.`;
+
+    const isMobile =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
+        .test(navigator.userAgent);
+
+    if (isMobile) {
+        const mailtoURL =
+            "mailto:" +
+            receiverEmail +
+            "?subject=" +
+            encodeURIComponent(mailSubject) +
+            "&body=" +
+            encodeURIComponent(mailBody);
+
+        window.location.href = mailtoURL;
+        return;
+    }
+
+    const params = new URLSearchParams();
+
+    params.set("view", "cm");
+    params.set("fs", "1");
+    params.set("to", receiverEmail);
+    params.set("su", mailSubject);
+    params.set("body", mailBody);
+
+    const gmailURL =
+        "https://mail.google.com/mail/u/0/?" +
+        params.toString();
+
+    window.open(gmailURL, "_blank");
+});
+
+
+/* ToolNest Dark / Light Mode */
+(function () {
+    const themeBtn = document.getElementById("themeBtn");
+    const sunIcon = document.getElementById("sunIcon");
+    const moonIcon = document.getElementById("moonIcon");
+
+    if (!themeBtn || !sunIcon || !moonIcon) return;
+
+    function setTheme(theme) {
+        const dark = theme === "dark";
+
+        document.documentElement.classList.toggle("dark", dark);
+
+        sunIcon.style.display = dark ? "none" : "block";
+        moonIcon.style.display = dark ? "block" : "none";
+
+        themeBtn.setAttribute(
+            "aria-label",
+            dark ? "Switch to light mode" : "Switch to dark mode"
+        );
+
+        try {
+            localStorage.setItem(
+                "toolnest-theme",
+                dark ? "dark" : "light"
+            );
+        } catch (e) {}
+    }
+
+    themeBtn.addEventListener("click", function () {
+        const dark =
+            document.documentElement.classList.contains("dark");
+
+        setTheme(dark ? "light" : "dark");
+    });
+
+    let saved = null;
+
+    try {
+        saved = localStorage.getItem("toolnest-theme");
+    } catch (e) {}
+
+    if (saved === "dark" || saved === "light") {
+        setTheme(saved);
+    } else {
+        setTheme(
+            window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light"
+        );
+    }
+})();
+</script>
+
+</body>
+</html>
