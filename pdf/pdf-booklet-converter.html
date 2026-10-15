@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF Booklet Converter</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Cpath d='M13 16C21 14 27 16 32 20V50C26 46 20 45 13 47Z' fill='white'/%3E%3Cpath d='M51 16C43 14 37 16 32 20V50C38 46 44 45 51 47Z' fill='%23dbeafe'/%3E%3Cpath d='M32 20V50' stroke='%232563eb' stroke-width='2'/%3E%3C/svg%3E">
+<meta name="description" content="Create print-ready 16-page and 32-page booklet signatures from PDF files.">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+ --bg:#f5f7fb;--surface:#fff;--surface2:#f8fafc;--text:#111827;--muted:#6b7280;
+ --border:#e5e7eb;--primary:#6366f1;--primary2:#4f46e5;--danger:#ef4444;
+ --shadow:0 20px 60px rgba(15,23,42,.10);
+}
+html.dark{--bg:#0b1120;--surface:#111827;--surface2:#172033;--text:#f9fafb;--muted:#9ca3af;
+ --border:#263247;--primary:#818cf8;--primary2:#6366f1;--danger:#f87171;
+ --shadow:0 20px 60px rgba(0,0,0,.35)}
+body{min-height:100vh;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;transition:.25s}
+button,input,select{font:inherit}button{cursor:pointer}
+.header{border-bottom:1px solid var(--border);background:var(--surface)}
+.header-inner{max-width:1180px;margin:auto;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.brand{display:flex;align-items:center;gap:12px;color:var(--text);text-decoration:none}
+.brand-icon{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--primary);color:#fff}
+.brand-icon svg{width:25px;height:25px}.brand-text h1{font-size:18px;line-height:1.1}.brand-text span{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+.theme-btn{width:42px;height:42px;border:1px solid var(--border);border-radius:11px;background:var(--surface);color:var(--text);display:grid;place-items:center}
+.theme-btn:hover{background:var(--surface2)}.theme-btn svg{width:20px;height:20px}
+main{padding:38px 18px 60px}.container{max-width:1180px;margin:auto}
+.hero{text-align:center;margin-bottom:18px}.hero h2{font-size:clamp(30px,5vw,46px);letter-spacing:-1.5px;line-height:1.05;margin-bottom:10px}
+.hero p{color:var(--muted);font-size:14px;line-height:1.5}
+.app{background:var(--surface);border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow);padding:22px;display:grid;gap:20px}
+.panel-title{margin-bottom:14px}.panel-title h3{font-size:18px;margin-bottom:4px}.panel-title p{font-size:13px;color:var(--muted)}
+.drop{border:2px dashed var(--border);border-radius:16px;padding:30px 18px;text-align:center;background:var(--surface2);cursor:pointer;transition:.2s}
+.drop:hover,.drop.drag{border-color:var(--primary);background:rgba(99,102,241,.07)}
+.drop-icon{width:56px;height:56px;border-radius:15px;margin:0 auto 12px;display:grid;place-items:center;background:rgba(99,102,241,.12);color:var(--primary)}
+.drop-icon svg{width:28px;height:28px}.drop strong{display:block;font-size:16px;margin-bottom:5px}.drop span{font-size:13px;color:var(--muted)}
+input[type=file]{
+  position:absolute;
+  width:1px;
+  height:1px;
+  opacity:0;
+  pointer-events:none;
+}
+.drop{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:190px;
+  width:100%;
+  overflow:hidden;
+}
+.drop-icon{flex:0 0 auto}
+.drop strong{position:relative;z-index:1}
+.drop span{position:relative;z-index:1}
+.controls{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:17px}
+.field label{display:block;font-size:12px;font-weight:700;margin-bottom:7px}
+input[type=number],select{width:100%;min-height:43px;padding:9px 11px;color:var(--text);background:var(--surface2);border:1px solid var(--border);border-radius:11px;outline:none}
+input[type=number]:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+.options{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}
+.check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text)}.check input{accent-color:var(--primary)}
+.help{font-size:12px;color:var(--muted);line-height:1.5;margin-top:12px}
+.buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}
+button.action{min-height:44px;padding:0 15px;border-radius:11px;border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:13px;font-weight:700;background:var(--surface);color:var(--text)}
+button.action:hover{background:var(--surface2)}button.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+button.primary:hover{background:var(--primary2);border-color:var(--primary2)}button:disabled{opacity:.45;cursor:not-allowed}
+button svg{width:18px;height:18px}.status{font-size:13px;color:var(--muted);min-height:20px;margin-top:12px}
+.preview-panel{padding:18px;background:var(--surface2);border:1px solid var(--border);border-radius:18px}
+.summary{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.pill{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:6px 10px;font-size:11px;color:var(--muted)}
+.grid{display:none}
+.preview{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:11px}.preview h3{font-size:13px;color:var(--muted);margin-bottom:8px}
+.sheet{display:none}
+.legend{font-size:11px;color:var(--muted);margin-top:7px;text-align:center}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+.loader{width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:850px){.controls,.options{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.header-inner{padding:13px 15px}.brand-text span{display:none}.controls,.options{grid-template-columns:1fr}.buttons{flex-direction:column}.action{width:100%}.app{padding:16px}}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
+</style>
+</head>
+<body>
+<header class="header">
+ <div class="header-inner">
+  <a class="brand" href="#">
+   <div class="brand-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M6 2h9l4 4v16H6z"/><path d="M15 2v5h5"/><path d="M9 13h6M9 17h6"/><path d="M3 7v13a2 2 0 0 0 2 2"/>
+    </svg>
+   </div>
+   <div class="brand-text"><h1>PDF Booklet Converter</h1><span>Print-ready booklet imposition</span></div>
+  </a>
+  <button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle dark mode">
+   <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+   <svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3A6.7 6.7 0 0 0 21 12.8Z"/></svg>
+  </button>
+ </div>
+</header>
+
+<main><div class="container">
+<section class="hero">
+ <h2>PDF → Booklet</h2>
+ <p>Upload a normal PDF and automatically rearrange its pages for duplex booklet printing.</p>
+</section>
+
+<section class="app">
+ <div>
+  <div class="panel-title"><h3>1. Upload PDF</h3><p>Your original PDF is processed locally in the browser.</p></div>
+  <label id="drop" class="drop" for="file">
+   <div class="drop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/><path d="M5 15v4h14v-4"/></svg></div>
+   <strong>Upload PDF</strong><span>Drop a PDF here or click to choose</span>
+   <input id="file" type="file" accept="application/pdf,.pdf">
+  </label>
+
+  <div class="controls">
+   <div class="field"><label for="signature">Booklet format</label><select id="signature"><option value="16">16 pages · 4 sheets × 4</option><option value="32">32 pages · 8 sheets × 4</option><option value="auto">Auto — one continuous booklet</option></select></div>
+   <div class="field"><label for="paper">Paper size</label><select id="paper"><option value="a4">A4</option><option value="letter">Letter</option></select></div>
+   <div class="field"><label for="orientation">Orientation</label><select id="orientation"><option value="landscape">Landscape</option><option value="portrait">Portrait</option></select></div>
+   <div class="field"><label for="dpi">Render quality</label><select id="dpi"><option value="150">150 DPI — Fast</option><option value="200">200 DPI — Balanced</option><option value="300" selected>300 DPI — Print</option></select></div>
+  </div>
+
+  <div class="controls">
+   <div class="field"><label for="margin">Outer margin (mm)</label><input id="margin" type="number" min="0" max="30" step="1" value="8"></div>
+   <div class="field"><label for="gutter">Center gutter (mm)</label><input id="gutter" type="number" min="0" max="20" step="0.5" value="3"></div>
+   <div class="field"><label for="scale">Page scaling</label><select id="scale"><option value="contain">Fit entire page</option><option value="fill">Fill panel</option></select></div>
+   <div class="field"><label for="binding">Binding</label><select id="binding"><option value="left">Left / Western</option><option value="right">Right / RTL</option></select></div>
+  </div>
+
+  <div class="options">
+   <label class="check"><input id="crop" type="checkbox"> Add crop marks</label>
+   <label class="check"><input id="foldline" type="checkbox"> Add center fold line</label>
+   <label class="check"><input id="labels" type="checkbox"> Show page numbers</label>
+   <label class="check"><input id="blank" type="checkbox" checked> Add blank pages at the end</label>
+   <label class="check"><input id="jpeg" type="checkbox"> Use JPEG compression</label>
+  </div>
+
+  <div class="help"><b>How it works:</b> One physical sheet contains 4 document pages: 2 pages on the front + 2 pages on the back. Therefore 16-page format = 4 sheets × 4 pages = 16 pages, and 32-page format = 8 sheets × 4 pages = 32 pages. The converter automatically imposes the page order for folding and stacking. The optional center fold line adds a guide exactly in the middle of the sheet. If blank-page padding is enabled, blank logical pages are always after the final real PDF page; they are never inserted between real pages.</div>
+
+  <div class="buttons">
+   <button id="process" class="action primary" disabled>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5"/><path d="M9 12h6"/><path d="m13 10 2 2-2 2"/></svg> Prepare Booklet
+   </button>
+  </div>
+  <div id="status" class="status"></div>
+ </div>
+
+ <div class="preview-panel">
+  <div class="panel-title">
+    <h3>2. Booklet output</h3>
+    <p>No page previews are generated. The booklet is prepared directly for download.</p>
+  </div>
+  <div id="summary" class="summary"></div>
+  <div class="buttons">
+   <button id="save" class="action primary" disabled>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg> Download Booklet PDF
+   </button>
+   <button id="print" class="action" disabled>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5h-2"/><path d="M6 14h12v7H6z"/></svg> Direct Print
+   </button>
+  </div>
+ </div>
+</section>
+</div></main>
+<footer>PDF Booklet Converter · Local browser processing</footer>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+const $ = id => document.getElementById(id);
+const fileInput = $("file");
+const drop = $("drop");
+const processBtn = $("process");
+const saveBtn = $("save");
+const printBtn = $("print");
+const statusEl = $("status");
+const summary = $("summary");
+
+let selectedFile = null;
+let sourcePdf = null;
+let bookletSheets = [];
+let sourcePageCount = 0;
+let finalPageCount = 0;
+
+
+/* ---------- Upload ---------- */
+fileInput.addEventListener("change", e => selectFile(e.target.files[0]));
+
+["dragenter", "dragover"].forEach(ev =>
+  drop.addEventListener(ev, e => {
+    e.preventDefault();
+    drop.classList.add("drag");
+  })
+);
+["dragleave", "drop"].forEach(ev =>
+  drop.addEventListener(ev, e => {
+    e.preventDefault();
+    drop.classList.remove("drag");
+  })
+);
+drop.addEventListener("drop", e => selectFile(e.dataTransfer.files[0]));
+
+function selectFile(file) {
+  if (!file) return;
+
+  if (file.type !== "application/pdf" && !/\.pdf$/i.test(file.name)) {
+    statusEl.textContent = "Please choose a PDF file.";
+    return;
+  }
+
+  selectedFile = file;
+  sourcePdf = null;
+  clearOutput();
+
+  processBtn.disabled = false;
+  saveBtn.disabled = true;
+  printBtn.disabled = true;
+
+  statusEl.textContent = `Selected: ${file.name}`;
+}
+
+/* ---------- Utilities ---------- */
+function clearOutput() {
+  bookletSheets = [];
+  summary.innerHTML = "";
+}
+
+function yieldToBrowser() {
+  return new Promise(resolve => setTimeout(resolve, 0));
+}
+
+function getPaperSize() {
+  const paper = $("paper").value;
+  const orientation = $("orientation").value;
+
+  let w = paper === "a4" ? 210 : 215.9;
+  let h = paper === "a4" ? 297 : 279.4;
+
+  if (orientation === "landscape") [w, h] = [h, w];
+  return { w, h };
+}
+
+function createWhiteCanvas(w, h) {
+  const c = document.createElement("canvas");
+  c.width = Math.max(1, Math.round(w));
+  c.height = Math.max(1, Math.round(h));
+
+  const ctx = c.getContext("2d", { alpha: false });
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, c.width, c.height);
+  return c;
+}
+
+function fitRect(sw, sh, x, y, w, h, mode) {
+  const ratio = mode === "fill"
+    ? Math.max(w / sw, h / sh)
+    : Math.min(w / sw, h / sh);
+
+  const dw = sw * ratio;
+  const dh = sh * ratio;
+
+  return {
+    x: x + (w - dw) / 2,
+    y: y + (h - dh) / 2,
+    w: dw,
+    h: dh
+  };
+}
+
+/*
+  Correct booklet imposition.
+
+  For a signature of N pages:
+    Sheet 1 front = N, 1
+    Sheet 1 back  = 2, N-1
+    Sheet 2 front = N-2, 3
+    Sheet 2 back  = 4, N-3
+    ...
+
+  The returned values are zero-based indexes.
+*/
+function getBookletPair(n, sheetIndex, binding, side) {
+  const k = sheetIndex * 2;
+
+  if (binding === "left") {
+    if (side === "front") {
+      return [n - 1 - k, k];
+    }
+    return [k + 1, n - 2 - k];
+  }
+
+  /* Right-to-left / RTL binding */
+  if (side === "front") {
+    return [k, n - 1 - k];
+  }
+  return [n - 2 - k, k + 1];
+}
+
+function getSignatureRanges(total, mode, addBlank) {
+  /*
+    IMPORTANT:
+    Blank pages are NEVER inserted between real pages.
+    They are always logical pages AFTER the last source page.
+
+    16-page format:
+      1–16, 17–32, 33–48, ...
+
+    32-page format:
+      1–32, 33–64, 65–96, ...
+
+    If the final signature is incomplete and "Add blank pages at the end"
+    is enabled, only the final signature is padded at its END.
+  */
+  let signatureSize;
+
+  if (mode === "auto") {
+    /*
+      Auto uses the smallest complete booklet signature needed while still
+      keeping blanks at the very end. For the user's main formats, use 16.
+    */
+    signatureSize = 16;
+  } else {
+    signatureSize = Number(mode);
+  }
+
+  if (!Number.isFinite(signatureSize) || signatureSize < 4) {
+    signatureSize = 16;
+  }
+
+  const signatureCount = addBlank
+    ? Math.ceil(total / signatureSize)
+    : Math.ceil(total / signatureSize);
+
+  const ranges = [];
+
+  for (let s = 0; s < signatureCount; s++) {
+    const start = s * signatureSize;
+    const remaining = Math.max(0, total - start);
+
+    ranges.push({
+      start,
+      count: Math.min(signatureSize, remaining)
+    });
+  }
+
+  /*
+    For a completely empty source this avoids creating an empty signature.
+  */
+  return ranges.filter(r => r.count > 0);
+}
+async function renderPdfPage(pageNumber, dpi) {
+  const page = await sourcePdf.getPage(pageNumber);
+  const viewport = page.getViewport({ scale: dpi / 72 });
+
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.ceil(viewport.width);
+  canvas.height = Math.ceil(viewport.height);
+
+  const ctx = canvas.getContext("2d", { alpha: false });
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  await page.render({
+    canvasContext: ctx,
+    viewport
+  }).promise;
+
+  return canvas;
+}
+
+function drawCropMarks(ctx, W, H, marginPx) {
+  const length = Math.min(22, Math.max(8, marginPx * 0.7));
+  const lineWidth = Math.max(1, W / 2500);
+
+  ctx.save();
+  ctx.strokeStyle = "#555";
+  ctx.lineWidth = lineWidth;
+  ctx.beginPath();
+
+  const marks = [
+    [marginPx, marginPx, length, 0],
+    [marginPx, marginPx, 0, length],
+    [W - marginPx, marginPx, -length, 0],
+    [W - marginPx, marginPx, 0, length],
+
+    [marginPx, H - marginPx, length, 0],
+    [marginPx, H - marginPx, 0, -length],
+    [W - marginPx, H - marginPx, -length, 0],
+    [W - marginPx, H - marginPx, 0, -length]
+  ];
+
+  marks.forEach(m => {
+    ctx.moveTo(m[0], m[1]);
+    ctx.lineTo(m[0] + m[2], m[1] + m[3]);
+  });
+
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawCenterFoldLine(ctx, W, H, marginPx, gutterPx) {
+  /*
+    Draw a thin vertical guide exactly through the physical sheet center.
+    It is placed through the gutter between the two imposed pages.
+  */
+  const x = W / 2;
+  const lineWidth = Math.max(1, W / 3000);
+
+  ctx.save();
+  ctx.strokeStyle = "#777";
+  ctx.lineWidth = lineWidth;
+  ctx.setLineDash([10, 8]);
+  ctx.beginPath();
+  ctx.moveTo(x, marginPx);
+  ctx.lineTo(x, H - marginPx);
+  ctx.stroke();
+
+  /* Small solid marks at the top and bottom make the fold position clear. */
+  ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.moveTo(x, Math.max(0, marginPx - 8));
+  ctx.lineTo(x, marginPx + 8);
+  ctx.moveTo(x, H - marginPx - 8);
+  ctx.lineTo(x, Math.min(H, H - marginPx + 8));
+  ctx.stroke();
+  ctx.restore();
+}
+
+/*
+  Builds one physical side and immediately compresses it to a Blob.
+  The large canvas is released after compression, preventing the
+  browser from keeping dozens of 300-DPI A4 canvases in RAM.
+*/
+async function makeSheetBlob(pageCanvases, pageIndexes, side, sheetNumber, signatureNumber) {
+  const size = getPaperSize();
+  const dpi = Math.max(100, Number($("dpi").value) || 300);
+
+  const W = Math.round(size.w * dpi / 25.4);
+  const H = Math.round(size.h * dpi / 25.4);
+
+  const canvas = createWhiteCanvas(W, H);
+  const ctx = canvas.getContext("2d", { alpha: false });
+
+  const marginMm = Math.max(0, Number($("margin").value) || 0);
+  const gutterMm = Math.max(0, Number($("gutter").value) || 0);
+
+  const margin = marginMm * dpi / 25.4;
+  const gutter = gutterMm * dpi / 25.4;
+
+  const innerW = W - margin * 2;
+  const innerH = H - margin * 2;
+  const panelW = Math.max(1, (innerW - gutter) / 2);
+  const fitMode = $("scale").value;
+
+  for (let col = 0; col < 2; col++) {
+    const pageIndex = pageIndexes[col];
+    const src = pageCanvases[col];
+
+    if (!src || pageIndex < 0) continue;
+
+    const rect = fitRect(
+      src.width,
+      src.height,
+      margin + col * (panelW + gutter),
+      margin,
+      panelW,
+      innerH,
+      fitMode
+    );
+
+    ctx.drawImage(src, rect.x, rect.y, rect.w, rect.h);
+
+    if ($("labels").checked) {
+      ctx.save();
+      ctx.fillStyle = "rgba(0,0,0,.65)";
+      ctx.font = `${Math.max(12, Math.round(dpi / 18))}px sans-serif`;
+      ctx.textAlign = "center";
+      ctx.fillText(
+        String(pageIndex + 1),
+        margin + col * (panelW + gutter) + panelW / 2,
+        H - Math.max(8, margin / 2)
+      );
+      ctx.restore();
+    }
+  }
+
+  if ($("crop").checked) {
+    drawCropMarks(ctx, W, H, margin);
+  }
+
+  if ($("foldline").checked) {
+    drawCenterFoldLine(ctx, W, H, margin, gutter);
+  }
+
+  /*
+    JPEG is used only as the browser's internal cache. This keeps
+    memory manageable even for 32-page / 300-DPI documents.
+    PNG export remains available when Save PDF is clicked.
+  */
+  const blob = await new Promise(resolve => {
+    canvas.toBlob(resolve, "image/jpeg", 0.96);
+  });
+
+  canvas.width = 1;
+  canvas.height = 1;
+
+  if (!blob) throw new Error("Browser could not create the temporary sheet image.");
+
+  return {
+    blob,
+    pageWmm: size.w,
+    pageHmm: size.h,
+    side,
+    sheetNumber,
+    signatureNumber,
+    pageIndexes: [...pageIndexes]
+  };
+}
+
+function addSummary(extra) {
+  const items = [
+    `Source: ${sourcePageCount} pages`,
+    `Output: ${finalPageCount} logical pages`,
+    `Physical sheets: ${bookletSheets.length / 2}`,
+    `Paper: ${$("paper").value.toUpperCase()}`,
+    `Orientation: ${$("orientation").value}`,
+    `DPI: ${$("dpi").value}`,
+    ...extra
+  ];
+
+  summary.innerHTML = items
+    .map(x => `<span class="pill">${x}</span>`)
+    .join("");
+}
+
+/* ---------- Main processing ---------- */
+async function processBooklet() {
+  if (!selectedFile) return;
+
+  processBtn.disabled = true;
+  saveBtn.disabled = true;
+  printBtn.disabled = true;
+  clearOutput();
+
+  try {
+    statusEl.textContent = "Loading PDF…";
+
+    sourcePdf = await pdfjsLib.getDocument({
+      data: await selectedFile.arrayBuffer()
+    }).promise;
+
+    sourcePageCount = sourcePdf.numPages;
+
+    const mode = $("signature").value;
+    const addBlank = $("blank").checked;
+    const binding = $("binding").value;
+    const dpi = Math.max(100, Number($("dpi").value) || 300);
+
+    const signatures = getSignatureRanges(
+      sourcePageCount,
+      mode,
+      addBlank
+    );
+
+    const signatureSize = $("signature").value === "32" ? 32 : 16;
+    const paddedPageCount = $("blank").checked
+      ? Math.ceil(sourcePageCount / signatureSize) * signatureSize
+      : sourcePageCount;
+
+    finalPageCount = paddedPageCount;
+
+    let physicalSheetNumber = 0;
+
+    for (let sigNo = 0; sigNo < signatures.length; sigNo++) {
+      const sig = signatures[sigNo];
+
+      /*
+        If blank-page insertion is OFF and the final signature is not
+        a multiple of four, add temporary blanks only for imposition.
+        This avoids broken/incomplete booklet sides.
+      */
+      /*
+        The logical signature is always 16 or 32 pages.
+        Any missing pages exist only AFTER sig.start + sig.count.
+        They are represented as -1 blanks by the mapping below.
+      */
+      const usableCount = sig.count === 0
+        ? 0
+        : Math.ceil(sig.count / 4) * 4;
+
+      for (let sheetIndex = 0; sheetIndex < usableCount / 4; sheetIndex++) {
+        physicalSheetNumber++;
+
+        statusEl.textContent =
+          `Creating sheet ${physicalSheetNumber}… ` +
+          `(${Math.round((physicalSheetNumber / (finalPageCount / 4)) * 100)}%)`;
+
+        const localFront = getBookletPair(
+          usableCount,
+          sheetIndex,
+          binding,
+          "front"
+        );
+
+        const localBack = getBookletPair(
+          usableCount,
+          sheetIndex,
+          binding,
+          "back"
+        );
+
+        /*
+          Convert local signature indexes to global source indexes.
+          A value outside the real source range becomes -1 = blank.
+        */
+        const frontGlobal = localFront.map(i => {
+          const global = sig.start + i;
+
+          // -1 means a blank page. Blanks can ONLY be after the last
+          // real source page; real pages are never displaced by blanks.
+          return (global >= 0 && global < sourcePageCount) ? global : -1;
+        });
+
+        const backGlobal = localBack.map(i => {
+          const global = sig.start + i;
+          return (global >= 0 && global < sourcePageCount) ? global : -1;
+        });
+
+        /*
+          Every source page is rendered only when needed.
+          This is the key change that prevents the "Page Unresponsive"
+          problem caused by keeping 16/32 full-size canvases in memory.
+        */
+        const needed = [...new Set([...frontGlobal, ...backGlobal].filter(i => i >= 0))];
+        const cache = new Map();
+
+        for (const globalIndex of needed) {
+          statusEl.textContent =
+            `Rendering source page ${globalIndex + 1} of ${sourcePageCount}…`;
+
+          cache.set(
+            globalIndex,
+            await renderPdfPage(globalIndex + 1, dpi)
+          );
+
+          await yieldToBrowser();
+        }
+
+        const frontCanvases = frontGlobal.map(i => i >= 0 ? cache.get(i) : null);
+        const backCanvases = backGlobal.map(i => i >= 0 ? cache.get(i) : null);
+
+        const frontSheet = await makeSheetBlob(
+          frontCanvases,
+          frontGlobal,
+          "Front",
+          physicalSheetNumber,
+          sigNo + 1
+        );
+
+        /*
+          Release front page canvases before building the back side.
+        */
+        frontCanvases.forEach(c => {
+          if (c) {
+            c.width = 1;
+            c.height = 1;
+          }
+        });
+
+        const backSheet = await makeSheetBlob(
+          backCanvases,
+          backGlobal,
+          "Back",
+          physicalSheetNumber,
+          sigNo + 1
+        );
+
+        backCanvases.forEach(c => {
+          if (c) {
+            c.width = 1;
+            c.height = 1;
+          }
+        });
+
+        bookletSheets.push(frontSheet, backSheet);
+
+        await yieldToBrowser();
+      }
+    }
+
+    addSummary([
+      `Binding: ${$("binding").value === "left" ? "Left" : "Right / RTL"}`,
+      `Mode: ${mode === "auto" ? "Auto" : mode + "-page signature"}`
+    ]);
+
+    statusEl.textContent =
+      `Done — ${bookletSheets.length} printable sides created ` +
+      `(${bookletSheets.length / 2} physical sheet(s)).`;
+
+    saveBtn.disabled = false;
+    printBtn.disabled = false;
+
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent =
+      "Could not create booklet: " + (err && err.message ? err.message : err);
+  } finally {
+    processBtn.disabled = false;
+  }
+}
+
+processBtn.addEventListener("click", processBooklet);
+
+/* ---------- Save PDF ---------- */
+async function blobToDataURL(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+saveBtn.addEventListener("click", async () => {
+  if (!bookletSheets.length) return;
+
+  saveBtn.disabled = true;
+  const oldHTML = saveBtn.innerHTML;
+  saveBtn.innerHTML = '<span class="loader"></span> Creating PDF…';
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const first = bookletSheets[0];
+
+    const doc = new jsPDF({
+      orientation: $("orientation").value,
+      unit: "mm",
+      format: [first.pageWmm, first.pageHmm],
+      compress: true
+    });
+
+    const useJPEG = $("jpeg").checked;
+
+    for (let i = 0; i < bookletSheets.length; i++) {
+      statusEl.textContent =
+        `Building PDF page ${i + 1} of ${bookletSheets.length}…`;
+
+      const pg = bookletSheets[i];
+
+      if (i > 0) {
+        doc.addPage(
+          [pg.pageWmm, pg.pageHmm],
+          $("orientation").value
+        );
+      }
+
+      /*
+        The cached sheet is JPEG to prevent memory crashes.
+        If JPEG mode is enabled, use it directly.
+        Otherwise decode the cached JPEG and put it on the PDF as JPEG.
+        This is deliberately memory-safe for 32-page documents.
+      */
+      const dataURL = await blobToDataURL(pg.blob);
+
+      doc.addImage(
+        dataURL,
+        "JPEG",
+        0,
+        0,
+        pg.pageWmm,
+        pg.pageHmm,
+        undefined,
+        "FAST"
+      );
+
+      await yieldToBrowser();
+    }
+
+    const base = (selectedFile.name || "booklet").replace(/\.pdf$/i, "");
+    const modeName =
+      $("signature").value === "auto"
+        ? "booklet"
+        : `${$("signature").value}page`;
+
+    const filename = `${base}_${modeName}_imposed.pdf`;
+
+    statusEl.textContent = "Starting download…";
+
+    const blob = doc.output("blob");
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+
+    statusEl.textContent = `Download started — ${filename}`;
+
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent =
+      "Could not save PDF: " + (err && err.message ? err.message : err);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = oldHTML;
+  }
+});
+
+/* ---------- Direct print ---------- */
+printBtn.addEventListener("click", () => {
+  if (!bookletSheets.length) return;
+
+  const win = window.open("", "_blank");
+
+  if (!win) {
+    alert("Please allow pop-ups for printing.");
+    return;
+  }
+
+  const first = bookletSheets[0];
+
+  const pages = bookletSheets.map(pg => {
+    const url = URL.createObjectURL(pg.blob);
+
+    return `
+      <div class="page">
+        <img src="${url}">
+      </div>
+    `;
+  }).join("");
+
+  win.document.write(`
+    <!doctype html>
+    <html>
+    <head>
+      <title>Booklet Print</title>
+      <style>
+        @page {
+          size: ${first.pageWmm}mm ${first.pageHmm}mm;
+          margin: 0;
+        }
+
+        html, body {
+          margin: 0;
+          padding: 0;
+        }
+
+        .page {
+          width: ${first.pageWmm}mm;
+          height: ${first.pageHmm}mm;
+          page-break-after: always;
+          break-after: page;
+        }
+
+        img {
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+      </style>
+    </head>
+    <body>${pages}</body>
+    </html>
+  `);
+
+  win.document.close();
+  win.focus();
+
+  setTimeout(() => win.print(), 800);
+});
+
+/* ---------- Dark / light mode ---------- */
+(function () {
+  const themeBtn = $("themeBtn");
+  const sunIcon = $("sunIcon");
+  const moonIcon = $("moonIcon");
+
+  function setTheme(theme) {
+    const dark = theme === "dark";
+
+    document.documentElement.classList.toggle("dark", dark);
+
+    sunIcon.style.display = dark ? "none" : "block";
+    moonIcon.style.display = dark ? "block" : "none";
+
+    themeBtn.setAttribute(
+      "aria-label",
+      dark ? "Switch to light mode" : "Switch to dark mode"
+    );
+
+    try {
+      localStorage.setItem("booklet-theme", theme);
+    } catch (e) {}
+  }
+
+  themeBtn.addEventListener("click", () => {
+    const dark =
+      document.documentElement.classList.contains("dark");
+
+    setTheme(dark ? "light" : "dark");
+  });
+
+  let saved = null;
+
+  try {
+    saved = localStorage.getItem("booklet-theme");
+  } catch (e) {}
+
+  if (saved === "dark" || saved === "light") {
+    setTheme(saved);
+  } else {
+    setTheme(
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light"
+    );
+  }
+})();
+
+/* Prevent mouse-wheel changes on number fields. */
+document.addEventListener("wheel", e => {
+  const input = e.target.closest('input[type="number"]');
+
+  if (input && document.activeElement === input) {
+    input.blur();
+  }
+});
+</script>
+</body>
+</html>

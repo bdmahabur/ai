@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCQ উত্তরপত্র জেনারেটর</title>
+
+  <!-- Kalpurush Web Font -->
+  <link href="https://fonts.maateen.me/kalpurush/font.css" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="mcq-favicon.svg">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    :root {
+      --ink: #111;
+      --line: #333;
+      --soft: #f1f1f1;
+      --panel: #ffffff;
+    }
+
+    body {
+      margin: 0;
+      background: #e9edf2;
+      color: var(--ink);
+      font-family: "Kalpurush", "Noto Serif Bengali", serif;
+    }
+
+    button, input, select {
+      font-family: inherit;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      min-height: 100vh;
+    }
+
+    .controls {
+      background: #fff;
+      border-right: 1px solid #d8d8d8;
+      padding: 22px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .controls h1 {
+      margin: 0 0 6px;
+      font-size: 25px;
+      line-height: 1.2;
+    }
+
+    .controls .subtitle {
+      margin: 0 0 20px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .field {
+      margin-bottom: 13px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      border: 1px solid #bdbdbd;
+      border-radius: 7px;
+      padding: 9px 11px;
+      font-size: 16px;
+      outline: none;
+      background: #fff;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: #555;
+      box-shadow: 0 0 0 2px rgba(0,0,0,.06);
+    }
+
+    .two {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 7px;
+      padding: 11px 10px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .btn-primary {
+      background: #111;
+      color: #fff;
+      grid-column: 1 / -1;
+    }
+
+    .btn-secondary {
+      background: #e9e9e9;
+      color: #111;
+    }
+
+    .tip {
+      margin-top: 18px;
+      padding: 11px 12px;
+      background: #f6f6f6;
+      border-left: 3px solid #111;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .preview-area {
+      padding: 28px;
+      overflow: auto;
+    }
+
+    .paper {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      background: #fff;
+      padding: 12mm 12mm 10mm;
+      box-shadow: 0 2px 16px rgba(0,0,0,.14);
+    }
+
+    .exam-header {
+      text-align: center;
+      margin-bottom: 5mm;
+    }
+
+    .institute-title {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+
+    .address {
+      margin: 2px 0 0;
+      font-size: 15px;
+    }
+
+    .subject {
+      margin: 4px 0 5px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    /* Time - title - full marks, with no border */
+    .exam-meta {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1.6fr 1fr;
+      align-items: center;
+      min-height: 9mm;
+      font-size: 15px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .meta-left {
+      text-align: left;
+    }
+
+    .meta-center {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .meta-right {
+      text-align: right;
+    }
+
+    .exam-meta span {
+      font-weight: 400;
+    }
+
+    /* Name left, roll center, class right — no borders */
+    /* Student information: 4 separate fields */
+    .student-line {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1.55fr 0.85fr 0.85fr 0.85fr;
+      column-gap: 16px;
+      align-items: end;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .student-name {
+      text-align: left;
+    }
+
+    .student-roll {
+      text-align: center;
+    }
+
+    .student-class {
+      text-align: center;
+    }
+
+    .student-section {
+      text-align: right;
+    }
+
+    .student-line > div {
+      white-space: nowrap;
+    }
+
+    .student-line span {
+      display: inline-block;
+      min-width: 250px;
+      height: 15px;
+      border-bottom: 1.8px dotted #555;
+      vertical-align: bottom;
+    }
+
+    .student-roll span {
+      min-width: 90px;
+    }
+
+    .student-class span {
+      min-width: 80px;
+    }
+
+    .student-section span {
+      min-width: 80px;
+    }
+
+    .columns {
+      display: grid;
+      gap: 5mm;
+      align-items: start;
+    }
+
+    .columns.cols-1 { grid-template-columns: 1fr; }
+    .columns.cols-2 { grid-template-columns: 1fr 1fr; }
+    .columns.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .columns.cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+    .answer-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 15px;
+    }
+
+    .answer-table th,
+    .answer-table td {
+      border: 1px solid #333;
+      height: 8.4mm;
+      padding: 1px 2px;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .answer-table th {
+      background: #fff;
+      font-weight: 700;
+      height: 8.5mm;
+    }
+
+    .answer-table tbody tr:nth-child(even) {
+      background: #efefef;
+    }
+
+    .answer-table th:first-child,
+    .answer-table td:first-child {
+      width: 21%;
+    }
+
+    .options {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      gap: 2px;
+      padding: 0 2px;
+    }
+
+    .bubble {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      border: 1.3px solid #222;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 5mm;
+      font-size: 11px;
+      color: #555;
+    }
+
+    @media (max-width: 1050px) {
+      .app { grid-template-columns: 1fr; }
+      .controls {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid #d8d8d8;
+      }
+      .preview-area { padding: 15px; }
+    }
+
+    @media (max-width: 650px) {
+      .paper {
+        width: 100%;
+        min-height: auto;
+        padding: 7mm 5mm;
+      }
+      .preview-area { padding: 5px; }
+      .columns.cols-2,
+      .columns.cols-3,
+      .columns.cols-4 {
+        grid-template-columns: 1fr;
+      }
+      .student-line { grid-template-columns: 1fr; }
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    @media print {
+      html, body {
+        width: 210mm;
+        height: 297mm;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .controls {
+        display: none !important;
+      }
+
+      .app {
+        display: block !important;
+        width: 210mm;
+        height: 297mm;
+      }
+
+      .preview-area {
+        display: block !important;
+        width: 210mm;
+        height: 297mm;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+      }
+
+      .paper {
+        width: 210mm !important;
+        height: 297mm !important;
+        min-height: 0 !important;
+        max-height: 297mm !important;
+        margin: 0 !important;
+        padding: 8mm 9mm 6mm !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+        page-break-after: avoid !important;
+        break-after: avoid-page !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid-page !important;
+      }
+
+      .exam-header {
+        margin-bottom: 4mm !important;
+      }
+
+      .institute-title {
+        font-size: 22px !important;
+      }
+
+      .address {
+        font-size: 13px !important;
+      }
+
+      .subject {
+        margin-top: 2px !important;
+        font-size: 15px !important;
+      }
+
+      .exam-meta {
+        margin-top: 1px !important;
+        min-height: 7mm !important;
+        font-size: 12px !important;
+      }
+
+      .meta-center {
+        font-size: 12px !important;
+      }
+
+      .student-line {
+        margin-bottom: 3px !important;
+        font-size: 11px !important;
+      }
+
+      .student-line {
+        grid-template-columns: 1.55fr 0.85fr 0.85fr 0.85fr !important;
+        column-gap: 10px !important;
+      }
+
+      .student-line span {
+        height: 15px !important;
+        min-width: 250px !important;
+      }
+
+      .student-roll span {
+        min-width: 90px !important;
+      }
+
+      .student-class span,
+      .student-section span {
+        min-width: 90px !important;
+      }
+
+      .columns {
+        gap: 3mm !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid-page !important;
+      }
+
+      .answer-table {
+        font-size: 12px !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid-page !important;
+      }
+
+      .answer-table th,
+      .answer-table td {
+        height: 6.25mm !important;
+        padding: 0 !important;
+      }
+
+      .answer-table th {
+        height: 6.5mm !important;
+      }
+
+      .bubble {
+        width: 18px !important;
+        height: 18px !important;
+        min-width: 18px !important;
+        border-width: 1px !important;
+        font-size: 11px !important;
+      }
+
+      .footer-note {
+        display: none !important;
+      }
+    }
+
+
+    /* Remove up/down arrows from question number input */
+#questions::-webkit-outer-spin-button,
+#questions::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#questions {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+  </style>
+</head>
+
+<body>
+<div class="app">
+
+  <aside class="controls">
+    <h1>MCQ উত্তরপত্র</h1>
+    <p class="subtitle">বাংলা A4 উত্তরপত্র জেনারেটর</p>
+
+    <div class="field">
+      <label for="institution">প্রতিষ্ঠানের নাম</label>
+      <input id="institution" type="text" value="আপনার প্রতিষ্ঠানের নাম">
+    </div>
+
+    <div class="field">
+      <label for="address">ঠিকানা</label>
+      <input id="address" type="text" value="প্রতিষ্ঠানের ঠিকানা">
+    </div>
+
+    <div class="field">
+      <label for="subject">বিষয়</label>
+      <input id="subject" type="text" value="বিষয়">
+    </div>
+
+    <div class="two">
+      <div class="field">
+        <label for="time">সময়</label>
+        <input id="time" type="text" value="১ ঘণ্টা">
+      </div>
+
+      <div class="field">
+        <label for="marks">পূর্ণমান</label>
+        <input id="marks" type="text" value="৫০">
+      </div>
+    </div>
+
+    <div class="two">
+      <div class="field">
+        <label for="questions">প্রশ্ন সংখ্যা</label>
+        <input id="questions" type="number" min="1" max="152" value="50">
+      </div>
+
+      <div class="field">
+        <label for="optionCount">অপশন সংখ্যা</label>
+        <select id="optionCount">
+          <option value="4" selected>৪টি — ক, খ, গ, ঘ</option>
+          <option value="5">৫টি — ক, খ, গ, ঘ, ঙ</option>
+          <option value="6">৬টি — ক, খ, গ, ঘ, ঙ, চ</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="title">উত্তরপত্রের শিরোনাম</label>
+      <input id="title" type="text" value="বহুনির্বাচনি উত্তরপত্র">
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="generate">উত্তরপত্র তৈরি করুন</button>
+      <button class="btn btn-secondary" id="print">প্রিন্ট / PDF</button>
+      <button class="btn btn-secondary" id="reset">রিসেট</button>
+    </div>
+
+    <div class="tip">
+      <b>ব্যবহার:</b> তথ্য পূরণ করে <b>উত্তরপত্র তৈরি করুন</b> চাপুন।
+      এরপর <b>প্রিন্ট / PDF</b> চাপলে A4 সাইজে প্রিন্ট করা যাবে।
+      <br><br>
+      <b>নোট:</b> Kalpurush ফন্ট ওয়েব থেকে লোড হয়। ইন্টারনেট না থাকলে কম্পিউটারে Kalpurush ইনস্টল থাকলে সেটি ব্যবহার হবে।
+    </div>
+  </aside>
+
+  <main class="preview-area">
+    <section class="paper" id="paper">
+
+      <header class="exam-header">
+        <h2 class="institute-title" id="outInstitution">আপনার প্রতিষ্ঠানের নাম</h2>
+        <div class="address" id="outAddress">প্রতিষ্ঠানের ঠিকানা</div>
+        <div class="subject" id="outSubject">বিষয়</div>
+
+        <div class="exam-meta">
+          <div class="meta-left">সময়: <span id="outTime">১ ঘণ্টা</span></div>
+          <div class="meta-center" id="outTitle">বহুনির্বাচনি উত্তরপত্র</div>
+          <div class="meta-right">পূর্ণমান: <span id="outMarks">৫০</span></div>
+        </div>
+
+        <div class="student-line">
+          <div class="student-name">নাম: <span></span></div>
+          <div class="student-roll">রোল: <span></span></div>
+          <div class="student-class">শ্রেণি: <span></span></div>
+          <div class="student-section">শাখা: <span></span></div>
+        </div>
+      </header>
+
+      <div id="answerColumns" class="columns cols-2"></div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+
+  const bnDigits = "০১২৩৪৫৬৭৮৯";
+  const optionLetters = ["ক", "খ", "গ", "ঘ", "ঙ", "চ"];
+
+  function toBanglaNumber(value) {
+    return String(value).replace(/[0-9]/g, d => bnDigits[d]);
+  }
+
+  function escapeHTML(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function updateHeader() {
+    $("outInstitution").textContent = $("institution").value.trim() || "প্রতিষ্ঠানের নাম";
+    $("outAddress").textContent = $("address").value.trim() || "ঠিকানা";
+    $("outSubject").textContent = $("subject").value.trim() || "বিষয়";
+    $("outTime").textContent = $("time").value.trim() || "—";
+    $("outMarks").textContent = $("marks").value.trim() || "—";
+    $("outTitle").textContent = $("title").value.trim() || "বহুনির্বাচনি উত্তরপত্র";
+  }
+
+  function getColumnCount(questionCount) {
+    // A4-এ 50টি প্রশ্নকে 2 কলামে 25+25 রাখা হয়।
+    // বড় সেট হলে 3 বা 4 কলামে ভাগ হয়।
+    if (questionCount <= 25) return 1;
+    if (questionCount <= 50) return 2;
+    if (questionCount <= 75) return 3;
+    return 4;
+  }
+
+  function generateSheet() {
+    updateHeader();
+
+    let questionCount = parseInt($("questions").value, 10);
+    if (!Number.isFinite(questionCount)) questionCount = 50;
+    questionCount = Math.max(1, Math.min(152, questionCount));
+    $("questions").value = questionCount;
+
+    let optionCount = parseInt($("optionCount").value, 10);
+    optionCount = Math.max(4, Math.min(6, optionCount));
+
+    const colCount = getColumnCount(questionCount);
+    const columns = $("answerColumns");
+
+    columns.className = "columns cols-" + colCount;
+    columns.innerHTML = "";
+
+    const perColumn = Math.ceil(questionCount / colCount);
+
+    for (let col = 0; col < colCount; col++) {
+      const start = col * perColumn + 1;
+      const end = Math.min(questionCount, start + perColumn - 1);
+
+      if (start > questionCount) break;
+
+      const table = document.createElement("table");
+      table.className = "answer-table";
+
+      const thead = document.createElement("thead");
+      thead.innerHTML = `
+        <tr>
+          <th>ক্র.নং</th>
+          <th>উত্তর</th>
+        </tr>
+      `;
+
+      const tbody = document.createElement("tbody");
+
+      for (let q = start; q <= end; q++) {
+        const tr = document.createElement("tr");
+
+        const numberCell = document.createElement("td");
+        numberCell.textContent = toBanglaNumber(q);
+
+        const optionCell = document.createElement("td");
+        const optionWrap = document.createElement("div");
+        optionWrap.className = "options";
+
+        for (let i = 0; i < optionCount; i++) {
+          const bubble = document.createElement("span");
+          bubble.className = "bubble";
+          bubble.textContent = optionLetters[i];
+          optionWrap.appendChild(bubble);
+        }
+
+        optionCell.appendChild(optionWrap);
+        tr.appendChild(numberCell);
+        tr.appendChild(optionCell);
+        tbody.appendChild(tr);
+      }
+
+      table.appendChild(thead);
+      table.appendChild(tbody);
+      columns.appendChild(table);
+    }
+
+    saveSettings();
+  }
+
+  function saveSettings() {
+    const data = {
+      institution: $("institution").value,
+      address: $("address").value,
+      subject: $("subject").value,
+      time: $("time").value,
+      marks: $("marks").value,
+      questions: $("questions").value,
+      optionCount: $("optionCount").value,
+      title: $("title").value
+    };
+    localStorage.setItem("mcqAnswerSheetSettings", JSON.stringify(data));
+  }
+
+  function loadSettings() {
+    try {
+      const data = JSON.parse(localStorage.getItem("mcqAnswerSheetSettings") || "null");
+      if (!data) return;
+
+      Object.keys(data).forEach(key => {
+        if ($(key) && data[key] !== undefined) {
+          $(key).value = data[key];
+        }
+      });
+    } catch (e) {
+      console.warn("Settings load failed", e);
+    }
+  }
+
+  function resetSettings() {
+    localStorage.removeItem("mcqAnswerSheetSettings");
+
+    $("institution").value = "আপনার প্রতিষ্ঠানের নাম";
+    $("address").value = "প্রতিষ্ঠানের ঠিকানা";
+    $("subject").value = "বিষয়";
+    $("time").value = "১ ঘণ্টা";
+    $("marks").value = "৫০";
+    $("questions").value = "50";
+    $("optionCount").value = "4";
+    $("title").value = "বহুনির্বাচনি উত্তরপত্র";
+
+    generateSheet();
+  }
+
+  $("generate").addEventListener("click", generateSheet);
+  $("print").addEventListener("click", () => {
+    updateHeader();
+    generateSheet();
+
+    // Give the browser one rendering cycle so all tables are painted
+    // before the print dialog captures the A4 page.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => window.print());
+    });
+  });
+  $("reset").addEventListener("click", resetSettings);
+
+  // Enter চাপলে জেনারেট
+  document.querySelectorAll(".controls input, .controls select").forEach(el => {
+    el.addEventListener("change", saveSettings);
+    el.addEventListener("keydown", e => {
+      if (e.key === "Enter") generateSheet();
+    });
+  });
+
+  loadSettings();
+  generateSheet();
+
+  // Prevent mouse-wheel scrolling from changing the single page number.
+document.addEventListener('wheel', function (e) {
+    const input = e.target.closest('input[type="number"]');
+
+    if (input && document.activeElement === input) {
+        input.blur();
+    }
+});
+</script>
+</body>
+</html>
