@@ -1,0 +1,5794 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="theme-color" content="#087f5b">
+<meta name="description" content="বাংলা তারিখ - বাংলাদেশের বাংলা ক্যালেন্ডার, তারিখ কনভার্টার, ছুটির দিন ও ইভেন্ট।">
+
+<title>বাংলা তারিখ — Bangladesh Bangla Calendar</title>
+
+<!-- =====================================================
+     SVG FAVICON
+===================================================== -->
+
+<link
+rel="icon"
+type="image/svg+xml"
+href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230b7655'/%3E%3Cpath d='M52 12C31 25 18 43 22 63c4 19 20 27 36 25-11-10-15-24-10-39 4-13 13-25 24-33-7-4-13-5-20-4Z' fill='%23ef4444'/%3E%3Cpath d='M57 13c-2 19 2 34 14 46 8 8 13 16 11 26-13-4-24-13-28-25-6-18-2-34 3-47Z' fill='%2300a878'/%3E%3C/svg%3E"
+>
+
+<!-- =====================================================
+     NOTO SANS BENGALI
+===================================================== -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link
+href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap"
+rel="stylesheet"
+>
+
+<!-- =====================================================
+     PDF + PNG LIBRARIES
+===================================================== -->
+
+<script
+src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+</script>
+
+<script
+src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+</script>
+
+
+<style>
+
+/* =====================================================
+   ROOT
+===================================================== */
+
+:root{
+
+    --primary:#087f5b;
+    --primary-dark:#056044;
+    --primary-light:#dff8ee;
+
+    --accent:#f59f00;
+
+    --bg:#f5f8f7;
+    --surface:#ffffff;
+    --surface-2:#f8fbfa;
+
+    --text:#102a25;
+    --muted:#71817d;
+
+    --border:#e4ebe8;
+
+    --danger:#e5484d;
+
+    --shadow:
+        0 10px 35px rgba(19,65,54,.08);
+
+    --radius:18px;
+}
+
+
+/* =====================================================
+   DARK MODE
+===================================================== */
+
+body.dark{
+
+    --bg:#0b1714;
+    --surface:#12231f;
+    --surface-2:#172a25;
+
+    --text:#edf8f4;
+    --muted:#93aaa3;
+
+    --border:#284039;
+
+    --primary-light:#143d32;
+
+    --shadow:
+        0 12px 40px rgba(0,0,0,.30);
+}
+
+
+/* =====================================================
+   GLOBAL
+===================================================== */
+
+*{
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+
+    margin:0;
+
+    background:var(--bg);
+
+    color:var(--text);
+
+    font-family:
+        "Noto Sans Bengali",
+        "Nirmala UI",
+        sans-serif;
+
+    transition:
+        background .25s,
+        color .25s;
+}
+
+
+/* =====================================================
+   SVG ICON SYSTEM
+===================================================== */
+
+.icon{
+
+    width:20px;
+    height:20px;
+
+    display:inline-block;
+    vertical-align:middle;
+
+    fill:none;
+
+    stroke:currentColor;
+
+    stroke-width:1.8;
+
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+.icon.sm{
+    width:17px;
+    height:17px;
+}
+
+.icon.lg{
+    width:24px;
+    height:24px;
+}
+
+
+/* =====================================================
+   LAYOUT
+===================================================== */
+
+.app{
+    min-height:100vh;
+}
+
+.container{
+
+    width:min(1440px,94%);
+
+    margin:auto;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.topbar{
+
+    height:76px;
+
+    background:
+        rgba(255,255,255,.88);
+
+    border-bottom:
+        1px solid var(--border);
+
+    position:sticky;
+
+    top:0;
+
+    z-index:100;
+
+    backdrop-filter:
+        blur(18px);
+}
+
+body.dark .topbar{
+
+    background:
+        rgba(18,35,31,.90);
+}
+
+
+.topbar-inner{
+
+    height:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:20px;
+}
+
+
+/* =====================================================
+   BRAND
+===================================================== */
+
+.brand{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:11px;
+
+    text-decoration:none;
+
+    color:var(--text);
+}
+
+.brand-logo{
+
+    width:44px;
+    height:44px;
+
+    border-radius:13px;
+
+    background:var(--primary);
+
+    display:grid;
+
+    place-items:center;
+
+    color:white;
+}
+
+.brand-logo svg{
+
+    width:31px;
+    height:31px;
+}
+
+.brand-name{
+
+    font-size:20px;
+
+    font-weight:800;
+
+    line-height:1;
+}
+
+.brand-sub{
+
+    color:var(--muted);
+
+    font-size:11px;
+
+    margin-top:4px;
+}
+
+
+/* =====================================================
+   NAV
+===================================================== */
+
+.nav{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:4px;
+}
+
+.nav a{
+
+    color:var(--muted);
+
+    text-decoration:none;
+
+    padding:9px 12px;
+
+    border-radius:10px;
+
+    font-size:13px;
+
+    font-weight:600;
+}
+
+.nav a:hover{
+
+    background:
+        var(--primary-light);
+
+    color:
+        var(--primary);
+}
+
+
+/* =====================================================
+   TOP ACTIONS
+===================================================== */
+
+.top-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+}
+
+
+/* =====================================================
+   BUTTON
+===================================================== */
+
+.btn{
+
+    border:0;
+
+    background:
+        var(--primary);
+
+    color:white;
+
+    height:40px;
+
+    padding:
+        0 14px;
+
+    border-radius:10px;
+
+    font-family:inherit;
+
+    font-weight:600;
+
+    font-size:13px;
+
+    cursor:pointer;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:7px;
+
+    transition:.2s;
+}
+
+.btn:hover{
+
+    background:
+        var(--primary-dark);
+
+    transform:
+        translateY(-1px);
+}
+
+.btn.secondary{
+
+    color:var(--text);
+
+    background:
+        var(--surface);
+
+    border:
+        1px solid var(--border);
+}
+
+.btn.secondary:hover{
+
+    background:
+        var(--surface-2);
+}
+
+.btn.icon-btn{
+
+    width:40px;
+
+    padding:0;
+}
+
+.btn.danger{
+
+    background:
+        var(--danger);
+}
+
+.btn.small{
+
+    height:34px;
+
+    padding:
+        0 11px;
+
+    font-size:12px;
+}
+
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+main{
+
+    padding:
+        28px 0 50px;
+}
+
+.dashboard{
+
+    display:grid;
+
+    grid-template-columns:
+        minmax(0,2fr)
+        minmax(300px,.85fr);
+
+    gap:20px;
+}
+
+
+/* =====================================================
+   CARD
+===================================================== */
+
+.card{
+
+    background:
+        var(--surface);
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        var(--radius);
+
+    box-shadow:
+        var(--shadow);
+}
+
+.card-header{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:15px;
+
+    padding:
+        20px 22px;
+
+    border-bottom:
+        1px solid var(--border);
+}
+
+.card-title{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:9px;
+
+    font-size:17px;
+
+    font-weight:800;
+}
+
+.card-title .title-icon{
+
+    color:
+        var(--primary);
+}
+
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.hero{
+
+    min-height:315px;
+
+    padding:30px;
+
+    position:relative;
+
+    overflow:hidden;
+
+    background:
+
+        radial-gradient(
+            circle at 85% 20%,
+            rgba(20,184,166,.18),
+            transparent 35%
+        ),
+
+        radial-gradient(
+            circle at 10% 100%,
+            rgba(16,185,129,.12),
+            transparent 35%
+        ),
+
+        var(--surface);
+}
+
+.hero-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        1.35fr 1fr;
+
+    gap:25px;
+
+    align-items:center;
+}
+
+.hero-label{
+
+    color:
+        var(--primary);
+
+    font-weight:700;
+
+    font-size:14px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:7px;
+}
+
+.hero-date{
+
+    font-size:
+        clamp(38px,5vw,64px);
+
+    line-height:1.15;
+
+    font-weight:800;
+
+    color:
+        var(--primary);
+
+    margin:
+        8px 0;
+}
+
+.hero-weekday{
+
+    font-size:20px;
+
+    font-weight:700;
+}
+
+.hero-gregorian{
+
+    color:
+        var(--muted);
+
+    font-size:14px;
+
+    margin-top:5px;
+}
+
+.quote{
+
+    color:
+        var(--muted);
+
+    margin:
+        18px 0 0;
+
+    font-size:14px;
+}
+
+.hero-right{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+}
+
+.date-meta{
+
+    display:flex;
+
+    gap:12px;
+
+    align-items:center;
+
+    padding:13px;
+
+    border-radius:13px;
+
+    background:
+        var(--surface-2);
+
+    border:
+        1px solid var(--border);
+}
+
+.date-meta-icon{
+
+    width:40px;
+    height:40px;
+
+    border-radius:11px;
+
+    background:
+        var(--primary-light);
+
+    color:
+        var(--primary);
+
+    display:grid;
+
+    place-items:center;
+}
+
+.date-meta small{
+
+    display:block;
+
+    color:
+        var(--muted);
+
+    font-size:11px;
+}
+
+.date-meta strong{
+
+    font-size:14px;
+}
+
+.clock{
+
+    font-size:24px;
+
+    font-weight:800;
+
+    letter-spacing:.5px;
+}
+
+
+/* =====================================================
+   ACTION ROW
+===================================================== */
+
+.action-row{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:8px;
+
+    margin-top:22px;
+}
+
+
+/* =====================================================
+   CALENDAR
+===================================================== */
+
+.calendar-card{
+
+    overflow:visible;
+}
+
+.calendar-tools{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+}
+
+.calendar-heading{
+
+    text-align:center;
+
+    flex:1;
+}
+
+.calendar-heading h2{
+
+    margin:0;
+
+    font-size:25px;
+}
+
+.calendar-heading p{
+
+    margin:
+        3px 0 0;
+
+    color:
+        var(--muted);
+
+    font-size:12px;
+}
+
+.calendar-body{
+
+    padding:16px;
+}
+
+.weekdays{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(7,1fr);
+
+    margin-bottom:6px;
+}
+
+.weekdays div{
+
+    text-align:center;
+
+    padding:
+        8px 3px;
+
+    color:
+        var(--muted);
+
+    font-size:12px;
+
+    font-weight:700;
+}
+
+.weekdays div:first-child,
+.weekdays div:nth-child(6){
+
+    color:#dc4b52;
+}
+
+.calendar-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(7,1fr);
+}
+
+.day{
+
+    min-height:94px;
+
+    border:
+        1px solid var(--border);
+
+    margin:
+        -1px 0 0 -1px;
+
+    padding:10px;
+
+    cursor:pointer;
+
+    position:relative;
+
+    transition:.15s;
+}
+
+.day:hover{
+
+    background:
+        var(--primary-light);
+
+    z-index:2;
+}
+
+.day.empty{
+
+    background:transparent;
+
+    cursor:default;
+}
+
+.day-number{
+
+    font-size:21px;
+
+    font-weight:800;
+}
+
+.day-greg{
+
+    margin-top:3px;
+
+    color:
+        var(--muted);
+
+    font-size:10px;
+}
+
+.day-event{
+
+    margin-top:8px;
+
+    padding:
+        3px 6px;
+
+    background:
+        var(--primary-light);
+
+    color:
+        var(--primary);
+
+    border-radius:5px;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    font-size:9px;
+}
+
+.day.today{
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary-light),
+            transparent
+        );
+
+    outline:
+        2px solid var(--primary);
+
+    outline-offset:-2px;
+
+    z-index:3;
+}
+
+.today-badge{
+
+    position:absolute;
+
+    top:6px;
+
+    right:6px;
+
+    background:
+        var(--primary);
+
+    color:white;
+
+    font-size:8px;
+
+    padding:
+        2px 5px;
+
+    border-radius:20px;
+}
+
+
+/* =====================================================
+   DOWNLOAD MENU
+===================================================== */
+
+.download-wrap{
+
+    position:relative;
+
+    display:inline-block;
+}
+
+.download-menu{
+
+    position:absolute;
+
+    right:0;
+
+    bottom:
+        calc(100% + 8px);
+
+    width:220px;
+
+    padding:7px;
+
+    background:
+        var(--surface);
+
+    border:
+        1px solid var(--border);
+
+    border-radius:13px;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.15);
+
+    display:none;
+
+    z-index:300;
+}
+
+.download-menu.show{
+
+    display:block;
+
+    animation:
+        downloadMenuIn .15s ease;
+}
+
+@keyframes downloadMenuIn{
+
+    from{
+
+        opacity:0;
+
+        transform:
+            translateY(5px);
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+.download-menu button{
+
+    width:100%;
+
+    border:0;
+
+    background:transparent;
+
+    color:
+        var(--text);
+
+    padding:10px;
+
+    border-radius:9px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    text-align:left;
+
+    font-family:inherit;
+
+    cursor:pointer;
+}
+
+.download-menu button:hover{
+
+    background:
+        var(--primary-light);
+}
+
+.download-menu button > span:first-child{
+
+    width:34px;
+    height:34px;
+
+    display:grid;
+
+    place-items:center;
+
+    background:
+        var(--surface-2);
+
+    border-radius:8px;
+
+    font-size:16px;
+}
+
+.download-menu button strong{
+
+    display:block;
+
+    font-size:12px;
+
+    font-weight:700;
+}
+
+.download-menu button small{
+
+    display:block;
+
+    color:
+        var(--muted);
+
+    font-size:9px;
+
+    margin-top:2px;
+}
+
+
+/* =====================================================
+   SIDEBAR
+===================================================== */
+
+.sidebar{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+}
+
+.side-card{
+
+    padding:20px;
+}
+
+.side-title{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:15px;
+}
+
+.side-title h3{
+
+    margin:0;
+
+    font-size:16px;
+}
+
+.side-title span{
+
+    color:
+        var(--muted);
+
+    font-size:11px;
+}
+
+
+/* =====================================================
+   CONVERTER
+===================================================== */
+
+.converter-tabs{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    padding:4px;
+
+    background:
+        var(--surface-2);
+
+    border-radius:10px;
+
+    margin-bottom:15px;
+}
+
+.converter-tabs button{
+
+    border:0;
+
+    background:transparent;
+
+    color:
+        var(--muted);
+
+    padding:8px;
+
+    border-radius:7px;
+
+    font-family:inherit;
+
+    font-weight:600;
+
+    cursor:pointer;
+}
+
+.converter-tabs button.active{
+
+    background:
+        var(--primary);
+
+    color:white;
+}
+
+.field{
+
+    margin-bottom:11px;
+}
+
+.field label{
+
+    display:block;
+
+    font-size:11px;
+
+    color:
+        var(--muted);
+
+    margin-bottom:5px;
+}
+
+.input,
+.select{
+
+    width:100%;
+
+    height:40px;
+
+    border:
+        1px solid var(--border);
+
+    background:
+        var(--surface);
+
+    color:
+        var(--text);
+
+    border-radius:9px;
+
+    padding:
+        0 11px;
+
+    font-family:inherit;
+
+    font-size:13px;
+
+    outline:none;
+}
+
+.input:focus,
+.select:focus{
+
+    border-color:
+        var(--primary);
+}
+
+.result-box{
+
+    background:
+        var(--primary-light);
+
+    border-radius:11px;
+
+    padding:12px;
+
+    margin-top:10px;
+}
+
+.result-label{
+
+    color:
+        var(--muted);
+
+    font-size:10px;
+}
+
+.result-value{
+
+    color:
+        var(--primary);
+
+    font-weight:800;
+
+    font-size:17px;
+
+    margin-top:3px;
+}
+
+
+/* =====================================================
+   PRAYER
+===================================================== */
+
+.prayer-list{
+
+    display:flex;
+
+    flex-direction:column;
+}
+
+.prayer-row{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:10px 0;
+
+    border-bottom:
+        1px solid var(--border);
+}
+
+.prayer-row:last-child{
+
+    border-bottom:0;
+}
+
+.prayer-left{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:9px;
+}
+
+.prayer-icon{
+
+    width:31px;
+    height:31px;
+
+    border-radius:9px;
+
+    background:#fff3d6;
+
+    color:#e39a00;
+
+    display:grid;
+
+    place-items:center;
+}
+
+.prayer-name{
+
+    font-size:12px;
+
+    font-weight:600;
+}
+
+.prayer-time{
+
+    font-size:12px;
+
+    font-weight:700;
+}
+
+
+/* =====================================================
+   CONTENT SECTION
+===================================================== */
+
+.content-section{
+
+    margin-top:20px;
+}
+
+.two-column{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:20px;
+}
+
+
+/* =====================================================
+   EVENTS
+===================================================== */
+
+.event-list{
+
+    padding:
+        16px 20px 20px;
+}
+
+.event-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:10px 0;
+
+    border-bottom:
+        1px solid var(--border);
+}
+
+.event-item:last-child{
+
+    border-bottom:0;
+}
+
+.event-date{
+
+    min-width:45px;
+
+    height:45px;
+
+    border-radius:10px;
+
+    background:
+        var(--primary-light);
+
+    color:
+        var(--primary);
+
+    display:grid;
+
+    place-items:center;
+
+    font-size:12px;
+
+    font-weight:800;
+}
+
+.event-date small{
+
+    font-size:8px;
+}
+
+.event-info{
+
+    flex:1;
+}
+
+.event-info strong{
+
+    display:block;
+
+    font-size:13px;
+}
+
+.event-info span{
+
+    display:block;
+
+    color:
+        var(--muted);
+
+    font-size:10px;
+
+    margin-top:2px;
+}
+
+
+/* =====================================================
+   YEAR
+===================================================== */
+
+.year-card{
+
+    margin-top:20px;
+}
+
+.year-grid{
+
+    padding:20px;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(6,1fr);
+
+    gap:10px;
+}
+
+.month-box{
+
+    padding:
+        15px 10px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:12px;
+
+    text-align:center;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.month-box:hover{
+
+    background:
+        var(--primary-light);
+
+    border-color:
+        var(--primary);
+
+    transform:
+        translateY(-2px);
+}
+
+.month-box.current{
+
+    background:
+        var(--primary-light);
+
+    border-color:
+        var(--primary);
+}
+
+.month-box strong{
+
+    display:block;
+
+    font-size:14px;
+}
+
+.month-box span{
+
+    color:
+        var(--muted);
+
+    font-size:10px;
+
+    margin-top:4px;
+
+    display:block;
+}
+
+
+/* =====================================================
+   QUICK LINKS
+===================================================== */
+
+.quick-links{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,1fr);
+
+    gap:9px;
+}
+
+.quick-link{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:10px;
+
+    border:
+        1px solid var(--border);
+
+    border-radius:10px;
+
+    color:
+        var(--text);
+
+    text-decoration:none;
+
+    font-size:11px;
+}
+
+.quick-link:hover{
+
+    background:
+        var(--primary-light);
+
+    color:
+        var(--primary);
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+.search-box{
+
+    position:relative;
+}
+
+.search-box .icon{
+
+    position:absolute;
+
+    left:11px;
+
+    top:11px;
+
+    color:
+        var(--muted);
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+footer{
+
+    margin-top:40px;
+
+    background:#073c2d;
+
+    color:#dff7ef;
+
+    padding:
+        30px 0;
+}
+
+.footer-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        2fr 1fr 1fr;
+
+    gap:30px;
+}
+
+.footer-brand{
+
+    font-size:20px;
+
+    font-weight:800;
+}
+
+.footer-text{
+
+    color:#a9c9bf;
+
+    font-size:12px;
+
+    margin-top:6px;
+}
+
+.footer-title{
+
+    font-weight:700;
+
+    font-size:13px;
+
+    margin-bottom:10px;
+}
+
+.footer-link{
+
+    display:block;
+
+    color:#a9c9bf;
+
+    text-decoration:none;
+
+    font-size:11px;
+
+    margin:7px 0;
+}
+
+.footer-link:hover{
+
+    color:white;
+}
+
+.footer-bottom{
+
+    border-top:
+        1px solid rgba(255,255,255,.1);
+
+    margin-top:25px;
+
+    padding-top:18px;
+
+    color:#8eb5aa;
+
+    font-size:10px;
+
+    display:flex;
+
+    justify-content:space-between;
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+.modal-overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    background:
+        rgba(0,0,0,.48);
+
+    backdrop-filter:
+        blur(5px);
+
+    z-index:500;
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:20px;
+}
+
+.modal-overlay.show{
+
+    display:flex;
+}
+
+.modal{
+
+    width:
+        min(480px,100%);
+
+    background:
+        var(--surface);
+
+    border:
+        1px solid var(--border);
+
+    border-radius:20px;
+
+    box-shadow:
+        0 25px 80px rgba(0,0,0,.25);
+
+    overflow:hidden;
+}
+
+.modal-header{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:
+        18px 20px;
+
+    border-bottom:
+        1px solid var(--border);
+}
+
+.modal-header h3{
+
+    margin:0;
+
+    font-size:17px;
+}
+
+.modal-body{
+
+    padding:20px;
+}
+
+.modal-footer{
+
+    padding:
+        15px 20px;
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:8px;
+
+    border-top:
+        1px solid var(--border);
+}
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+.toast{
+
+    position:fixed;
+
+    right:20px;
+
+    bottom:20px;
+
+    background:#102a25;
+
+    color:white;
+
+    padding:
+        12px 16px;
+
+    border-radius:11px;
+
+    box-shadow:
+        0 12px 35px rgba(0,0,0,.2);
+
+    font-size:12px;
+
+    transform:
+        translateY(100px);
+
+    opacity:0;
+
+    transition:.3s;
+
+    z-index:1000;
+}
+
+.toast.show{
+
+    transform:
+        translateY(0);
+
+    opacity:1;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media(max-width:1050px){
+
+    .nav{
+        display:none;
+    }
+
+    .dashboard{
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .sidebar{
+
+        display:grid;
+
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+    .hero-grid{
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .hero-right{
+
+        display:grid;
+
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+    .year-grid{
+
+        grid-template-columns:
+            repeat(4,1fr);
+    }
+}
+
+
+@media(max-width:700px){
+
+    .topbar{
+        height:65px;
+    }
+
+    .brand-sub{
+        display:none;
+    }
+
+    .brand-name{
+        font-size:17px;
+    }
+
+    .top-actions .lang-btn{
+        display:none;
+    }
+
+    .top-actions .search-box{
+        display:none;
+    }
+
+    main{
+
+        padding-top:15px;
+    }
+
+    .hero{
+
+        padding:20px;
+    }
+
+    .hero-date{
+
+        font-size:40px;
+    }
+
+    .hero-right{
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .two-column{
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .sidebar{
+
+        display:flex;
+    }
+
+    .calendar-body{
+
+        padding:8px;
+    }
+
+    .day{
+
+        min-height:70px;
+
+        padding:6px;
+    }
+
+    .day-number{
+
+        font-size:17px;
+    }
+
+    .day-greg{
+
+        font-size:8px;
+    }
+
+    .day-event{
+
+        display:none;
+    }
+
+    .today-badge{
+
+        font-size:7px;
+    }
+
+    .weekdays div{
+
+        font-size:9px;
+    }
+
+    .year-grid{
+
+        grid-template-columns:
+            repeat(3,1fr);
+
+        padding:12px;
+
+        gap:7px;
+    }
+
+    .month-box{
+
+        padding:
+            11px 5px;
+    }
+
+    .footer-grid{
+
+        grid-template-columns:
+            1fr;
+
+        gap:20px;
+    }
+
+    .footer-bottom{
+
+        flex-direction:column;
+
+        gap:8px;
+    }
+
+    .download-menu{
+
+        right:auto;
+
+        left:50%;
+
+        transform:
+            translateX(-50%);
+    }
+
+    .download-menu.show{
+
+        transform:
+            translateX(-50%);
+    }
+}
+
+
+@media(max-width:420px){
+
+    .brand-logo{
+
+        width:38px;
+        height:38px;
+    }
+
+    .hero-date{
+
+        font-size:34px;
+    }
+
+    .day{
+
+        min-height:60px;
+    }
+
+    .day-greg{
+
+        display:none;
+    }
+
+    .calendar-heading h2{
+
+        font-size:19px;
+    }
+
+    .calendar-heading p{
+
+        display:none;
+    }
+}
+
+
+/* =====================================================
+   PRINT
+===================================================== */
+
+@media print{
+
+    body{
+        background:white;
+    }
+
+    .topbar,
+    .sidebar,
+    .action-row,
+    footer,
+    .content-section,
+    .year-card,
+    .download-wrap{
+
+        display:none !important;
+    }
+
+    .dashboard{
+
+        display:block;
+    }
+
+    .card{
+
+        box-shadow:none;
+    }
+
+    .calendar-card{
+
+        margin-top:20px;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+<!-- =====================================================
+     SVG SYMBOLS
+===================================================== -->
+
+<svg style="display:none">
+
+<symbol id="i-calendar" viewBox="0 0 24 24">
+
+<rect
+x="3"
+y="4"
+width="18"
+height="17"
+rx="3"
+/>
+
+<path d="M16 2v4M8 2v4M3 9h18"/>
+
+</symbol>
+
+
+<symbol id="i-clock" viewBox="0 0 24 24">
+
+<circle
+cx="12"
+cy="12"
+r="9"
+/>
+
+<path d="M12 7v5l3 2"/>
+
+</symbol>
+
+
+<symbol id="i-search" viewBox="0 0 24 24">
+
+<circle
+cx="11"
+cy="11"
+r="7"
+/>
+
+<path d="m20 20-4-4"/>
+
+</symbol>
+
+
+<symbol id="i-settings" viewBox="0 0 24 24">
+
+<path
+d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"
+/>
+
+<path
+d="m19.4 15 .1.1a2 2 0 1 1-2.8 2.8l-.1-.1a2 2 0 0 0-3.4 1.4v.2a2 2 0 1 1-4 0v-.2A2 2 0 0 0 5.8 18l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A2 2 0 0 0 1.6 12a2 2 0 1 1 4-0 2 2 0 0 0 3.4-1.4v-.2a2 2 0 1 1 4 0v.2A2 2 0 0 0 16.4 12a2 2 0 0 1 3 3Z"
+/>
+
+</symbol>
+
+
+<symbol id="i-copy" viewBox="0 0 24 24">
+
+<rect
+x="8"
+y="8"
+width="12"
+height="12"
+rx="2"
+/>
+
+<path
+d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"
+/>
+
+</symbol>
+
+
+<symbol id="i-share" viewBox="0 0 24 24">
+
+<circle
+cx="18"
+cy="5"
+r="2"
+/>
+
+<circle
+cx="6"
+cy="12"
+r="2"
+/>
+
+<circle
+cx="18"
+cy="19"
+r="2"
+/>
+
+<path d="m8 11 8-5M8 13l8 5"/>
+
+</symbol>
+
+
+<symbol id="i-print" viewBox="0 0 24 24">
+
+<path d="M6 9V3h12v6"/>
+
+<path
+d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
+/>
+
+<path d="M6 14h12v7H6z"/>
+
+</symbol>
+
+
+<symbol id="i-download" viewBox="0 0 24 24">
+
+<path d="M12 3v12"/>
+
+<path d="m7 10 5 5 5-5"/>
+
+<path d="M4 21h16"/>
+
+</symbol>
+
+
+<symbol id="i-sun" viewBox="0 0 24 24">
+
+<circle
+cx="12"
+cy="12"
+r="4"
+/>
+
+<path
+d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+/>
+
+</symbol>
+
+
+<symbol id="i-moon" viewBox="0 0 24 24">
+
+<path
+d="M20 15.5A8.5 8.5 0 0 1 8.5 4 8.5 8.5 0 1 0 20 15.5Z"
+/>
+
+</symbol>
+
+
+<symbol id="i-location" viewBox="0 0 24 24">
+
+<path
+d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"
+/>
+
+<circle
+cx="12"
+cy="10"
+r="2.5"
+/>
+
+</symbol>
+
+
+<symbol id="i-plus" viewBox="0 0 24 24">
+
+<path d="M12 5v14M5 12h14"/>
+
+</symbol>
+
+
+<symbol id="i-x" viewBox="0 0 24 24">
+
+<path d="m6 6 12 12M18 6 6 18"/>
+
+</symbol>
+
+
+<symbol id="i-chevron-left" viewBox="0 0 24 24">
+
+<path d="m15 18-6-6 6-6"/>
+
+</symbol>
+
+
+<symbol id="i-chevron-right" viewBox="0 0 24 24">
+
+<path d="m9 18 6-6-6-6"/>
+
+</symbol>
+
+
+<symbol id="i-home" viewBox="0 0 24 24">
+
+<path
+d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Z"
+/>
+
+<path d="M9 21v-7h6v7"/>
+
+</symbol>
+
+
+<symbol id="i-event" viewBox="0 0 24 24">
+
+<rect
+x="3"
+y="4"
+width="18"
+height="17"
+rx="3"
+/>
+
+<path d="M16 2v4M8 2v4M3 9h18"/>
+
+<path d="M8 13h3M8 17h5"/>
+
+</symbol>
+
+
+<symbol id="i-mosque" viewBox="0 0 24 24">
+
+<path d="M4 21v-8h16v8"/>
+
+<path d="M2 21h20"/>
+
+<path
+d="M8 13V9a4 4 0 0 1 8 0v4"
+/>
+
+<path d="M12 5V2M10 3h4"/>
+
+<path
+d="M9 21v-4h2v4M13 17h2v4"
+/>
+
+</symbol>
+
+
+<symbol id="i-trash" viewBox="0 0 24 24">
+
+<path d="M4 7h16M10 11v6M14 11v6"/>
+
+<path
+d="M6 7l1 14h10l1-14M9 7V4h6v3"
+/>
+
+</symbol>
+
+
+<symbol id="i-check" viewBox="0 0 24 24">
+
+<path d="m5 12 4 4L19 6"/>
+
+</symbol>
+
+</svg>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header class="topbar">
+
+<div class="container topbar-inner">
+
+
+<a href="#" class="brand">
+
+<div class="brand-logo">
+
+<svg class="icon lg">
+<use href="#i-calendar"></use>
+</svg>
+
+</div>
+
+
+<div>
+
+<div class="brand-name">
+বাংলা তারিখ
+</div>
+
+<div class="brand-sub">
+বাংলাদেশ বাংলা ক্যালেন্ডার
+</div>
+
+</div>
+
+</a>
+
+
+<nav class="nav">
+
+<a href="#today">
+
+<svg class="icon sm">
+<use href="#i-home"/>
+</svg>
+
+আজ
+
+</a>
+
+
+<a href="#calendar">
+
+<svg class="icon sm">
+<use href="#i-calendar"/>
+</svg>
+
+ক্যালেন্ডার
+
+</a>
+
+
+<a href="#converter">
+
+<svg class="icon sm">
+<use href="#i-event"/>
+</svg>
+
+কনভার্টার
+
+</a>
+
+
+</nav>
+
+
+<div class="top-actions">
+
+
+<div class="search-box">
+
+<svg class="icon sm">
+<use href="#i-search"/>
+</svg>
+
+<input
+id="searchInput"
+class="input"
+style="width:180px;height:38px;padding-left:37px"
+placeholder="খুঁজুন..."
+>
+
+</div>
+
+
+<button
+class="btn secondary icon-btn"
+onclick="toggleTheme()"
+title="Theme"
+>
+
+<svg class="icon">
+
+<use
+id="themeIcon"
+href="#i-moon"
+/>
+
+</svg>
+
+</button>
+
+
+<button
+class="btn secondary lang-btn"
+onclick="toggleNumbers()"
+>
+
+১২৩
+
+</button>
+
+</div>
+
+</div>
+
+</header>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main>
+
+<div class="container">
+
+
+<div class="dashboard">
+
+
+<!-- =====================================================
+     LEFT
+===================================================== -->
+
+<div>
+
+
+<!-- HERO -->
+
+<section
+class="card hero"
+id="today"
+>
+
+<div class="hero-grid">
+
+
+<div>
+
+
+<div class="hero-label">
+
+<svg class="icon sm">
+<use href="#i-calendar"/>
+</svg>
+
+আজকের বাংলা তারিখ
+
+</div>
+
+
+<div
+class="hero-date"
+id="todayBangla"
+>
+—
+</div>
+
+
+<div
+class="hero-weekday"
+id="todayWeekday"
+>
+—
+</div>
+
+
+<div
+class="hero-gregorian"
+id="todayGregorian"
+>
+—
+</div>
+
+
+<p class="quote">
+“সময়ের মূল্য দিন, জীবন বদলে যাবে।”
+</p>
+
+
+<div class="action-row">
+
+
+<button
+class="btn"
+onclick="copyDate()"
+>
+
+<svg class="icon sm">
+<use href="#i-copy"/>
+</svg>
+
+কপি করুন
+
+</button>
+
+
+<button
+class="btn secondary"
+onclick="shareDate()"
+>
+
+<svg class="icon sm">
+<use href="#i-share"/>
+</svg>
+
+শেয়ার
+
+</button>
+
+
+<button
+class="btn secondary"
+onclick="window.print()"
+>
+
+<svg class="icon sm">
+<use href="#i-print"/>
+</svg>
+
+প্রিন্ট
+
+</button>
+
+
+</div>
+
+</div>
+
+
+<div class="hero-right">
+
+
+<div class="date-meta">
+
+<div class="date-meta-icon">
+
+<svg class="icon">
+<use href="#i-calendar"/>
+</svg>
+
+</div>
+
+<div>
+
+<small>
+Gregorian
+</small>
+
+<strong
+id="englishMeta"
+>
+—
+</strong>
+
+</div>
+
+</div>
+
+
+
+<div class="date-meta">
+
+<div class="date-meta-icon">
+
+<svg class="icon">
+<use href="#i-location"/>
+</svg>
+
+</div>
+
+<div>
+
+<small>
+স্থান
+</small>
+
+<strong>
+ঢাকা, বাংলাদেশ
+</strong>
+
+</div>
+
+</div>
+
+
+<div class="date-meta">
+
+<div class="date-meta-icon">
+
+<svg class="icon">
+<use href="#i-clock"/>
+</svg>
+
+</div>
+
+<div>
+
+<small>
+বর্তমান সময়
+</small>
+
+<strong
+class="clock"
+id="clock"
+>
+00:00:00
+</strong>
+
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     CALENDAR
+===================================================== -->
+
+<section
+class="card calendar-card content-section"
+id="calendar"
+>
+
+
+<div class="card-header">
+
+
+<div class="card-title">
+
+<svg class="icon title-icon">
+<use href="#i-calendar"/>
+</svg>
+
+বাংলা ক্যালেন্ডার
+
+</div>
+
+
+<div class="calendar-tools">
+
+
+<button
+class="btn secondary icon-btn"
+onclick="previousMonth()"
+title="Previous month"
+>
+
+<svg class="icon">
+<use href="#i-chevron-left"/>
+</svg>
+
+</button>
+
+
+<div class="calendar-heading">
+
+<h2 id="calendarTitle">
+—
+</h2>
+
+<p id="calendarSubtitle">
+—
+</p>
+
+</div>
+
+
+<button
+class="btn secondary icon-btn"
+onclick="nextMonth()"
+title="Next month"
+>
+
+<svg class="icon">
+<use href="#i-chevron-right"/>
+</svg>
+
+</button>
+
+
+</div>
+
+</div>
+
+
+<div class="calendar-body">
+
+
+<div class="weekdays">
+
+<div>রবি</div>
+<div>সোম</div>
+<div>মঙ্গল</div>
+<div>বুধ</div>
+<div>বৃহস্পতি</div>
+<div>শুক্র</div>
+<div>শনি</div>
+
+</div>
+
+
+<div
+class="calendar-grid"
+id="calendarGrid"
+>
+</div>
+
+
+<div
+class="action-row"
+style="justify-content:center"
+>
+
+
+<button
+class="btn small"
+onclick="goToday()"
+>
+
+<svg class="icon sm">
+<use href="#i-calendar"/>
+</svg>
+
+আজ
+
+</button>
+
+
+<!-- =================================================
+     DOWNLOAD MENU
+================================================= -->
+
+<div class="download-wrap">
+
+
+<button
+class="btn secondary small"
+onclick="toggleDownloadMenu(event)"
+>
+
+<svg class="icon sm">
+<use href="#i-download"/>
+</svg>
+
+ডাউনলোড
+
+</button>
+
+
+<div
+class="download-menu"
+id="downloadMenu"
+>
+
+
+<button
+onclick="downloadCalendarPNG()"
+>
+
+<span>
+🖼️
+</span>
+
+<span>
+
+<strong>
+PNG
+</strong>
+
+<small>
+ছবি হিসেবে ডাউনলোড
+</small>
+
+</span>
+
+</button>
+
+
+<button
+onclick="downloadCalendarPDF()"
+>
+
+<span>
+📑
+</span>
+
+<span>
+
+<strong>
+PDF
+</strong>
+
+<small>
+PDF হিসেবে ডাউনলোড
+</small>
+
+</span>
+
+</button>
+
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     YEAR
+===================================================== -->
+
+<section
+class="card year-card"
+id="year"
+>
+
+
+<div class="card-header">
+
+
+<div class="card-title">
+
+<svg class="icon title-icon">
+<use href="#i-calendar"/>
+</svg>
+
+সম্পূর্ণ বছরের ক্যালেন্ডার
+
+</div>
+
+
+<span
+id="yearTitle"
+style="
+color:var(--muted);
+font-size:12px;
+"
+>
+—
+</span>
+
+</div>
+
+
+<div
+class="year-grid"
+id="yearGrid"
+>
+</div>
+
+</section>
+
+
+</div>
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside class="sidebar">
+
+
+<!-- CONVERTER -->
+
+<section
+class="card side-card"
+id="converter"
+>
+
+
+<div class="side-title">
+
+<h3>
+তারিখ কনভার্টার
+</h3>
+
+<svg class="icon">
+<use href="#i-event"/>
+</svg>
+
+</div>
+
+
+<div class="converter-tabs">
+
+
+<button
+id="tabGregorian"
+class="active"
+onclick="switchConverter('gregorian')"
+>
+
+ইংরেজি → বাংলা
+
+</button>
+
+
+<button
+id="tabBangla"
+onclick="switchConverter('bangla')"
+>
+
+বাংলা → ইংরেজি
+
+</button>
+
+</div>
+
+
+<div id="gregorianConverter">
+
+
+<div class="field">
+
+<label>
+ইংরেজি তারিখ নির্বাচন করুন
+</label>
+
+<input
+type="date"
+id="gregorianInput"
+class="input"
+>
+
+</div>
+
+
+<button
+class="btn"
+style="width:100%"
+onclick="convertGregorian()"
+>
+
+রূপান্তর করুন
+
+</button>
+
+</div>
+
+
+<div
+id="banglaConverter"
+style="display:none"
+>
+
+
+<div class="field">
+
+<label>
+বাংলা বছর
+</label>
+
+<input
+type="number"
+id="banglaYearInput"
+class="input"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+বাংলা মাস
+</label>
+
+<select
+id="banglaMonthInput"
+class="select"
+>
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>
+বাংলা দিন
+</label>
+
+<input
+type="number"
+id="banglaDayInput"
+class="input"
+min="1"
+max="31"
+>
+
+</div>
+
+
+<button
+class="btn"
+style="width:100%"
+onclick="convertBangla()"
+>
+
+রূপান্তর করুন
+
+</button>
+
+</div>
+
+
+<div class="result-box">
+
+<div class="result-label">
+ফলাফল
+</div>
+
+<div
+class="result-value"
+id="conversionResult"
+>
+তারিখ নির্বাচন করুন
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- =====================================================
+     QUICK LINKS
+===================================================== -->
+
+<section class="card side-card">
+
+
+<div class="side-title">
+
+<h3>
+দ্রুত লিংক
+</h3>
+
+</div>
+
+
+<div class="quick-links">
+
+
+<a
+class="quick-link"
+href="#today"
+>
+
+<svg class="icon sm">
+<use href="#i-calendar"/>
+</svg>
+
+আজকের তারিখ
+
+</a>
+
+
+
+
+<a
+class="quick-link"
+href="#year"
+>
+
+<svg class="icon sm">
+<use href="#i-calendar"/>
+</svg>
+
+সম্পূর্ণ বছর
+
+</a>
+
+
+<a
+class="quick-link"
+href="#converter"
+>
+
+<svg class="icon sm">
+<use href="#i-event"/>
+</svg>
+
+তারিখ কনভার্ট
+
+</a>
+
+
+
+
+<button
+class="quick-link"
+onclick="openEventModal()"
+style="
+border:1px solid var(--border);
+background:transparent;
+font-family:inherit;
+cursor:pointer;
+"
+>
+
+<svg class="icon sm">
+<use href="#i-plus"/>
+</svg>
+
+ইভেন্ট যোগ
+
+</button>
+
+
+</div>
+
+</section>
+
+
+</aside>
+
+</div>
+
+</div>
+
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+<div class="container">
+
+
+<div class="footer-grid">
+
+
+<div>
+
+<div class="footer-brand">
+বাংলা তারিখ
+</div>
+
+<div class="footer-text">
+বাংলাদেশের বাংলা ক্যালেন্ডার ও তারিখ কনভার্টার
+</div>
+
+</div>
+
+
+<div>
+
+<div class="footer-title">
+ক্যালেন্ডার
+</div>
+
+<a
+class="footer-link"
+href="#today"
+>
+আজকের তারিখ
+</a>
+
+<a
+class="footer-link"
+href="#calendar"
+>
+বাংলা ক্যালেন্ডার
+</a>
+
+<a
+class="footer-link"
+href="#year"
+>
+বার্ষিক ক্যালেন্ডার
+</a>
+
+</div>
+
+
+<div>
+
+<div class="footer-title">
+টুলস
+</div>
+
+<a
+class="footer-link"
+href="#converter"
+>
+তারিখ কনভার্টার
+</a>
+
+
+</div>
+
+</div>
+
+
+<div class="footer-bottom">
+
+<div>
+© ২০২৬ বাংলা তারিখ
+</div>
+
+<div>
+বাংলার তারিখ, বাংলার ঐতিহ্য 🇧🇩
+</div>
+
+</div>
+
+</div>
+
+</footer>
+
+
+<!-- =====================================================
+     EVENT MODAL
+===================================================== -->
+
+<div
+class="modal-overlay"
+id="eventModal"
+>
+
+
+<div class="modal">
+
+
+<div class="modal-header">
+
+
+<h3>
+নতুন ইভেন্ট যোগ করুন
+</h3>
+
+
+<button
+class="btn secondary icon-btn"
+onclick="closeEventModal()"
+>
+
+<svg class="icon">
+<use href="#i-x"/>
+</svg>
+
+</button>
+
+</div>
+
+
+<div class="modal-body">
+
+
+<div class="field">
+
+<label>
+ইভেন্টের নাম
+</label>
+
+<input
+id="eventName"
+class="input"
+placeholder="যেমন: জন্মদিন"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+তারিখ
+</label>
+
+<input
+type="date"
+id="eventDate"
+class="input"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+বিবরণ
+</label>
+
+<input
+id="eventDescription"
+class="input"
+placeholder="ঐচ্ছিক"
+>
+
+</div>
+
+</div>
+
+
+<div class="modal-footer">
+
+
+<button
+class="btn secondary"
+onclick="closeEventModal()"
+>
+বাতিল
+</button>
+
+
+<button
+class="btn"
+onclick="saveEvent()"
+>
+
+<svg class="icon sm">
+<use href="#i-check"/>
+</svg>
+
+সংরক্ষণ
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     TOAST
+===================================================== -->
+
+<div
+class="toast"
+id="toast"
+>
+সম্পন্ন হয়েছে
+</div>
+
+
+<script>
+
+/* =====================================================
+   BANGLA DATA
+===================================================== */
+
+const banglaMonths = [
+
+    "বৈশাখ",
+    "জ্যৈষ্ঠ",
+    "আষাঢ়",
+    "শ্রাবণ",
+    "ভাদ্র",
+    "আশ্বিন",
+    "কার্তিক",
+    "অগ্রহায়ণ",
+    "পৌষ",
+    "মাঘ",
+    "ফাল্গুন",
+    "চৈত্র"
+
+];
+
+
+const englishMonths = [
+
+    "Baishakh",
+    "Jyaishtha",
+    "Ashar",
+    "Shraban",
+    "Bhadra",
+    "Ashwin",
+    "Kartik",
+    "Agrahayan",
+    "Poush",
+    "Magh",
+    "Falgun",
+    "Chaitra"
+
+];
+
+
+const weekdays = [
+
+    "রবিবার",
+    "সোমবার",
+    "মঙ্গলবার",
+    "বুধবার",
+    "বৃহস্পতিবার",
+    "শুক্রবার",
+    "শনিবার"
+
+];
+
+
+const bnDigits =
+    "০১২৩৪৫৬৭৮৯";
+
+
+let useBanglaNumbers = true;
+
+
+/* =====================================================
+   NUMBER
+===================================================== */
+
+function bn(value){
+
+    if(!useBanglaNumbers){
+
+        return String(value);
+
+    }
+
+    return String(value)
+        .replace(
+            /\d/g,
+            d => bnDigits[d]
+        );
+}
+
+
+/* =====================================================
+   LEAP YEAR
+===================================================== */
+
+function isLeap(year){
+
+    return (
+        year % 4 === 0 &&
+        (
+            year % 100 !== 0 ||
+            year % 400 === 0
+        )
+    );
+}
+
+
+/* =====================================================
+   BANGLA MONTH DAYS
+===================================================== */
+
+function getBanglaMonthDays(
+    banglaYear,
+    month
+){
+
+    /*
+       বৈশাখ - আশ্বিন = 31
+       কার্তিক - মাঘ = 30
+       ফাল্গুন = 29 / 30
+       চৈত্র = 30
+    */
+
+    if(month <= 5){
+
+        return 31;
+
+    }
+
+    if(month <= 9){
+
+        return 30;
+
+    }
+
+    if(month === 10){
+
+        const gregorianYear =
+            banglaYear + 593;
+
+        return isLeap(
+            gregorianYear
+        )
+            ? 30
+            : 29;
+    }
+
+    return 30;
+}
+
+
+/* =====================================================
+   BANGLA YEAR
+===================================================== */
+
+function getBanglaYear(date){
+
+    const year =
+        date.getFullYear();
+
+    const newYear =
+        new Date(
+            year,
+            3,
+            14
+        );
+
+    if(date >= newYear){
+
+        return year - 593;
+
+    }
+
+    return year - 594;
+}
+
+
+/* =====================================================
+   GREGORIAN → BANGLA
+===================================================== */
+
+function gregorianToBangla(date){
+
+    const gy =
+        date.getFullYear();
+
+    const banglaYear =
+        getBanglaYear(date);
+
+    const startYear =
+        date >= new Date(
+            gy,
+            3,
+            14
+        )
+            ? gy
+            : gy - 1;
+
+    const start =
+        new Date(
+            startYear,
+            3,
+            14
+        );
+
+    start.setHours(
+        0,0,0,0
+    );
+
+    const current =
+        new Date(date);
+
+    current.setHours(
+        0,0,0,0
+    );
+
+    let days =
+        Math.round(
+            (
+                current - start
+            ) /
+            86400000
+        );
+
+    let month = 0;
+
+    while(
+
+        days >=
+        getBanglaMonthDays(
+            banglaYear,
+            month
+        )
+
+    ){
+
+        days -=
+            getBanglaMonthDays(
+                banglaYear,
+                month
+            );
+
+        month++;
+
+        if(month > 11){
+
+            month = 11;
+
+            break;
+        }
+    }
+
+    return {
+
+        year:
+            banglaYear,
+
+        month:
+            month,
+
+        day:
+            days + 1
+
+    };
+}
+
+
+/* =====================================================
+   BANGLA → GREGORIAN
+===================================================== */
+
+function banglaToGregorian(
+    year,
+    month,
+    day
+){
+
+    const gregorianYear =
+        year + 593;
+
+    const start =
+        new Date(
+            gregorianYear,
+            3,
+            14
+        );
+
+    let offset =
+        day - 1;
+
+    for(
+        let i = 0;
+        i < month;
+        i++
+    ){
+
+        offset +=
+            getBanglaMonthDays(
+                year,
+                i
+            );
+    }
+
+    const result =
+        new Date(start);
+
+    result.setDate(
+        result.getDate() +
+        offset
+    );
+
+    return result;
+}
+
+
+/* =====================================================
+   DATE INPUT FORMAT
+===================================================== */
+
+function inputDate(date){
+
+    const year =
+        date.getFullYear();
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(2,"0");
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(2,"0");
+
+    return `${year}-${month}-${day}`;
+}
+
+
+/* =====================================================
+   TODAY
+===================================================== */
+
+let today =
+    new Date();
+
+
+function updateToday(){
+
+    today =
+        new Date();
+
+    const bd =
+        gregorianToBangla(
+            today
+        );
+
+
+    document.getElementById(
+        "todayBangla"
+    ).textContent =
+
+        `${bn(bd.day)}
+        ${banglaMonths[bd.month]}
+        ${bn(bd.year)}
+        বঙ্গাব্দ`;
+
+
+    document.getElementById(
+        "todayWeekday"
+    ).textContent =
+
+        weekdays[
+            today.getDay()
+        ];
+
+
+    const englishDate =
+        today.toLocaleDateString(
+            "en-US",
+            {
+                day:"numeric",
+                month:"long",
+                year:"numeric"
+            }
+        );
+
+
+    document.getElementById(
+        "todayGregorian"
+    ).textContent =
+        englishDate;
+
+
+    document.getElementById(
+        "englishMeta"
+    ).textContent =
+        englishDate;
+
+
+    
+
+
+    document.getElementById(
+        "gregorianInput"
+    ).value =
+        inputDate(today);
+
+
+    document.getElementById(
+        "banglaYearInput"
+    ).value =
+        bd.year;
+
+
+    document.getElementById(
+        "banglaMonthInput"
+    ).value =
+        bd.month;
+
+
+    document.getElementById(
+        "banglaDayInput"
+    ).value =
+        bd.day;
+}
+
+
+/* =====================================================
+   CLOCK
+===================================================== */
+
+function updateClock(){
+
+    const now =
+        new Date();
+
+    document.getElementById(
+        "clock"
+    ).textContent =
+
+        now.toLocaleTimeString(
+            "bn-BD",
+            {
+                hour:"2-digit",
+                minute:"2-digit",
+                second:"2-digit",
+                hour12:true
+            }
+        );
+}
+
+
+setInterval(
+    updateClock,
+    1000
+);
+
+
+/* =====================================================
+   CALENDAR STATE
+===================================================== */
+
+let calendarDate =
+    new Date();
+
+
+/* =====================================================
+   CALENDAR RENDER
+===================================================== */
+
+function renderCalendar(){
+
+    const bd =
+        gregorianToBangla(
+            calendarDate
+        );
+
+    const year =
+        bd.year;
+
+    const month =
+        bd.month;
+
+
+    document.getElementById(
+        "calendarTitle"
+    ).textContent =
+
+        `${banglaMonths[month]}
+        ${bn(year)}`;
+
+
+    document.getElementById(
+        "calendarSubtitle"
+    ).textContent =
+
+        `${englishMonths[month]}
+        •
+        ${bn(
+            getBanglaMonthDays(
+                year,
+                month
+            )
+        )}
+        দিন`;
+
+
+    const grid =
+        document.getElementById(
+            "calendarGrid"
+        );
+
+
+    grid.innerHTML = "";
+
+
+    const firstDay =
+        banglaToGregorian(
+            year,
+            month,
+            1
+        );
+
+
+    const firstWeekday =
+        firstDay.getDay();
+
+
+    /* Empty cells */
+
+    for(
+        let i = 0;
+        i < firstWeekday;
+        i++
+    ){
+
+        const empty =
+            document.createElement(
+                "div"
+            );
+
+        empty.className =
+            "day empty";
+
+        grid.appendChild(
+            empty
+        );
+    }
+
+
+    const totalDays =
+        getBanglaMonthDays(
+            year,
+            month
+        );
+
+
+    const todayBD =
+        gregorianToBangla(
+            new Date()
+        );
+
+
+    for(
+        let day = 1;
+        day <= totalDays;
+        day++
+    ){
+
+        const greg =
+            banglaToGregorian(
+                year,
+                month,
+                day
+            );
+
+
+        const cell =
+            document.createElement(
+                "div"
+            );
+
+
+        cell.className =
+            "day";
+
+
+        const isToday =
+
+            year === todayBD.year &&
+            month === todayBD.month &&
+            day === todayBD.day;
+
+
+        if(isToday){
+
+            cell.classList.add(
+                "today"
+            );
+        }
+
+
+        const event =
+            findEventForDate(
+                greg
+            );
+
+
+        cell.innerHTML = `
+
+            ${
+                isToday
+                ?
+                `
+                <span class="today-badge">
+                    আজ
+                </span>
+                `
+                :
+                ""
+            }
+
+            <div class="day-number">
+
+                ${bn(day)}
+
+            </div>
+
+
+            <div class="day-greg">
+
+                ${bn(greg.getDate())}
+                /
+                ${bn(greg.getMonth()+1)}
+
+            </div>
+
+
+            ${
+                event
+                ?
+                `
+                <div class="day-event">
+
+                    ${escapeHTML(
+                        event.name
+                    )}
+
+                </div>
+                `
+                :
+                ""
+            }
+
+        `;
+
+
+        cell.title =
+            `${bn(day)}
+            ${banglaMonths[month]}
+            ${bn(year)}`;
+
+
+        cell.onclick =
+            () => openDateInfo(
+                greg,
+                year,
+                month,
+                day
+            );
+
+
+        grid.appendChild(
+            cell
+        );
+    }
+}
+
+
+/* =====================================================
+   MONTH NAVIGATION
+===================================================== */
+
+function previousMonth(){
+
+    const bd =
+        gregorianToBangla(
+            calendarDate
+        );
+
+
+    let year =
+        bd.year;
+
+    let month =
+        bd.month - 1;
+
+
+    if(month < 0){
+
+        month = 11;
+
+        year--;
+    }
+
+
+    calendarDate =
+        banglaToGregorian(
+            year,
+            month,
+            1
+        );
+
+
+    renderCalendar();
+}
+
+
+function nextMonth(){
+
+    const bd =
+        gregorianToBangla(
+            calendarDate
+        );
+
+
+    let year =
+        bd.year;
+
+    let month =
+        bd.month + 1;
+
+
+    if(month > 11){
+
+        month = 0;
+
+        year++;
+    }
+
+
+    calendarDate =
+        banglaToGregorian(
+            year,
+            month,
+            1
+        );
+
+
+    renderCalendar();
+}
+
+
+function goToday(){
+
+    calendarDate =
+        new Date();
+
+    renderCalendar();
+
+    document.getElementById(
+        "calendar"
+    ).scrollIntoView({
+        behavior:"smooth"
+    });
+}
+
+
+/* =====================================================
+   CONVERTER TABS
+===================================================== */
+
+function switchConverter(type){
+
+    const gregorian =
+        document.getElementById(
+            "gregorianConverter"
+        );
+
+    const bangla =
+        document.getElementById(
+            "banglaConverter"
+        );
+
+    const gTab =
+        document.getElementById(
+            "tabGregorian"
+        );
+
+    const bTab =
+        document.getElementById(
+            "tabBangla"
+        );
+
+
+    if(type === "gregorian"){
+
+        gregorian.style.display =
+            "block";
+
+        bangla.style.display =
+            "none";
+
+        gTab.classList.add(
+            "active"
+        );
+
+        bTab.classList.remove(
+            "active"
+        );
+
+    }else{
+
+        gregorian.style.display =
+            "none";
+
+        bangla.style.display =
+            "block";
+
+        gTab.classList.remove(
+            "active"
+        );
+
+        bTab.classList.add(
+            "active"
+        );
+    }
+}
+
+
+/* =====================================================
+   MONTH SELECT
+===================================================== */
+
+function populateMonths(){
+
+    const select =
+        document.getElementById(
+            "banglaMonthInput"
+        );
+
+
+    select.innerHTML = "";
+
+
+    banglaMonths.forEach(
+        (month,index)=>{
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                index;
+
+            option.textContent =
+                month;
+
+            select.appendChild(
+                option
+            );
+        }
+    );
+}
+
+
+/* =====================================================
+   GREGORIAN → BANGLA
+===================================================== */
+
+function convertGregorian(){
+
+    const value =
+        document.getElementById(
+            "gregorianInput"
+        ).value;
+
+
+    if(!value){
+
+        showToast(
+            "তারিখ নির্বাচন করুন"
+        );
+
+        return;
+    }
+
+
+    const date =
+        new Date(
+            value +
+            "T00:00:00"
+        );
+
+
+    const bd =
+        gregorianToBangla(
+            date
+        );
+
+
+    document.getElementById(
+        "conversionResult"
+    ).textContent =
+
+        `${bn(bd.day)}
+        ${banglaMonths[bd.month]}
+        ${bn(bd.year)}
+        বঙ্গাব্দ`;
+}
+
+
+/* =====================================================
+   BANGLA → GREGORIAN
+===================================================== */
+
+function convertBangla(){
+
+    const year =
+        Number(
+            document.getElementById(
+                "banglaYearInput"
+            ).value
+        );
+
+
+    const month =
+        Number(
+            document.getElementById(
+                "banglaMonthInput"
+            ).value
+        );
+
+
+    const day =
+        Number(
+            document.getElementById(
+                "banglaDayInput"
+            ).value
+        );
+
+
+    if(
+        !year ||
+        !Number.isInteger(day) ||
+        day < 1 ||
+        day >
+        getBanglaMonthDays(
+            year,
+            month
+        )
+    ){
+
+        showToast(
+            "সঠিক বাংলা তারিখ দিন"
+        );
+
+        return;
+    }
+
+
+    const date =
+        banglaToGregorian(
+            year,
+            month,
+            day
+        );
+
+
+    document.getElementById(
+        "conversionResult"
+    ).textContent =
+
+        date.toLocaleDateString(
+            "bn-BD",
+            {
+                weekday:"long",
+                day:"numeric",
+                month:"long",
+                year:"numeric"
+            }
+        );
+}
+
+
+/* =====================================================
+   YEAR OVERVIEW
+===================================================== */
+
+function renderYear(){
+
+    const bd =
+        gregorianToBangla(
+            new Date()
+        );
+
+
+    const year =
+        bd.year;
+
+
+    document.getElementById(
+        "yearTitle"
+    ).textContent =
+
+        `${bn(year)}
+        বঙ্গাব্দ`;
+
+
+    const grid =
+        document.getElementById(
+            "yearGrid"
+        );
+
+
+    grid.innerHTML = "";
+
+
+    for(
+        let month = 0;
+        month < 12;
+        month++
+    ){
+
+        const box =
+            document.createElement(
+                "div"
+            );
+
+
+        box.className =
+            "month-box";
+
+
+        if(month === bd.month){
+
+            box.classList.add(
+                "current"
+            );
+        }
+
+
+        box.innerHTML = `
+
+            <strong>
+                ${banglaMonths[month]}
+            </strong>
+
+            <span>
+                ${englishMonths[month]}
+            </span>
+
+            <span>
+                ${bn(
+                    getBanglaMonthDays(
+                        year,
+                        month
+                    )
+                )}
+                দিন
+            </span>
+
+        `;
+
+
+        box.onclick =
+            () => {
+
+                calendarDate =
+                    banglaToGregorian(
+                        year,
+                        month,
+                        1
+                    );
+
+
+                renderCalendar();
+
+
+                document.getElementById(
+                    "calendar"
+                ).scrollIntoView({
+                    behavior:"smooth"
+                });
+            };
+
+
+        grid.appendChild(
+            box
+        );
+    }
+}
+
+
+/* =====================================================
+   HOLIDAYS
+===================================================== */
+
+const holidays = [
+
+    // October 2026
+
+{
+    date:"2026-10-20",
+    name:"দুর্গাপূজা (নবমী)",
+    desc:
+        "হিন্দু ধর্মীয় উৎসব"
+},
+
+{
+    date:"2026-10-21",
+    name:"বিজয়া দশমী",
+    desc:
+        "হিন্দু ধর্মীয় উৎসব"
+},
+
+// November 2026
+
+// November 2026-এ কোনো সাধারণ সরকারি ছুটি নেই
+
+// December 2026
+
+{
+    date:"2026-12-16",
+    name:"বিজয় দিবস",
+    desc:
+        "জাতীয় দিবস"
+},
+
+{
+    date:"2026-12-25",
+    name:"বড়দিন",
+    desc:
+        "খ্রিস্টান ধর্মীয় উৎসব"
+}
+
+];
+
+
+function renderHolidays(){
+
+    const list =
+        document.getElementById(
+            "holidayList"
+        );
+
+
+    list.innerHTML = "";
+
+
+    holidays.forEach(
+        item => {
+
+            const date =
+                new Date(
+                    item.date +
+                    "T00:00:00"
+                );
+
+
+            const bd =
+                gregorianToBangla(
+                    date
+                );
+
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "event-item";
+
+
+            row.innerHTML = `
+
+                <div class="event-date">
+
+                    ${bn(bd.day)}
+
+                    <small>
+                        ${banglaMonths[
+                            bd.month
+                        ].slice(0,3)}
+                    </small>
+
+                </div>
+
+
+                <div class="event-info">
+
+                    <strong>
+                        ${item.name}
+                    </strong>
+
+                    <span>
+
+                        ${item.desc}
+
+                        •
+
+                        ${date.toLocaleDateString(
+                            "bn-BD",
+                            {
+                                day:"numeric",
+                                month:"long"
+                            }
+                        )}
+
+                    </span>
+
+                </div>
+
+            `;
+
+
+            list.appendChild(
+                row
+            );
+        }
+    );
+}
+
+
+/* =====================================================
+   EVENTS
+===================================================== */
+
+function getEvents(){
+
+    try{
+
+        return JSON.parse(
+            localStorage.getItem(
+                "banglaEvents"
+            ) || "[]"
+        );
+
+    }catch{
+
+        return [];
+    }
+}
+
+
+function saveEvents(events){
+
+    localStorage.setItem(
+        "banglaEvents",
+        JSON.stringify(events)
+    );
+}
+
+
+function findEventForDate(date){
+
+    const events =
+        getEvents();
+
+
+    const target =
+        inputDate(date);
+
+
+    return events.find(
+        event =>
+            event.date === target
+    );
+}
+
+
+function renderMyEvents(){
+
+    const list =
+        document.getElementById(
+            "myEventList"
+        );
+
+
+    const events =
+        getEvents();
+
+
+    list.innerHTML = "";
+
+
+    if(events.length === 0){
+
+        list.innerHTML = `
+
+            <div
+            style="
+                color:var(--muted);
+                font-size:12px;
+                text-align:center;
+                padding:20px 0;
+            "
+            >
+
+                এখনো কোনো ইভেন্ট নেই
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    events
+        .sort(
+            (a,b) =>
+                a.date.localeCompare(
+                    b.date
+                )
+        )
+        .forEach(
+            (event,index)=>{
+
+                const date =
+                    new Date(
+                        event.date +
+                        "T00:00:00"
+                    );
+
+
+                const bd =
+                    gregorianToBangla(
+                        date
+                    );
+
+
+                const row =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                row.className =
+                    "event-item";
+
+
+                row.innerHTML = `
+
+                    <div class="event-date">
+
+                        ${bn(bd.day)}
+
+                    </div>
+
+
+                    <div class="event-info">
+
+                        <strong>
+
+                            ${escapeHTML(
+                                event.name
+                            )}
+
+                        </strong>
+
+
+                        <span>
+
+                            ${date.toLocaleDateString(
+                                "bn-BD",
+                                {
+                                    day:"numeric",
+                                    month:"long"
+                                }
+                            )}
+
+                            ${
+                                event.description
+                                ?
+                                " • " +
+                                escapeHTML(
+                                    event.description
+                                )
+                                :
+                                ""
+                            }
+
+                        </span>
+
+                    </div>
+
+
+                    <button
+                    class="btn danger small"
+                    onclick="deleteEvent(${index})"
+                    title="Delete"
+                    >
+
+                        <svg class="icon sm">
+
+                            <use href="#i-trash"/>
+
+                        </svg>
+
+                    </button>
+
+                `;
+
+
+                list.appendChild(
+                    row
+                );
+            }
+        );
+}
+
+
+/* =====================================================
+   EVENT MODAL
+===================================================== */
+
+function openEventModal(){
+
+    document.getElementById(
+        "eventModal"
+    ).classList.add(
+        "show"
+    );
+
+
+    document.getElementById(
+        "eventDate"
+    ).value =
+        inputDate(
+            new Date()
+        );
+
+
+    setTimeout(
+        () =>
+            document.getElementById(
+                "eventName"
+            ).focus(),
+        100
+    );
+}
+
+
+function closeEventModal(){
+
+    document.getElementById(
+        "eventModal"
+    ).classList.remove(
+        "show"
+    );
+}
+
+
+function saveEvent(){
+
+    const name =
+        document.getElementById(
+            "eventName"
+        ).value.trim();
+
+
+    const date =
+        document.getElementById(
+            "eventDate"
+        ).value;
+
+
+    const description =
+        document.getElementById(
+            "eventDescription"
+        ).value.trim();
+
+
+    if(!name || !date){
+
+        showToast(
+            "ইভেন্টের নাম ও তারিখ দিন"
+        );
+
+        return;
+    }
+
+
+    const events =
+        getEvents();
+
+
+    events.push({
+
+        id:
+            Date.now(),
+
+        name,
+
+        date,
+
+        description
+
+    });
+
+
+    saveEvents(
+        events
+    );
+
+
+    document.getElementById(
+        "eventName"
+    ).value = "";
+
+
+    document.getElementById(
+        "eventDescription"
+    ).value = "";
+
+
+    closeEventModal();
+
+
+    renderMyEvents();
+
+    renderCalendar();
+
+
+    showToast(
+        "ইভেন্ট সংরক্ষণ হয়েছে"
+    );
+}
+
+
+function deleteEvent(index){
+
+    const events =
+        getEvents();
+
+
+    events.splice(
+        index,
+        1
+    );
+
+
+    saveEvents(
+        events
+    );
+
+
+    renderMyEvents();
+
+    renderCalendar();
+
+
+    showToast(
+        "ইভেন্ট মুছে ফেলা হয়েছে"
+    );
+}
+
+
+/* =====================================================
+   DATE INFO
+===================================================== */
+
+function openDateInfo(
+    date,
+    year,
+    month,
+    day
+){
+
+    const event =
+        findEventForDate(
+            date
+        );
+
+
+    const text =
+
+        `${bn(day)}
+        ${banglaMonths[month]}
+        ${bn(year)}
+        বঙ্গাব্দ`;
+
+
+    if(event){
+
+        showToast(
+            `${text} — ${event.name}`
+        );
+
+    }else{
+
+        showToast(
+            text
+        );
+    }
+}
+
+
+/* =====================================================
+   COPY DATE
+===================================================== */
+
+async function copyDate(){
+
+    const bd =
+        gregorianToBangla(
+            new Date()
+        );
+
+
+    const text =
+
+        `${bn(bd.day)}
+        ${banglaMonths[bd.month]}
+        ${bn(bd.year)}
+        বঙ্গাব্দ`;
+
+
+    try{
+
+        await navigator.clipboard.writeText(
+            text
+        );
+
+
+        showToast(
+            "বাংলা তারিখ কপি হয়েছে"
+        );
+
+    }catch{
+
+        showToast(
+            text
+        );
+    }
+}
+
+
+/* =====================================================
+   SHARE
+===================================================== */
+
+async function shareDate(){
+
+    const bd =
+        gregorianToBangla(
+            new Date()
+        );
+
+
+    const text =
+
+        `${bn(bd.day)}
+        ${banglaMonths[bd.month]}
+        ${bn(bd.year)}
+        বঙ্গাব্দ`;
+
+
+    if(
+        navigator.share
+    ){
+
+        try{
+
+            await navigator.share({
+
+                title:
+                    "বাংলা তারিখ",
+
+                text:
+                    text
+
+            });
+
+        }catch{}
+
+    }else{
+
+        copyDate();
+
+    }
+}
+
+
+/* =====================================================
+   NUMBER TOGGLE
+===================================================== */
+
+function toggleNumbers(){
+
+    useBanglaNumbers =
+        !useBanglaNumbers;
+
+
+    updateToday();
+
+    renderCalendar();
+
+    renderYear();
+
+    renderHolidays();
+
+    renderMyEvents();
+
+
+    showToast(
+
+        useBanglaNumbers
+        ?
+        "বাংলা সংখ্যা চালু"
+        :
+        "English number চালু"
+
+    );
+}
+
+
+/* =====================================================
+   THEME
+===================================================== */
+
+function toggleTheme(){
+
+    document.body.classList.toggle(
+        "dark"
+    );
+
+
+    const dark =
+        document.body.classList.contains(
+            "dark"
+        );
+
+
+    localStorage.setItem(
+        "banglaTheme",
+        dark
+            ? "dark"
+            : "light"
+    );
+
+
+    document
+        .getElementById(
+            "themeIcon"
+        )
+        .setAttribute(
+            "href",
+            dark
+                ? "#i-sun"
+                : "#i-moon"
+        );
+}
+
+
+/* =====================================================
+   LOAD THEME
+===================================================== */
+
+function loadTheme(){
+
+    const dark =
+        localStorage.getItem(
+            "banglaTheme"
+        ) === "dark";
+
+
+    if(dark){
+
+        document.body.classList.add(
+            "dark"
+        );
+
+
+        document
+            .getElementById(
+                "themeIcon"
+            )
+            .setAttribute(
+                "href",
+                "#i-sun"
+            );
+    }
+}
+
+
+/* =====================================================
+   DOWNLOAD MENU
+===================================================== */
+
+function toggleDownloadMenu(event){
+
+    event.stopPropagation();
+
+
+    const menu =
+        document.getElementById(
+            "downloadMenu"
+        );
+
+
+    menu.classList.toggle(
+        "show"
+    );
+}
+
+
+document.addEventListener(
+    "click",
+    function(){
+
+        closeDownloadMenu();
+
+    }
+);
+
+
+function closeDownloadMenu(){
+
+    const menu =
+        document.getElementById(
+            "downloadMenu"
+        );
+
+
+    if(menu){
+
+        menu.classList.remove(
+            "show"
+        );
+    }
+}
+
+
+/* =====================================================
+   PNG DOWNLOAD
+===================================================== */
+
+async function downloadCalendarPNG(){
+
+    closeDownloadMenu();
+
+
+    const calendar =
+        document.getElementById(
+            "calendar"
+        );
+
+
+    if(!calendar){
+
+        showToast(
+            "ক্যালেন্ডার পাওয়া যায়নি"
+        );
+
+        return;
+    }
+
+
+    showToast(
+        "PNG তৈরি হচ্ছে..."
+    );
+
+
+    try{
+
+        /*
+        Clone the calendar so the export
+        can be rendered cleanly.
+        */
+
+        const clone =
+            calendar.cloneNode(
+                true
+            );
+
+
+        clone.style.width =
+            "1100px";
+
+        clone.style.position =
+            "absolute";
+
+        clone.style.left =
+            "-99999px";
+
+        clone.style.top =
+            "0";
+
+        clone.style.background =
+            "#ffffff";
+
+        clone.style.color =
+            "#102a25";
+
+
+        document.body.appendChild(
+            clone
+        );
+
+
+        const canvas =
+            await html2canvas(
+                clone,
+                {
+                    scale:2,
+
+                    useCORS:true,
+
+                    backgroundColor:
+                        "#ffffff",
+
+                    logging:false,
+
+                    width:1100
+                }
+            );
+
+
+        clone.remove();
+
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+
+        link.download =
+            "bangla-calendar.png";
+
+
+        link.href =
+            canvas.toDataURL(
+                "image/png"
+            );
+
+
+        document.body.appendChild(
+            link
+        );
+
+
+        link.click();
+
+
+        link.remove();
+
+
+        showToast(
+            "PNG ডাউনলোড হয়েছে"
+        );
+
+
+    }catch(error){
+
+        console.error(
+            error
+        );
+
+
+        showToast(
+            "PNG তৈরি করা যায়নি"
+        );
+    }
+}
+
+
+/* =====================================================
+   PDF DOWNLOAD
+===================================================== */
+
+async function downloadCalendarPDF(){
+
+    closeDownloadMenu();
+
+
+    const calendar =
+        document.getElementById(
+            "calendar"
+        );
+
+
+    if(!calendar){
+
+        showToast(
+            "ক্যালেন্ডার পাওয়া যায়নি"
+        );
+
+        return;
+    }
+
+
+    showToast(
+        "PDF তৈরি হচ্ছে..."
+    );
+
+
+    try{
+
+        const clone =
+            calendar.cloneNode(
+                true
+            );
+
+
+        clone.style.width =
+            "1100px";
+
+        clone.style.position =
+            "absolute";
+
+        clone.style.left =
+            "-99999px";
+
+        clone.style.top =
+            "0";
+
+        clone.style.background =
+            "#ffffff";
+
+        clone.style.color =
+            "#102a25";
+
+
+        document.body.appendChild(
+            clone
+        );
+
+
+        const canvas =
+            await html2canvas(
+                clone,
+                {
+                    scale:2,
+
+                    useCORS:true,
+
+                    backgroundColor:
+                        "#ffffff",
+
+                    logging:false,
+
+                    width:1100
+                }
+            );
+
+
+        clone.remove();
+
+
+        const imageData =
+            canvas.toDataURL(
+                "image/png"
+            );
+
+
+        const {
+            jsPDF
+        } =
+            window.jspdf;
+
+
+        const pdf =
+            new jsPDF({
+
+                orientation:
+                    "landscape",
+
+                unit:
+                    "mm",
+
+                format:
+                    "a4"
+
+            });
+
+
+        const pageWidth =
+            pdf.internal.pageSize.getWidth();
+
+
+        const pageHeight =
+            pdf.internal.pageSize.getHeight();
+
+
+        const margin =
+            8;
+
+
+        const availableWidth =
+            pageWidth -
+            margin * 2;
+
+
+        const availableHeight =
+            pageHeight -
+            margin * 2;
+
+
+        const imageRatio =
+            canvas.width /
+            canvas.height;
+
+
+        let imageWidth =
+            availableWidth;
+
+
+        let imageHeight =
+            imageWidth /
+            imageRatio;
+
+
+        if(
+            imageHeight >
+            availableHeight
+        ){
+
+            imageHeight =
+                availableHeight;
+
+
+            imageWidth =
+                imageHeight *
+                imageRatio;
+        }
+
+
+        const x =
+            (
+                pageWidth -
+                imageWidth
+            ) / 2;
+
+
+        const y =
+            (
+                pageHeight -
+                imageHeight
+            ) / 2;
+
+
+        pdf.addImage(
+
+            imageData,
+
+            "PNG",
+
+            x,
+
+            y,
+
+            imageWidth,
+
+            imageHeight
+
+        );
+
+
+        pdf.save(
+            "bangla-calendar.pdf"
+        );
+
+
+        showToast(
+            "PDF ডাউনলোড হয়েছে"
+        );
+
+
+    }catch(error){
+
+        console.error(
+            error
+        );
+
+
+        showToast(
+            "PDF তৈরি করা যায়নি"
+        );
+    }
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+document
+    .getElementById(
+        "searchInput"
+    )
+    .addEventListener(
+        "input",
+        function(){
+
+            const query =
+                this.value
+                    .trim()
+                    .toLowerCase();
+
+
+            if(!query){
+
+                return;
+            }
+
+
+            const matched =
+                holidays.filter(
+                    item =>
+                        item.name
+                            .toLowerCase()
+                            .includes(
+                                query
+                            )
+                );
+
+
+            if(
+                matched.length
+            ){
+
+                document
+                    .getElementById(
+                        "holidays"
+                    )
+                    .scrollIntoView({
+                        behavior:
+                            "smooth"
+                    });
+
+
+                showToast(
+                    `${matched.length}
+                    টি ফলাফল পাওয়া গেছে`
+                );
+
+            }else{
+
+                showToast(
+                    "কোনো ফলাফল পাওয়া যায়নি"
+                );
+            }
+        }
+    );
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+let toastTimer;
+
+
+function showToast(
+    message
+){
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+
+    toast.textContent =
+        message;
+
+
+    toast.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+        setTimeout(
+            () => {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            2500
+        );
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHTML(
+    value
+){
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
+
+
+/* =====================================================
+   KEYBOARD SHORTCUTS
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.target.tagName ===
+            "INPUT"
+        ){
+
+            return;
+        }
+
+
+        if(
+            event.key ===
+            "ArrowLeft"
+        ){
+
+            previousMonth();
+        }
+
+
+        if(
+            event.key ===
+            "ArrowRight"
+        ){
+
+            nextMonth();
+        }
+
+
+        if(
+            event.key.toLowerCase()
+            === "t"
+        ){
+
+            goToday();
+        }
+
+
+        if(
+            event.key.toLowerCase()
+            === "d"
+        ){
+
+            toggleTheme();
+        }
+    }
+);
+
+
+/* =====================================================
+   CLOSE MODAL OUTSIDE
+===================================================== */
+
+document
+    .getElementById(
+        "eventModal"
+    )
+    .addEventListener(
+        "click",
+        function(event){
+
+            if(
+                event.target === this
+            ){
+
+                closeEventModal();
+
+            }
+        }
+    );
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+function init(){
+
+    loadTheme();
+
+    populateMonths();
+
+    updateToday();
+
+    updateClock();
+
+    renderCalendar();
+
+    renderYear();
+
+    renderHolidays();
+
+    renderMyEvents();
+
+}
+
+
+init();
+
+</script>
+
+</body>
+</html>
