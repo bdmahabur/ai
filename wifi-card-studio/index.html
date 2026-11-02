@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10131a">
+<title>WiFi Card Studio</title>
+<link rel="icon" type="image/svg+xml"
+href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23635bff'/%3E%3Cg fill='none' stroke='white' stroke-width='8' stroke-linecap='round'%3E%3Cpath d='M15 35 Q50 3 85 35'/%3E%3Cpath d='M27 49 Q50 29 73 49'/%3E%3Cpath d='M39 63 Q50 53 61 63'/%3E%3C/g%3E%3Ccircle cx='50' cy='76' r='6' fill='white'/%3E%3C/svg%3E">
+
+<style>
+:root {
+ --bg:#f3f5f9;--panel:#fff;--text:#171923;
+ --muted:#687080;--line:#e3e7ef;
+ --accent:#635bff;--accent2:#4b44df;
+ --field:#f8f9fc;--shadow:0 18px 55px #17203a12;
+}
+[data-theme="dark"] {
+ --bg:#0e1118;--panel:#171c26;--text:#f2f4fa;
+ --muted:#a2aabc;--line:#2a3241;
+ --accent:#8b83ff;--accent2:#7168f3;
+ --field:#10151e;--shadow:0 18px 55px #0005;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:15px/1.5 Inter,system-ui,sans-serif;
+ transition:background .2s,color .2s;
+}
+header{
+ max-width:1180px;margin:auto;padding:26px 24px 16px;
+ display:flex;align-items:center;justify-content:space-between;gap:18px;
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-icon{
+ width:42px;height:42px;border-radius:13px;
+ background:var(--accent);color:white;
+ display:grid;place-items:center;font-size:22px;
+}
+.brand h1{font-size:20px;margin:0}
+.brand p{margin:1px 0 0;color:var(--muted);font-size:12px}
+.btn{
+ border:1px solid var(--line);background:var(--panel);
+ color:var(--text);padding:10px 14px;border-radius:11px;
+ font-weight:650;cursor:pointer;display:inline-flex;
+ align-items:center;justify-content:center;gap:8px;
+}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:white}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Consistent inline SVG sizing: prevents SVGs from expanding to 300x150 */
+.icon{
+ width:22px;
+ height:22px;
+ min-width:22px;
+ max-width:22px;
+ flex:0 0 22px;
+ display:block;
+}
+.brand-icon svg{width:24px;height:24px;display:block}
+.reveal .icon{width:20px;height:20px;min-width:20px;max-width:20px;flex-basis:20px}
+#themeIcon .icon{width:18px;height:18px;min-width:18px;max-width:18px;flex-basis:18px}
+#updateBtn .icon{width:20px;height:20px;min-width:20px;max-width:20px;flex-basis:20px}
+.export-row .btn{min-height:76px}
+.export-row .icon{
+ width:34px;
+ height:34px;
+ min-width:34px;
+ max-width:34px;
+ flex:0 0 34px;
+}
+
+
+main{
+ max-width:1180px;margin:auto;padding:12px 24px 44px;
+ display:grid;grid-template-columns:minmax(300px,430px) minmax(340px,1fr);
+ gap:24px;align-items:start;
+}
+.panel{
+ background:var(--panel);border:1px solid var(--line);
+ border-radius:18px;box-shadow:var(--shadow);padding:22px;
+}
+.panel h2{font-size:16px;margin:0 0 5px}
+.sub{color:var(--muted);font-size:12px;margin:0 0 20px}
+.field{margin-bottom:15px}
+.field label{
+ display:flex;justify-content:space-between;
+ font-size:12px;font-weight:700;margin-bottom:7px;
+}
+input,select{
+ width:100%;padding:12px 13px;border:1px solid var(--line);
+ background:var(--field);color:var(--text);
+ border-radius:10px;font:inherit;outline:none;
+}
+input:focus,select:focus{border-color:var(--accent)}
+.input-wrap{position:relative}
+.input-wrap input{padding-right:48px}
+.reveal{
+ position:absolute;right:7px;top:6px;border:0;
+ background:transparent;color:var(--muted);
+ padding:7px;cursor:pointer;
+}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.check{
+ display:flex;align-items:center;gap:8px;
+ color:var(--muted);font-size:12px;margin:4px 0 16px;
+}
+.check input{width:auto;accent-color:var(--accent)}
+.divider{height:1px;background:var(--line);margin:18px 0}
+.section-label{
+ font-size:11px;text-transform:uppercase;
+ letter-spacing:1px;color:var(--muted);font-weight:800;
+}
+.preview-panel{position:sticky;top:18px}
+.preview-head{
+ display:flex;justify-content:space-between;
+ align-items:center;margin-bottom:16px;
+}
+.live{font-size:11px;color:#16a36a;font-weight:700}
+.card-stage{
+ background:repeating-linear-gradient(
+  45deg,var(--field),var(--field) 10px,
+  color-mix(in srgb,var(--line) 45%,var(--field)) 10px,
+  color-mix(in srgb,var(--line) 45%,var(--field)) 20px
+ );
+ border:1px solid var(--line);border-radius:14px;
+ padding:24px;display:grid;place-items:center;
+ min-height:590px;overflow:auto;
+}
+
+/* WIFI CARD */
+.wifi-card{
+ width:min(100%,390px);background:#fff;color:#111;
+ border:2px solid #111;box-shadow:0 12px 32px #0002;
+ text-align:center;overflow:hidden;
+ font-family:Arial,Helvetica,sans-serif;
+}
+.card-top{
+ background:#080808;color:white;
+ padding:23px 16px 17px;
+}
+
+/* SVG WIFI ICON */
+.wifi-symbol{
+ height:48px;display:flex;
+ justify-content:center;align-items:center;
+ margin:0 auto 8px;
+}
+.wifi-symbol svg{display:block}
+
+.card-top h3{
+ font-size:51px;letter-spacing:2px;
+ line-height:1;margin:0;font-weight:850;
+}
+.qr-zone{padding:23px 18px;background:#fff}
+.qr-frame{
+ width:250px;height:250px;max-width:100%;
+ margin:auto;border:8px solid #111;
+ display:grid;place-items:center;padding:7px;background:#fff;
+}
+.qr-frame canvas,.qr-frame img{
+ max-width:100%;height:auto!important;image-rendering:pixelated;
+}
+.scan-band{
+ background:#080808;color:#fff;padding:12px;
+ font-size:26px;font-weight:700;
+ display:flex;align-items:center;justify-content:center;gap:12px;
+}
+.phone-icon{
+ width:21px;height:34px;border:2px solid white;
+ border-radius:5px;position:relative;
+}
+.phone-icon:after{
+ content:"";position:absolute;top:3px;left:6px;
+ width:6px;height:1px;background:white;
+}
+.card-details {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.7;
+  letter-spacing: 0.3px;
+  padding: 18px 12px 20px;
+}
+.card-details p{margin:5px 0}
+
+/* CARD THEMES */
+.wifi-card.theme-classic{border-radius:0}
+
+.wifi-card.theme-soft{
+ border-radius:20px;border-color:#d9d9e8;
+}
+.wifi-card.theme-soft .card-top,
+.wifi-card.theme-soft .scan-band{background:#272449}
+
+.wifi-card.theme-midnight{border-color:#172b50}
+.wifi-card.theme-midnight .card-top,
+.wifi-card.theme-midnight .scan-band{background:#102344}
+.wifi-card.theme-midnight .card-details{background:#f0f5ff}
+
+.wifi-card.theme-ocean{border-color:#087eaa}
+.wifi-card.theme-ocean .card-top,
+.wifi-card.theme-ocean .scan-band{background:#087eaa}
+.wifi-card.theme-ocean .card-details{background:#eafaff}
+
+.wifi-card.theme-forest{border-color:#176342}
+.wifi-card.theme-forest .card-top,
+.wifi-card.theme-forest .scan-band{background:#14563a}
+.wifi-card.theme-forest .card-details{background:#effaf3}
+
+.wifi-card.theme-sunset{
+ border:0;border-radius:18px;
+}
+.wifi-card.theme-sunset .card-top{
+ background:linear-gradient(135deg,#f05a4f,#8b35a8);
+}
+.wifi-card.theme-sunset .scan-band{background:#8b35a8}
+.wifi-card.theme-sunset .card-details{background:#fff5f0}
+
+.wifi-card.theme-minimal{border:2px solid #dedede}
+.wifi-card.theme-minimal .card-top{
+ background:#fff;color:#111;padding-top:28px;
+}
+.wifi-card.theme-minimal .scan-band{
+ background:#f0f1f4;color:#111;
+}
+.wifi-card.theme-minimal .phone-icon{border-color:#111}
+.wifi-card.theme-minimal .phone-icon:after{background:#111}
+
+.wifi-card.theme-neon{
+ background:#10101a;color:#fff;
+ border:2px solid #7b5cff;border-radius:16px;
+}
+.wifi-card.theme-neon .card-top,
+.wifi-card.theme-neon .scan-band{
+ background:#10101a;color:#8fffea;
+}
+.wifi-card.theme-neon .card-details{background:#19192a;color:#fff}
+.wifi-card.theme-neon .qr-zone{background:#fff}
+.wifi-card.theme-neon .qr-frame{border-color:#8fffea}
+
+.preview-note{
+ color:var(--muted);font-size:11px;
+ text-align:center;margin:13px 0 0;
+}
+.export-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+.export-row .btn{flex:1}
+.status{min-height:18px;color:var(--muted);font-size:11px;margin-top:10px}
+.foot{
+ max-width:1180px;margin:auto;padding:0 24px 26px;
+ color:var(--muted);font-size:11px;
+}
+
+@media(max-width:520px){
+ .export-row{display:grid;grid-template-columns:1fr}
+ .export-row .btn{min-height:60px}
+ .export-row .icon{width:26px;height:26px;min-width:26px;max-width:26px;flex-basis:26px}
+}
+@media(max-width:820px){
+ main{grid-template-columns:1fr}
+ .preview-panel{position:static}
+ .card-stage{min-height:520px}
+ header{padding:18px 16px}
+ main{padding:8px 16px 30px}
+ .panel{padding:18px}
+}
+@media(max-width:420px){
+ .brand p{display:none}
+ .card-stage{padding:12px}
+ .wifi-card{width:100%}
+ .qr-frame{width:225px;height:225px}
+ .card-top h3{font-size:44px}
+}
+@media print{
+ body{background:white!important}
+ .no-print,header,.editor,.preview-head,
+ .preview-note,.foot{display:none!important}
+ main{display:block;padding:0;margin:0}
+ .preview-panel{
+  position:static;border:0;box-shadow:none;padding:0;
+ }
+ .card-stage{
+  background:white;border:0;padding:0;min-height:0;
+ }
+ .wifi-card{
+  width:90mm;box-shadow:none;margin:0 auto;
+  break-inside:avoid;
+ }
+ .export-row,.status{display:none!important}
+ @page{size:A4;margin:15mm}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div class="brand">
+  <div class="brand-icon" aria-hidden="true">
+   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+    <path d="M2.5 8.8a14.5 14.5 0 0 1 19 0"/><path d="M6 12.3a9.2 9.2 0 0 1 12 0"/><path d="M9.5 15.8a4 4 0 0 1 5 0"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/>
+   </svg>
+  </div>
+  <div>
+   <h1>WiFi Card Studio</h1>
+   <p>Make a scan-to-connect WiFi card for your shop</p>
+  </div>
+ </div>
+ <div class="top-actions">
+  <button class="btn" id="themeBtn" type="button">
+   <span id="themeIcon" aria-hidden="true"></span><span id="themeLabel">Dark</span>
+  </button>
+ </div>
+</header>
+
+<main>
+
+<!-- SETTINGS PANEL -->
+<section class="panel editor">
+ <h2>Network details</h2>
+ <p class="sub">Enter your shop WiFi details. The QR code is created in your browser.</p>
+
+ <div class="field">
+  <label for="ssid">WiFi network name (SSID)</label>
+  <input id="ssid"
+   maxlength="32" autocomplete="off"
+   placeholder="Enter your WiFi name">
+ </div>
+
+ <div class="field">
+  <label for="password">WiFi password</label>
+  <div class="input-wrap">
+   <input id="password"
+    autocomplete="off" placeholder="Enter WiFi password">
+   <button class="reveal" id="togglePass"
+    type="button" aria-label="Show password">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+     <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>
+    </svg>
+   </button>
+  </div>
+ </div>
+
+ <div class="two">
+  <div class="field">
+   <label for="security">Security</label>
+   <select id="security">
+    <option value="WPA" selected>WPA / WPA2 / WPA3</option>
+    <option value="WEP">WEP</option>
+    <option value="nopass">Open (no password)</option>
+   </select>
+  </div>
+  <div class="field">
+   <label for="titleText">Card heading</label>
+   <input id="titleText" maxlength="20" placeholder="WIFI">
+  </div>
+ </div>
+
+ <label class="check">
+  <input type="checkbox" id="hidden">
+  This is a hidden network
+ </label>
+
+ <div class="divider"></div>
+ <p class="section-label">Card appearance</p>
+
+ <div class="two">
+  <div class="field">
+   <label for="scanText">Scan instruction</label>
+   <input id="scanText" maxlength="24" placeholder="Scan">
+  </div>
+  <div class="field">
+   <label for="footerText">Footer label</label>
+   <input id="footerText" maxlength="20" placeholder="WiFi">
+  </div>
+ </div>
+
+ <label class="check">
+  <input type="checkbox" id="showPassword" checked>
+  Show password on printed card
+ </label>
+
+ <div class="field">
+  <label for="cardStyle">Card style</label>
+  <select id="cardStyle">
+   <option value="classic">Classic black & white</option>
+   <option value="soft">Soft rounded</option>
+   <option value="midnight">Midnight blue</option>
+   <option value="ocean">Ocean blue</option>
+   <option value="forest">Forest green</option>
+   <option value="sunset">Sunset gradient</option>
+   <option value="minimal">Minimal white</option>
+   <option value="neon">Neon dark</option>
+  </select>
+ </div>
+
+ <div class="divider"></div>
+
+ <button class="btn primary" id="updateBtn"
+  type="button" style="width:100%">
+  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5"/><path d="M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6l2 6M4 12l2 6a7 7 0 0 0 12.4-3"/></svg>
+  Update WiFi card
+ </button>
+
+ <div class="status" id="status" aria-live="polite">
+  Enter your WiFi details. They will be saved automatically in this browser.
+ </div>
+ <button class="btn" id="clearSavedBtn" type="button" style="width:100%;margin-top:8px">
+  Clear saved details
+ </button>
+</section>
+
+<!-- LIVE PREVIEW -->
+<section class="panel preview-panel">
+ <div class="preview-head">
+  <h2>Live card preview</h2>
+  <span class="live">LIVE PREVIEW</span>
+ </div>
+
+ <div class="card-stage">
+  <article class="wifi-card theme-classic" id="wifiCard">
+
+   <div class="card-top">
+
+    <!-- SVG WIFI ICON -->
+    <div class="wifi-symbol">
+     <svg viewBox="0 0 64 48" width="64" height="48">
+      <path d="M5 15C20 -1 44 -1 59 15"
+       fill="none" stroke="currentColor"
+       stroke-width="6" stroke-linecap="round"/>
+      <path d="M15 27C25 17 39 17 49 27"
+       fill="none" stroke="currentColor"
+       stroke-width="6" stroke-linecap="round"/>
+      <path d="M25 38C29 34 35 34 39 38"
+       fill="none" stroke="currentColor"
+       stroke-width="6" stroke-linecap="round"/>
+      <circle cx="32" cy="45" r="3.5" fill="currentColor"/>
+     </svg>
+    </div>
+
+    <h3 id="cardTitle">WIFI</h3>
+   </div>
+
+   <div class="qr-zone">
+    <div class="qr-frame" id="qrcode">
+     <span style="font-size:12px;color:#777">Creating QR...</span>
+    </div>
+   </div>
+
+   <div class="scan-band">
+    <span class="phone-icon"></span>
+    <span id="cardScan">Scan</span>
+   </div>
+
+   <div class="card-details">
+    <p>
+     <strong id="footerLabel">WiFi:</strong>
+     <span id="cardSsid">Your WiFi name</span>
+    </p>
+    <p id="passwordLine">
+     <strong>Password:</strong>
+     <span id="cardPassword">••••••••</span>
+    </p>
+   </div>
+
+  </article>
+ </div>
+
+ <p class="preview-note">
+  Customers can scan this QR code using their phone camera or WiFi settings.
+ </p>
+
+ <div class="export-row no-print">
+  <button class="btn primary" id="pngBtn" type="button">
+   <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5"/><path d="M5 20h14"/></svg>
+   Download PNG
+  </button>
+  <button class="btn" id="pdfBtn" type="button">
+   <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 14h8M9 18h8"/></svg>
+   Download PDF
+  </button>
+  <button class="btn" id="printBtn" type="button">
+   <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 8V3h10v5M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><path d="M7 14h10v7H7z"/><path d="M17 11h.01"/></svg>
+   Print
+  </button>
+ </div>
+
+ <div class="status no-print" id="exportStatus" aria-live="polite"></div>
+</section>
+
+</main>
+
+<div class="foot">
+ Privacy: QR generation and card rendering happen locally in your browser.
+ Avoid sharing this card publicly if you want to keep your WiFi private.
+</div>
+
+<!-- LIBRARIES -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+(() => {
+
+ const $ = id => document.getElementById(id);
+
+ const icons = {
+  moon: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z"/></svg>',
+  sun: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>'
+ };
+
+ function updateThemeButton() {
+  const dark = document.documentElement.dataset.theme === 'dark';
+  $('themeIcon').innerHTML = dark ? icons.sun : icons.moon;
+  $('themeLabel').textContent = dark ? 'Light' : 'Dark';
+ }
+
+ const fields = [
+  'ssid','password','security','titleText',
+  'scanText','footerText','hidden',
+  'showPassword','cardStyle'
+ ];
+
+ let qr = null;
+ let debounce;
+
+ // Escape special characters in WiFi QR data
+ function wifiEscape(value) {
+  return String(value)
+   .replace(/\\/g,'\\\\')
+   .replace(/;/g,'\\;')
+   .replace(/,/g,'\\,')
+   .replace(/:/g,'\\:')
+   .replace(/"/g,'\\"');
+ }
+
+ // Generate WiFi QR content
+ function payload() {
+  const type = $('security').value;
+  const ssid = wifiEscape($('ssid').value);
+
+  if(type === 'nopass') {
+   return `WIFI:T:nopass;S:${ssid};H:${$('hidden').checked};;`;
+  }
+
+  return `WIFI:T:${type};S:${ssid};P:${wifiEscape($('password').value)};H:${$('hidden').checked};;`;
+ }
+
+ // Update card preview
+ function render() {
+
+  const ssid = $('ssid').value.trim();
+  const pass = $('password').value;
+
+  // Update the visible card labels even before credentials are entered.
+  $('cardTitle').textContent =
+   $('titleText').value.trim() || 'WIFI';
+
+  $('cardScan').textContent =
+   $('scanText').value.trim() || 'Scan';
+
+  $('footerLabel').textContent =
+   ($('footerText').value.trim() || 'WiFi') + ':';
+
+  $('cardSsid').textContent = ssid || 'Your WiFi name';
+
+  $('cardPassword').textContent =
+   $('showPassword').checked && pass ? pass : '••••••••';
+
+  $('passwordLine').style.display =
+   $('security').value === 'nopass' ? 'none' : 'block';
+
+  // Apply selected card design.
+  const card = $('wifiCard');
+  const theme = $('cardStyle').value;
+  card.className = 'wifi-card theme-' + theme;
+
+  // Do not create an invalid QR code while required fields are empty.
+  const node = $('qrcode');
+  node.innerHTML = '';
+
+  if (!ssid) {
+   node.innerHTML = '<span style="font-size:12px;color:#777;text-align:center;padding:12px">Enter WiFi name to create QR code</span>';
+   $('status').textContent = 'Enter your WiFi name and password. Your details will be saved automatically.';
+   return;
+  }
+
+  if ($('security').value !== 'nopass' && !pass) {
+   node.innerHTML = '<span style="font-size:12px;color:#777;text-align:center;padding:12px">Enter WiFi password to create QR code</span>';
+   $('status').textContent = 'WiFi name entered. Now enter your password to generate the QR code.';
+   return;
+  }
+
+  try {
+
+   if (typeof QRCode === 'undefined') {
+    throw new Error(
+     'QR library did not load. Check your internet connection.'
+    );
+   }
+
+   qr = new QRCode(node, {
+    text: payload(),
+    width: 230,
+    height: 230,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+   });
+
+   $('status').textContent =
+    'Card updated. Your details are saved in this browser.';
+
+  } catch(e) {
+
+   node.textContent = 'QR code unavailable';
+   $('status').textContent = e.message;
+
+  }
+ }
+
+ // Save and restore form settings in this browser using localStorage.
+ const STORAGE_KEY = 'wifi-card-studio-settings-v1';
+
+ function saveSettings() {
+  const settings = {};
+
+  fields.forEach(id => {
+   const element = $(id);
+   settings[id] = element.type === 'checkbox'
+    ? element.checked
+    : element.value;
+  });
+
+  settings.theme = document.documentElement.dataset.theme || 'light';
+
+  try {
+   localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+   $('status').textContent = 'Your settings are saved automatically in this browser.';
+  } catch (error) {
+   $('status').textContent = 'Could not save settings. Your browser may have storage disabled.';
+  }
+ }
+
+ function loadSettings() {
+  try {
+   const saved = localStorage.getItem(STORAGE_KEY);
+   if (!saved) return;
+
+   const settings = JSON.parse(saved);
+
+   fields.forEach(id => {
+    if (settings[id] === undefined) return;
+    const element = $(id);
+
+    if (element.type === 'checkbox') {
+     element.checked = Boolean(settings[id]);
+    } else {
+     element.value = settings[id];
+    }
+   });
+
+   if (settings.theme === 'dark') {
+    document.documentElement.dataset.theme = 'dark';
+    updateThemeButton();
+   } else {
+    document.documentElement.dataset.theme = 'light';
+    updateThemeButton();
+   }
+
+  } catch (error) {
+   console.warn('Could not restore WiFi Card Studio settings:', error);
+  }
+ }
+
+ // Live update and save whenever a field changes.
+ function schedule() {
+  saveSettings();
+  clearTimeout(debounce);
+  debounce = setTimeout(render, 250);
+ }
+
+ // Restore previously saved values before attaching listeners and first render.
+ loadSettings();
+ updateThemeButton();
+
+ fields.forEach(id => {
+  $(id).addEventListener('input', schedule);
+  $(id).addEventListener('change', schedule);
+ });
+
+ $('updateBtn').addEventListener('click', render);
+
+ // Clear locally saved credentials and return all text fields to blank.
+ $('clearSavedBtn').addEventListener('click', () => {
+  try {
+   localStorage.removeItem(STORAGE_KEY);
+  } catch (error) {}
+
+  fields.forEach(id => {
+   const element = $(id);
+   if (element.type === 'checkbox') {
+    element.checked = id === 'showPassword';
+   } else if (element.tagName === 'SELECT') {
+    element.selectedIndex = 0;
+   } else {
+    element.value = '';
+   }
+  });
+
+  document.documentElement.dataset.theme = 'light';
+  updateThemeButton();
+  render();
+  $('status').textContent = 'Saved details cleared. All text fields are now empty.';
+ });
+
+ // Password visibility
+ $('togglePass').addEventListener('click', () => {
+  $('password').type =
+   $('password').type === 'password' ? 'text' : 'password';
+ });
+
+ $('password').type = 'password';
+
+ // Dark and light mode
+ $('themeBtn').addEventListener('click', () => {
+
+  const dark =
+   document.documentElement.dataset.theme !== 'dark';
+
+  document.documentElement.dataset.theme =
+   dark ? 'dark' : 'light';
+
+  updateThemeButton();
+
+  saveSettings();
+
+ });
+
+ // Capture card for export
+ async function capture() {
+
+  if(typeof html2canvas === 'undefined') {
+   throw new Error(
+    'Export library did not load. Check your internet connection.'
+   );
+  }
+
+  render();
+
+  await new Promise(resolve => setTimeout(resolve, 150));
+
+  return await html2canvas($('wifiCard'), {
+   backgroundColor:'#ffffff',
+   scale:3,
+   useCORS:true
+  });
+ }
+
+ // Download PNG
+ $('pngBtn').addEventListener('click', async () => {
+
+  const button = $('pngBtn');
+  button.disabled = true;
+
+  $('exportStatus').textContent = 'Preparing PNG...';
+
+  try {
+
+   const canvas = await capture();
+
+   const link = document.createElement('a');
+   link.download = 'shop-wifi-card.png';
+   link.href = canvas.toDataURL('image/png');
+   link.click();
+
+   $('exportStatus').textContent = 'PNG downloaded.';
+
+  } catch(e) {
+
+   $('exportStatus').textContent = e.message;
+
+  } finally {
+   button.disabled = false;
+  }
+
+ });
+
+ // Download PDF
+ $('pdfBtn').addEventListener('click', async () => {
+
+  const button = $('pdfBtn');
+  button.disabled = true;
+
+  $('exportStatus').textContent =
+   'Preparing print-ready PDF...';
+
+  try {
+
+   const canvas = await capture();
+   const img = canvas.toDataURL('image/png');
+
+   const { jsPDF } = window.jspdf;
+
+   const pdf = new jsPDF({
+    orientation:'portrait',
+    unit:'mm',
+    format:'a4'
+   });
+
+   const width = 90;
+   const height = width * canvas.height / canvas.width;
+
+   pdf.addImage(
+    img,'PNG',(210-width)/2,25,width,height
+   );
+
+   pdf.save('shop-wifi-card.pdf');
+
+   $('exportStatus').textContent =
+    'PDF downloaded (A4 page with centered card).';
+
+  } catch(e) {
+
+   $('exportStatus').textContent = e.message;
+
+  } finally {
+   button.disabled = false;
+  }
+
+ });
+
+ // Print card
+ $('printBtn').addEventListener('click', () => {
+  render();
+  window.print();
+ });
+
+ // Initial render
+ render();
+
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Birth Certificate Generator</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Cpath d='M18 9h20l10 10v36H18z' fill='white'/%3E%3Cpath d='M38 9v12h10' fill='%23dbeafe'/%3E%3Crect x='24' y='27' width='18' height='3' rx='1.5' fill='%232563eb'/%3E%3Crect x='24' y='34' width='14' height='3' rx='1.5' fill='%2394a3b8'/%3E%3Crect x='24' y='41' width='17' height='3' rx='1.5' fill='%2394a3b8'/%3E%3Ccircle cx='24' cy='49' r='8' fill='%232563eb'/%3E%3Cpath d='M21 49l2 2 4-5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.maateen.me/solaiman-lipi/font.css" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,"Noto Sans Bengali",sans-serif;background:#f3f4f6;color:#111}
+.app{max-width:1500px;margin:0 auto;padding:22px}
+.toolbar{background:#fff;border:1px solid #ddd;border-radius:12px;padding:16px;margin-bottom:18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.toolbar h1{font-size:20px;margin:0 20px 0 0}
+button{border:0;border-radius:8px;padding:11px 16px;font-weight:600;cursor:pointer}
+.primary{background:#111827;color:white}.secondary{background:#e5e7eb;color:#111827}
+.layout{display:grid;grid-template-columns:430px 1fr;gap:18px}
+.panel{background:#fff;border:1px solid #ddd;border-radius:12px;padding:18px}
+.panel h2{font-size:16px;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.full{grid-column:1/-1}
+label{font-size:12px;font-weight:700;display:block;margin-bottom:5px}
+input{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:7px;font-size:14px}
+input:focus{outline:2px solid #dbeafe;border-color:#2563eb}
+.preview-wrap{overflow:auto;background:#d1d5db;border-radius:10px;padding:24px;min-height:850px}
+.certificate{position:relative;width:210mm;height:297mm;margin:auto;background:#fff;overflow:hidden;padding:14mm;font-family:Arial,"Noto Sans Bengali",sans-serif;color:#111;box-shadow:0 3px 18px #0002}
+.content{position:relative;z-index:2;width:100%;height:100%}
+.certificate-watermark{position:absolute;left:50%;top:54.5%;width:150mm;height:150mm;object-fit:contain;transform:translate(-50%,-50%);opacity:.10;z-index:1;pointer-events:none;user-select:none}
+.top-area{position:relative;width:100%;height:16mm}
+.header-logo-area{position:absolute;top:0;left:50%;width:16mm;height:16mm;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;z-index:5}
+.header-logo{display:block;width:14mm;height:14mm;object-fit:contain}
+.qr-area{position:absolute;top:0;left:0;width:32mm;height:32mm;z-index:3}
+.qr{display:block;width:30mm;height:30mm;object-fit:contain}
+.barcode-area{position:absolute;top:0;right:0;width:55mm;height:16mm;display:flex;align-items:flex-start;justify-content:flex-end;z-index:3}
+.barcode{display:block;width:55mm;height:13mm;margin:0}
+.header-text{position:relative;z-index:4;width:100%;text-align:center;line-height:1.15}
+.gov-title{font-size:19px;font-weight:400;line-height:1.2;white-space:nowrap}
+.office-title{font-size:15px;line-height:1.2;white-space:nowrap;margin-top:1mm}
+.union-title{font-size:15px;line-height:1.2;white-space:nowrap;margin-top:1.5mm}
+.location-title{font-size:14px;line-height:1.2;white-space:nowrap;margin-top:1mm}
+.rules{font-size:13.5px;line-height:1.2;margin-top:1mm}
+.certificate-title{position:relative;z-index:4;text-align:center;font-family:"SolaimanLipi",Georgia,serif;font-size:23px;font-weight:700;line-height:1.3;white-space:nowrap;margin-top:6mm;margin-bottom:6mm}
+.certificate-title span{font-family:SolaimanLipi,"Times New Roman",serif}
+.registration-info{position:relative;z-index:4;display:grid;grid-template-columns:1fr 1.5fr 1fr;width:100%;margin-bottom:8mm}
+.reg-label{font-size:15px;margin-bottom:2mm}.reg-value{font-size:15px}.reg-number{font-size:15px;font-weight:700}.reg-center{text-align:center}.reg-right{text-align:right;padding-right:3mm}
+.birth-info{position:relative;z-index:4;display:grid;grid-template-columns:1fr 1fr;width:100%;margin-bottom:1mm}
+.birth-date-row{display:grid;grid-template-columns:30mm 5mm 1fr;align-items:start;font-size:15px;line-height:1.45}
+.birth-label{white-space:nowrap}.birth-colon{text-align:center}.birth-value{white-space:nowrap}
+.sex-row{text-align:right;padding-right:17mm;font-size:15px;line-height:1.45;white-space:nowrap}.sex-row span{padding:0 3mm}
+.birth-in-words{position:relative;z-index:4;display:grid;grid-template-columns:30mm 5mm 1fr;width:100%;align-items:start;font-size:17px;line-height:1.45;margin-bottom:5mm}
+.details{position:relative;z-index:4}
+.data-row{display:grid;grid-template-columns:30mm 5mm 50mm 30mm 5mm 1fr;min-height:13mm;align-items:start;font-size:17px;line-height:1.45}
+.bn-label,.bn-value{font-family:"SolaimanLipi",sans-serif;font-size:19px}
+.en-label,.en-value{font-family:Arial,sans-serif;font-size:16px}.colon{text-align:center}.address-row{margin-top:3mm}
+.number-row {
+  position: absolute;
+  z-index: 4;
+  left: 5mm;
+  right: 5mm;
+  bottom: 20mm;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+/* LEFT */
+.number-left {
+  width: 30%;
+  text-align: center;
+}
+
+.left-line1 {
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.left-line2 {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.left-line3 {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+
+/* RIGHT */
+.number-right {
+  width: 30%;
+  text-align: center;
+}
+
+.right-line1 {
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.right-line2 {
+  font-size: 13px;
+  line-height: 1.4;
+}
+.footer{position:absolute;z-index:4;left:0;right:0;bottom:2mm;text-align:center;font-size:11px;line-height:1.5}
+.muted{font-size:12px;color:#64748b;margin-top:8px}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}.preview-wrap{min-height:auto}.certificate{transform-origin:top left}}
+@media print{
+ @page{size:A4 portrait;margin:0}
+ html,body{
+   margin:0!important;
+   padding:0!important;
+   width:210mm!important;
+   height:297mm!important;
+   min-width:210mm!important;
+   max-width:210mm!important;
+   min-height:297mm!important;
+   max-height:297mm!important;
+   overflow:hidden!important;
+   background:white!important;
+ }
+ body{
+   position:relative!important;
+ }
+ body *{visibility:hidden!important}
+ .app{
+   position:fixed!important;
+   left:0!important;
+   top:0!important;
+   width:210mm!important;
+   height:297mm!important;
+   min-height:297mm!important;
+   max-height:297mm!important;
+   margin:0!important;
+   padding:0!important;
+   overflow:hidden!important;
+ }
+ #printArea,#printArea *{visibility:visible!important}
+ #printArea{
+   display:block!important;
+   position:absolute!important;
+   left:0!important;
+   top:0!important;
+   width:210mm!important;
+   height:297mm!important;
+   min-height:297mm!important;
+   max-height:297mm!important;
+   margin:0!important;
+   padding:0!important;
+   overflow:hidden!important;
+ }
+ .certificate{
+   width:210mm!important;
+   height:297mm!important;
+   min-height:297mm!important;
+   max-height:297mm!important;
+   margin:0!important;
+   box-shadow:none!important;
+   page-break-after:avoid!important;
+   break-after:avoid-page!important;
+ }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="toolbar">
+    <h1>Birth Certificate Generator</h1>
+    <button class="primary" onclick="printCertificate()">Print</button>
+    <button class="primary" onclick="exportPDF()">PDF</button>
+    <button class="secondary" onclick="exportImage('jpg')">JPG</button>
+    <button class="secondary" onclick="exportImage('png')">PNG</button>
+    <button class="secondary" onclick="clearForm()">Clear</button>
+  </div>
+
+  <div class="layout">
+    <section class="panel">
+      <h2>Certificate Information</h2>
+      <div class="grid">
+        <div class="full"><label>QR Image</label><input type="file" id="qrUpload" accept="image/*"></div>
+        <div><label>Registration Office</label><input id="registrationOffice"></div>
+        <div><label>Location line 1</label><input id="location1"></div>
+        <div><label>Location line 2</label><input id="location2"></div>
+        <div><label>Date of Registration</label><input id="registrationDate"></div>
+        <div><label>Birth Registration Number</label><input id="registrationNumber" maxlength="17"></div>
+        <div><label>Date of Issuance</label><input id="issuanceDate"></div>
+        <div><label>Date of Birth</label><input id="birthDate" placeholder="DD/MM/YYYY"></div>
+        <div><label>Sex</label><input id="sex"></div>
+        <div><label>In Word</label><input id="birthDateWords" placeholder="Eg: Twenty First of January Two Thousand"></div>
+
+        <div><label>Name (Bangla)</label><input id="nameBn"></div>
+        <div><label>Name (English)</label><input id="nameEn"></div>
+        <div><label>Mother Name (Bangla)</label><input id="motherBn"></div>
+        <div><label>Mother Name (English)</label><input id="motherEn"></div>
+        <div><label>Mother's Nationality (Bangla)</label><input id="motherNatBn"></div>
+        <div><label>Mother's Nationality (English)</label><input id="motherNatEn"></div>
+        <div><label>Father Name (Bangla)</label><input id="fatherBn"></div>
+        <div><label>Father Name (English)</label><input id="fatherEn"></div>
+        <div><label>Father's Nationality (Bangla)</label><input id="fatherNatBn"></div>
+        <div><label>Father's Nationality (English)</label><input id="fatherNatEn"></div>
+        <div><label>Place of Birth (Bangla)</label><input id="placeBn"></div>
+        <div><label>Place of Birth (English)</label><input id="placeEn"></div>
+        <div class="full"><label>Permanent Address (Bangla)</label><input id="addressBn"></div>
+        <div class="full"><label>Permanent Address (English)</label><input id="addressEn"></div>
+        </div>
+      <div class="muted">Everything runs locally in your browser. No certificate data is uploaded by this page.</div>
+    </section>
+
+
+    <section class="panel">
+      <h2>Live A4 Preview</h2>
+      <div class="preview-wrap">
+        <div id="printArea"></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script>
+const ids = [
+'registrationDate','registrationOffice','issuanceDate','birthDate','birthDateWords','registrationNumber','sex',
+'nameBn','nameEn','motherBn','motherEn','motherNatBn','motherNatEn','fatherBn','fatherEn',
+'fatherNatBn','fatherNatEn','placeBn','placeEn','addressBn','addressEn','location1','location2'
+];
+
+const state = {qr:'',logo:'images/header_logo.png',watermark:'images/watermark.png'};
+
+function clean(s){return (s||'').replace(/\\s+/g,' ').trim();}
+
+function numberToWords(num){
+ const ones=["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
+ const tens=["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
+ num=parseInt(num,10); if(isNaN(num))return "";
+ if(num<20)return ones[num];
+ if(num<100)return tens[Math.floor(num/10)]+(num%10?" "+ones[num%10]:"");
+ if(num<1000)return ones[Math.floor(num/100)]+" Hundred"+(num%100?" "+numberToWords(num%100):"");
+ if(num<1000000)return numberToWords(Math.floor(num/1000))+" Thousand"+(num%1000?" "+numberToWords(num%1000):"");
+ return "";
+}
+function ordinalWord(num){
+ const o={1:"First",2:"Second",3:"Third",4:"Fourth",5:"Fifth",6:"Sixth",7:"Seventh",8:"Eighth",9:"Ninth",10:"Tenth",11:"Eleventh",12:"Twelfth",13:"Thirteenth",14:"Fourteenth",15:"Fifteenth",16:"Sixteenth",17:"Seventeenth",18:"Eighteenth",19:"Nineteenth",20:"Twentieth",21:"Twenty First",22:"Twenty Second",23:"Twenty Third",24:"Twenty Fourth",25:"Twenty Fifth",26:"Twenty Sixth",27:"Twenty Seventh",28:"Twenty Eighth",29:"Twenty Ninth",30:"Thirtieth",31:"Thirty First"};
+ return o[num]||"";
+}
+function yearToWords(year){
+ year=parseInt(year,10);if(isNaN(year))return "";
+ if(year>=2000&&year<2100)return year===2000?"Two Thousand":"Two Thousand "+numberToWords(year-2000);
+ if(year>=1900&&year<2000){let x=year-1900;return x===0?"Nineteen Hundred":"Nineteen "+numberToWords(x);}
+ if(year>=1800&&year<1900){let x=year-1800;return x===0?"Eighteen Hundred":"Eighteen "+numberToWords(x);}
+ return numberToWords(year);
+}
+function dateInWords(s){
+ s=clean(s); let d=0,m=0,y=0,match;
+ match=s.match(/^(\\d{1,2})[\\/-](\\d{1,2})[\\/-](\\d{4})$/);
+ if(match){d=+match[1];m=+match[2];y=+match[3];}
+ if(!d){match=s.match(/^(\\d{1,2})\\.(\\d{1,2})\\.(\\d{4})$/);if(match){d=+match[1];m=+match[2];y=+match[3];}}
+ if(!d){match=s.match(/^(\\d{1,2})\\s+([A-Za-z]+)\\s+(\\d{4})$/i);if(match){d=+match[1];y=+match[3];const mn={january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12};m=mn[match[2].toLowerCase()]||0;}}
+ const months=["","January","February","March","April","May","June","July","August","September","October","November","December"];
+ if(!d||!m||!y)return "";
+ return ordinalWord(d)+" of "+months[m]+" "+yearToWords(y);
+}
+function v(id){return document.getElementById(id).value;}
+
+function field(bnl,enl,bnv,env,extra=""){
+ return `<div class="data-row ${extra}">
+   <div class="bn-label">${bnl}</div><div class="colon">:</div><div class="bn-value">${bnv||""}</div>
+   <div class="en-label">${enl}</div><div class="colon">:</div><div class="en-value">${env||""}</div>
+ </div>`;
+}
+
+function render(){
+ const registrationNumber=v('registrationNumber');
+ const html=`
+ <div class="certificate">
+  <div class="content">
+   ${state.watermark?`<img class="certificate-watermark" src="${state.watermark}" alt="">`:''}
+   <div class="top-area">
+    <div class="header-logo-area">${state.logo?`<img src="${state.logo}" class="header-logo">`:''}</div>
+    <div class="qr-area">${state.qr?`<img src="${state.qr}" class="qr">`:''}</div>
+    <div class="barcode-area"><svg id="BR_BARCODE" class="barcode"></svg></div>
+   </div>
+
+   <div class="header-text">
+    <div class="gov-title">Government of the People's Republic of Bangladesh</div>
+    <div class="office-title">Office of the Registrar, Birth and Death Registration</div>
+    ${v('registrationOffice')?`<div class="union-title">${v('registrationOffice')}</div>`:''}
+    ${v('location1')?`<div class="location-title">${v('location1')}</div>`:''}
+    ${v('location2')?`<div class="location-title">${v('location2')}</div>`:''}
+    <div class="rules">(Rule 9, 10)</div>
+   </div>
+
+   <div class="certificate-title">জন্ম নিবন্ধন সনদ / <span>Birth Registration Certificate</span></div>
+
+   <div class="registration-info">
+    <div><div class="reg-label">Date of Registration</div><div class="reg-value">${v('registrationDate')}</div></div>
+    <div class="reg-center"><div class="reg-label">Birth Registration Number</div><div class="reg-number">${registrationNumber}</div></div>
+    <div class="reg-right"><div class="reg-label">Date of Issuance</div><div class="reg-value">${v('issuanceDate')}</div></div>
+   </div>
+
+   <div class="birth-info">
+    <div class="birth-date-row"><div class="birth-label">Date of Birth</div><div class="birth-colon">:</div><div class="birth-value">${v('birthDate')}</div></div>
+    <div class="sex-row">Sex<span>:</span>${v('sex')}</div>
+   </div>
+
+   <div class="birth-in-words"><div class="birth-label">In Word</div><div class="birth-colon">:</div><div class="birth-value">${v('birthDateWords')}</div></div>
+
+   <div class="details">
+    ${field("নাম","Name",v('nameBn'),v('nameEn'))}
+    ${field("মাতা","Mother",v('motherBn'),v('motherEn'))}
+    ${field("মাতার জাতীয়তা","Nationality",v('motherNatBn'),v('motherNatEn'))}
+    ${field("পিতা","Father",v('fatherBn'),v('fatherEn'))}
+    ${field("পিতার জাতীয়তা","Nationality",v('fatherNatBn'),v('fatherNatEn'))}
+    ${field("জন্মস্থান","Place of Birth",v('placeBn'),v('placeEn'))}
+    ${(v('addressBn')||v('addressEn'))?field("স্থায়ী ঠিকানা","Permanent Address",v('addressBn'),v('addressEn'),"address-row"):''}
+   </div>
+
+
+<div class="number-row">
+  <div class="number-left">
+    <div class="left-line1">Seal & Signature</div>
+    <div class="left-line2">Assistant to Registrar</div>
+    <div class="left-line3">(Preparation, Verification)</div>
+  </div>
+
+  <div class="number-right">
+    <div class="right-line1">Seal & Signature</div>
+    <div class="right-line2">Registrar</div>
+  </div>
+</div>
+
+
+   <div class="footer">
+    This certificate is generated from bdris.gov.bd, and to verify this certificate, please scan the above QR Code & Bar Code.
+   </div>
+  </div>
+ </div>`;
+ document.getElementById('printArea').innerHTML=html;
+ if(/^\d{17}$/.test(registrationNumber)){
+   try{JsBarcode("#BR_BARCODE",registrationNumber,{format:"CODE128",width:2,height:35,displayValue:false,margin:0,background:"#ffffff",lineColor:"#000000"});}catch(e){}
+ }
+}
+
+ids.forEach(id=>document.getElementById(id).addEventListener('input',render));
+
+function fileToDataUrl(input,key){
+ input.addEventListener('change',()=>{
+  const file=input.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{state[key]=reader.result;render()};
+  reader.readAsDataURL(file);
+ });
+}
+fileToDataUrl(document.getElementById('qrUpload'),'qr');
+
+
+async function getExportCanvas(){
+  const area = document.getElementById('printArea');
+  if(!area) throw new Error('Certificate area not found.');
+
+  // Target approximately 450 DPI for an A4 export.
+  const targetWidth = Math.round(210 / 25.4 * 450);
+  const currentWidth = area.getBoundingClientRect().width || 794;
+  const scale = Math.min(targetWidth / currentWidth, 6);
+
+  return await html2canvas(area, {
+    scale: scale,
+    useCORS: true,
+    allowTaint: false,
+    backgroundColor: '#ffffff',
+    logging: false,
+    imageTimeout: 20000
+  });
+}
+
+function printCertificate(){
+  render();
+  setTimeout(() => window.print(), 150);
+}
+
+async function exportImage(type){
+  try{
+    render();
+    const canvas = await getExportCanvas();
+    const mime = type === 'jpg' ? 'image/jpeg' : 'image/png';
+    const quality = type === 'jpg' ? 0.98 : undefined;
+
+    canvas.toBlob(blob => {
+      if(!blob) throw new Error('Could not create image.');
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `birth-certificate.${type}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    }, mime, quality);
+  }catch(error){
+    console.error(error);
+    alert('Could not export the certificate. Please try again.');
+  }
+}
+
+async function exportPDF(){
+  try{
+    render();
+    const canvas = await getExportCanvas();
+    const imgData = canvas.toDataURL('image/jpeg', 0.98);
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+      compress: true
+    });
+
+    pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+    pdf.save('birth-certificate.pdf');
+  }catch(error){
+    console.error(error);
+    alert('Could not create the PDF. Please try again.');
+  }
+}
+
+function clearForm(){
+ ids.forEach(id=>document.getElementById(id).value='');
+ ['qrUpload','logoUpload','watermarkUpload'].forEach(id=>document.getElementById(id).value='');
+ state.qr=state.logo=state.watermark='';
+ render();
+}
+render();
+</script>
+</body>
+</html>

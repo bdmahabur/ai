@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Generator</title>
+    <meta name="description" content="Generate Code 128, Code 39, EAN, UPC, ITF-14, Codabar and other barcode formats.">
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%236366f1'/%3E%3Cg fill='white'%3E%3Crect x='9' y='10' width='4' height='44'/%3E%3Crect x='16' y='10' width='2' height='44'/%3E%3Crect x='21' y='10' width='5' height='44'/%3E%3Crect x='30' y='10' width='2' height='44'/%3E%3Crect x='35' y='10' width='4' height='44'/%3E%3Crect x='43' y='10' width='2' height='44'/%3E%3Crect x='48' y='10' width='5' height='44'/%3E%3C/g%3E%3C/svg%3E">
+
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bwip-js@4.6.0/dist/bwip-js-min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-2: #f8fafc;
+            --text: #111827;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --shadow: 0 20px 60px rgba(15, 23, 42, 0.10);
+        }
+
+        html.dark {
+            --bg: #0b1120;
+            --surface: #111827;
+            --surface-2: #172033;
+            --text: #f9fafb;
+            --muted: #9ca3af;
+            --border: #263247;
+            --primary: #818cf8;
+            --primary-hover: #6366f1;
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+                BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        button, input, select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .header {
+            width: 100%;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        .header-inner {
+            max-width: 1100px;
+            margin: auto;
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 11px;
+            display: grid;
+            place-items: center;
+            background: var(--primary);
+            color: white;
+        }
+
+        .brand-icon svg {
+            width: 25px;
+            height: 25px;
+        }
+
+        .brand-text h1 {
+            font-size: 18px;
+            line-height: 1.1;
+            font-weight: 750;
+        }
+
+        .brand-text span {
+            display: block;
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .theme-btn {
+            width: 42px;
+            height: 42px;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            display: grid;
+            place-items: center;
+            color: var(--text);
+            background: var(--surface);
+        }
+
+        .theme-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        main {
+            width: 100%;
+            padding: 55px 20px 70px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .hero h2 {
+            font-size: clamp(30px, 5vw, 48px);
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            max-width: 650px;
+            margin: auto;
+            color: var(--muted);
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .app-card {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 25px;
+            padding: 25px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        .panel {
+            min-width: 0;
+        }
+
+        .panel-title {
+            margin-bottom: 18px;
+        }
+
+        .panel-title h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .panel-title p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 650;
+            margin-bottom: 8px;
+        }
+
+        .barcode-type,
+        .main-input {
+            width: 100%;
+            min-height: 45px;
+            padding: 11px 13px;
+            color: var(--text);
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .barcode-type:focus,
+        .main-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+        }
+
+        .barcode-type {
+            margin-bottom: 16px;
+        }
+
+        .helper {
+            min-height: 35px;
+            padding-top: 7px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .btn {
+            min-height: 45px;
+            padding: 0 17px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 650;
+            transition: transform .15s ease, background .2s ease;
+        }
+
+        .btn:active {
+            transform: scale(.98);
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface-2);
+        }
+
+        .barcode-panel {
+            min-height: 360px;
+            padding: 20px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .barcode-stage {
+            width: 100%;
+            min-height: 230px;
+            padding: 25px 15px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+        }
+
+        #barcode {
+            display: none;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .barcode-placeholder {
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .barcode-placeholder svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 12px;
+        }
+
+        .barcode-placeholder p {
+            font-size: 13px;
+        }
+
+        .download-btn {
+            width: 230px;
+            margin-top: 17px;
+        }
+
+        .download-btn:disabled {
+            cursor: not-allowed;
+            opacity: .45;
+        }
+
+        footer {
+            padding: 25px 20px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 25px;
+            transform: translate(-50%, 20px);
+            padding: 11px 16px;
+            background: var(--text);
+            color: var(--surface);
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: .25s;
+            z-index: 100;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        @media (max-width: 760px) {
+            main {
+                padding: 35px 15px 50px;
+            }
+
+            .app-card {
+                grid-template-columns: 1fr;
+                padding: 17px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-inner {
+                padding: 14px 15px;
+            }
+
+            .brand-text span {
+                display: none;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .barcode-stage {
+                min-height: 200px;
+                padding: 20px 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <a href="#" class="brand">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 5v14"></path>
+                        <path d="M6 5v14"></path>
+                        <path d="M9 5v14"></path>
+                        <path d="M13 5v14"></path>
+                        <path d="M15 5v14"></path>
+                        <path d="M18 5v14"></path>
+                        <path d="M21 5v14"></path>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>Barcode Generator</h1>
+                    <span>Multiple barcode formats</span>
+                </div>
+            </a>
+
+            <button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle dark mode">
+                <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round">
+                    <circle cx="12" cy="12" r="4"></circle>
+                    <path d="M12 2v2"></path>
+                    <path d="M12 20v2"></path>
+                    <path d="m4.93 4.93 1.41 1.41"></path>
+                    <path d="m17.66 17.66 1.41 1.41"></path>
+                    <path d="M2 12h2"></path>
+                    <path d="M20 12h2"></path>
+                    <path d="m6.34 17.66-1.41 1.41"></path>
+                    <path d="m19.07 4.93-1.41 1.41"></path>
+                </svg>
+                <svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" style="display:none;">
+                    <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3A6.7 6.7 0 0 0 21 12.8Z"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="hero">
+                <h2>Create Barcodes Instantly</h2>
+                <p>
+                    Generate professional 1D and 2D barcodes in different standard formats
+                    for products, inventory, labels, IDs and general use.
+                </p>
+            </section>
+
+            <section class="app-card">
+                <div class="panel">
+                    <div class="panel-title">
+                        <h3>Your barcode</h3>
+                        <p>Select a barcode format and enter the value to encode.</p>
+                    </div>
+
+                    <label class="field-label" for="barcodeType">Barcode Type</label>
+                    <select id="barcodeType" class="barcode-type">
+                        <option value="CODE128">Code 128 — General purpose</option>
+                        <option value="PDF417">PDF417 — 2D / document barcode</option>
+                        <option value="CODE39">Code 39 — Alphanumeric</option>
+                        <option value="EAN13">EAN-13 — Retail product</option>
+                        <option value="EAN8">EAN-8 — Compact retail</option>
+                        <option value="UPC">UPC-A — Retail product</option>
+                        <option value="ITF14">ITF-14 — Shipping/carton</option>
+                        <option value="MSI">MSI — Inventory</option>
+                        <option value="pharmacode">Pharmacode — Pharmaceutical</option>
+                        <option value="codabar">Codabar — Legacy numeric</option>
+                    </select>
+
+                    <label class="field-label" for="barcodeInput">Barcode Value</label>
+                    <input
+                        id="barcodeInput"
+                        class="main-input"
+                        type="text"
+                        placeholder="Enter text or number"
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+
+                    <div class="helper" id="helper">
+                        Code 128 accepts letters, numbers and most common symbols.
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn btn-primary" id="generateBtn" type="button">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round">
+                                <path d="M3 5v14"></path>
+                                <path d="M6 5v14"></path>
+                                <path d="M9 5v14"></path>
+                                <path d="M13 5v14"></path>
+                                <path d="M15 5v14"></path>
+                                <path d="M18 5v14"></path>
+                                <path d="M21 5v14"></path>
+                            </svg>
+                            Generate Barcode
+                        </button>
+
+                        <button class="btn btn-secondary" id="clearBtn" type="button">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round">
+                                <path d="M18 6 6 18"></path>
+                                <path d="m6 6 12 12"></path>
+                            </svg>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">
+                        <h3>Barcode preview</h3>
+                        <p>Your generated barcode will appear here.</p>
+                    </div>
+
+                    <div class="barcode-panel">
+                        <div class="barcode-stage" id="barcodeStage">
+                            <div class="barcode-placeholder" id="placeholder">
+                                <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10 12v56"></path>
+                                    <path d="M17 12v56"></path>
+                                    <path d="M25 12v56"></path>
+                                    <path d="M34 12v56"></path>
+                                    <path d="M39 12v56"></path>
+                                    <path d="M48 12v56"></path>
+                                    <path d="M56 12v56"></path>
+                                    <path d="M64 12v56"></path>
+                                    <path d="M70 12v56"></path>
+                                </svg>
+                                <p>Barcode will appear here</p>
+                            </div>
+                            <svg id="barcode"></svg>
+                        </div>
+
+                        <button class="btn btn-primary download-btn"
+                            id="downloadBtn" type="button" disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 3v12"></path>
+                                <path d="m7 10 5 5 5-5"></path>
+                                <path d="M5 21h14"></path>
+                            </svg>
+                            Download PNG
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        Barcode Generator · Multiple standard formats
+    </footer>
+
+    <div class="toast" id="toast" role="status"></div>
+
+    <script>
+        const barcodeType = document.getElementById("barcodeType");
+        const barcodeInput = document.getElementById("barcodeInput");
+        const helper = document.getElementById("helper");
+        const barcode = document.getElementById("barcode");
+        const placeholder = document.getElementById("placeholder");
+        const generateBtn = document.getElementById("generateBtn");
+        const clearBtn = document.getElementById("clearBtn");
+        const downloadBtn = document.getElementById("downloadBtn");
+        const toast = document.getElementById("toast");
+        const themeBtn = document.getElementById("themeBtn");
+        const sunIcon = document.getElementById("sunIcon");
+        const moonIcon = document.getElementById("moonIcon");
+
+        let generated = false;
+        let currentValue = "";
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add("show");
+            clearTimeout(showToast.timer);
+            showToast.timer = setTimeout(() => {
+                toast.classList.remove("show");
+            }, 2300);
+        }
+
+        function updateHelper() {
+            const type = barcodeType.value;
+
+            const messages = {
+                CODE128: "Code 128 accepts letters, numbers and most common symbols.",
+                PDF417: "PDF417 is a high-capacity 2D barcode commonly used for IDs, documents and transport applications.",
+                CODE39: "Code 39 accepts A–Z, 0–9, spaces and - . $ / + %.",
+                EAN13: "Enter 12 digits to calculate the check digit automatically, or enter all 13 digits.",
+                EAN8: "Enter 7 digits to calculate the check digit automatically, or enter all 8 digits.",
+                UPC: "Enter 11 digits to calculate the check digit automatically, or enter all 12 digits.",
+                ITF14: "Enter 13 digits to calculate the check digit automatically, or enter all 14 digits.",
+                MSI: "MSI is normally used with numeric inventory or identification values.",
+                pharmacode: "Enter a number from 3 to 131070.",
+                codabar: "Codabar accepts numbers and common Codabar characters such as A, B, C and D."
+            };
+
+            helper.textContent = messages[type] || "";
+            barcodeInput.value = "";
+            resetPreview();
+        }
+
+        function resetPreview() {
+            const stage = document.getElementById("barcodeStage");
+            stage.replaceChildren(placeholder, barcode);
+            barcode.innerHTML = "";
+            barcode.style.display = "none";
+            placeholder.style.display = "block";
+            generated = false;
+            currentValue = "";
+            downloadBtn.disabled = true;
+        }
+
+        function onlyDigits(value) {
+            return /^\d+$/.test(value);
+        }
+
+        function checksumEAN13(first12) {
+            let sum = 0;
+            for (let i = 0; i < 12; i++) {
+                sum += Number(first12[i]) * (i % 2 === 0 ? 1 : 3);
+            }
+            return String((10 - (sum % 10)) % 10);
+        }
+
+        function checksumEAN8(first7) {
+            let sum = 0;
+            for (let i = 0; i < 7; i++) {
+                sum += Number(first7[i]) * (i % 2 === 0 ? 3 : 1);
+            }
+            return String((10 - (sum % 10)) % 10);
+        }
+
+        function checksumUPC(first11) {
+            let sum = 0;
+            for (let i = 0; i < 11; i++) {
+                sum += Number(first11[i]) * (i % 2 === 0 ? 3 : 1);
+            }
+            return String((10 - (sum % 10)) % 10);
+        }
+
+        function checksumITF14(first13) {
+            let sum = 0;
+            for (let i = 0; i < 13; i++) {
+                sum += Number(first13[i]) * (i % 2 === 0 ? 3 : 1);
+            }
+            return String((10 - (sum % 10)) % 10);
+        }
+
+        function prepareValue(type, raw) {
+            const value = raw.trim();
+
+            if (!value) {
+                return { value: "", error: "Please enter a value." };
+            }
+
+            if (type === "CODE128") {
+                return { value };
+            }
+
+            if (type === "CODE39") {
+                if (!/^[0-9A-Z .\-$/+%]+$/i.test(value)) {
+                    return {
+                        value: "",
+                        error: "Code 39 only supports A–Z, 0–9, spaces and - . $ / + %."
+                    };
+                }
+                return { value: value.toUpperCase() };
+            }
+
+            if (type === "EAN13") {
+                if (!onlyDigits(value) || (value.length !== 12 && value.length !== 13)) {
+                    return { value: "", error: "EAN-13 requires 12 or 13 digits." };
+                }
+                if (value.length === 12) {
+                    return { value: value + checksumEAN13(value) };
+                }
+                return { value };
+            }
+
+            if (type === "EAN8") {
+                if (!onlyDigits(value) || (value.length !== 7 && value.length !== 8)) {
+                    return { value: "", error: "EAN-8 requires 7 or 8 digits." };
+                }
+                if (value.length === 7) {
+                    return { value: value + checksumEAN8(value) };
+                }
+                return { value };
+            }
+
+            if (type === "UPC") {
+                if (!onlyDigits(value) || (value.length !== 11 && value.length !== 12)) {
+                    return { value: "", error: "UPC-A requires 11 or 12 digits." };
+                }
+                if (value.length === 11) {
+                    return { value: value + checksumUPC(value) };
+                }
+                return { value };
+            }
+
+            if (type === "ITF14") {
+                if (!onlyDigits(value) || (value.length !== 13 && value.length !== 14)) {
+                    return { value: "", error: "ITF-14 requires 13 or 14 digits." };
+                }
+                if (value.length === 13) {
+                    return { value: value + checksumITF14(value) };
+                }
+                return { value };
+            }
+
+            if (type === "MSI") {
+                if (!onlyDigits(value)) {
+                    return { value: "", error: "MSI accepts digits only." };
+                }
+                return { value };
+            }
+
+            if (type === "pharmacode") {
+                if (!onlyDigits(value)) {
+                    return { value: "", error: "Pharmacode accepts digits only." };
+                }
+                const n = Number(value);
+                if (n < 3 || n > 131070) {
+                    return { value: "", error: "Pharmacode must be between 3 and 131070." };
+                }
+                return { value };
+            }
+
+            if (type === "codabar") {
+                if (!/^[0-9\-\$:\/\.\+\sABCD]+$/i.test(value)) {
+                    return {
+                        value: "",
+                        error: "Invalid Codabar characters."
+                    };
+                }
+                return { value: value.toUpperCase() };
+            }
+
+            return { value };
+        }
+
+        function generateBarcode() {
+            const type = barcodeType.value;
+            const prepared = prepareValue(type, barcodeInput.value);
+
+            if (!prepared.value) {
+                showToast(prepared.error);
+                barcodeInput.focus();
+                return;
+            }
+
+            barcode.innerHTML = "";
+            barcode.style.display = "none";
+
+            try {
+                if (type === "PDF417") {
+                    if (typeof bwipjs === "undefined") {
+                        showToast("PDF417 library could not be loaded.");
+                        return;
+                    }
+
+                    const canvas = document.createElement("canvas");
+                    canvas.id = "pdf417Canvas";
+                    canvas.style.display = "block";
+                    canvas.style.maxWidth = "100%";
+                    canvas.style.height = "auto";
+
+                    document.getElementById("barcodeStage").replaceChildren(canvas);
+
+                    bwipjs.toCanvas(canvas, {
+                        bcid: "pdf417",
+                        text: prepared.value,
+                        scale: 3,
+                        height: 10,
+                        columns: 6,
+                        rows: 0,
+                        eclevel: 2,
+                        includetext: true,
+                        textxalign: "center",
+                        paddingwidth: 12,
+                        paddingheight: 12,
+                        backgroundcolor: "FFFFFF",
+                        barcolor: "000000"
+                    });
+
+                    placeholder.style.display = "none";
+                    barcode.style.display = "none";
+
+                    generated = true;
+                    currentValue = prepared.value;
+                    downloadBtn.disabled = false;
+
+                    showToast("PDF417 barcode generated!");
+                    return;
+                }
+
+                if (typeof JsBarcode === "undefined") {
+                    showToast("Barcode library could not be loaded.");
+                    return;
+                }
+
+                // Restore the normal SVG preview container.
+                const stage = document.getElementById("barcodeStage");
+                stage.replaceChildren(placeholder, barcode);
+
+                JsBarcode(barcode, prepared.value, {
+                    format: type,
+                    lineColor: "#000000",
+                    background: "#ffffff",
+                    width: 2,
+                    height: 100,
+                    displayValue: true,
+                    fontSize: 16,
+                    margin: 10,
+                    textMargin: 5
+                });
+
+                placeholder.style.display = "none";
+                barcode.style.display = "block";
+
+                generated = true;
+                currentValue = prepared.value;
+                downloadBtn.disabled = false;
+
+                if (
+                    (type === "EAN13" && barcodeInput.value.trim().length === 12) ||
+                    (type === "EAN8" && barcodeInput.value.trim().length === 7) ||
+                    (type === "UPC" && barcodeInput.value.trim().length === 11) ||
+                    (type === "ITF14" && barcodeInput.value.trim().length === 13)
+                ) {
+                    showToast("Check digit added automatically!");
+                } else {
+                    showToast(type + " barcode generated!");
+                }
+            } catch (error) {
+                console.error(error);
+                resetPreview();
+                showToast(
+                    type === "PDF417"
+                        ? "Could not generate PDF417 with this value."
+                        : "This value is not valid for " + type + "."
+                );
+            }
+        }
+
+        generateBtn.addEventListener("click", generateBarcode);
+
+        barcodeInput.addEventListener("keydown", event => {
+            if (
+                event.key === "Enter" &&
+                (event.ctrlKey || event.metaKey)
+            ) {
+                generateBarcode();
+            }
+        });
+
+        barcodeType.addEventListener("change", updateHelper);
+
+        clearBtn.addEventListener("click", () => {
+            barcodeInput.value = "";
+            resetPreview();
+            showToast("Cleared.");
+            barcodeInput.focus();
+        });
+
+        downloadBtn.addEventListener("click", () => {
+            if (!generated) {
+                showToast("Generate a barcode first.");
+                return;
+            }
+
+            const pdfCanvas = document.getElementById("pdf417Canvas");
+
+            if (barcodeType.value === "PDF417" && pdfCanvas) {
+                const link = document.createElement("a");
+                link.download =
+                    "barcode-pdf417-" +
+                    new Date().toISOString().replace(/[:.]/g, "-") +
+                    ".png";
+                link.href = pdfCanvas.toDataURL("image/png");
+
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+
+                showToast("PDF417 barcode downloaded!");
+                return;
+            }
+
+            const svg = barcode;
+
+            if (!svg || !svg.querySelector("rect, path, line, text")) {
+                showToast("Unable to download barcode.");
+                return;
+            }
+
+            const serializer = new XMLSerializer();
+            const svgString = serializer.serializeToString(svg);
+
+            const svgBlob = new Blob(
+                [svgString],
+                { type: "image/svg+xml;charset=utf-8" }
+            );
+
+            const url = URL.createObjectURL(svgBlob);
+            const image = new Image();
+
+            image.onload = () => {
+                const scale = 3;
+                const canvas = document.createElement("canvas");
+
+                canvas.width = image.width * scale;
+                canvas.height = image.height * scale;
+
+                const ctx = canvas.getContext("2d");
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                URL.revokeObjectURL(url);
+
+                const link = document.createElement("a");
+                link.download =
+                    "barcode-" +
+                    barcodeType.value.toLowerCase() +
+                    "-" +
+                    new Date().toISOString().replace(/[:.]/g, "-") +
+                    ".png";
+
+                link.href = canvas.toDataURL("image/png");
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+
+                showToast("Barcode downloaded!");
+            };
+
+            image.onerror = () => {
+                URL.revokeObjectURL(url);
+                showToast("Unable to download barcode.");
+            };
+
+            image.src = url;
+        });
+
+        function setTheme(theme) {
+            if (theme === "dark") {
+                document.documentElement.classList.add("dark");
+                sunIcon.style.display = "none";
+                moonIcon.style.display = "block";
+                themeBtn.setAttribute("aria-label", "Switch to light mode");
+            } else {
+                document.documentElement.classList.remove("dark");
+                sunIcon.style.display = "block";
+                moonIcon.style.display = "none";
+                themeBtn.setAttribute("aria-label", "Switch to dark mode");
+            }
+
+            localStorage.setItem("barcode-theme", theme);
+        }
+
+        themeBtn.addEventListener("click", () => {
+            const isDark =
+                document.documentElement.classList.contains("dark");
+            setTheme(isDark ? "light" : "dark");
+        });
+
+        const savedTheme = localStorage.getItem("barcode-theme");
+
+        if (savedTheme) {
+            setTheme(savedTheme);
+        } else if (
+            window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+        ) {
+            setTheme("dark");
+        } else {
+            setTheme("light");
+        }
+
+        updateHelper();
+    </script>
+</body>
+</html>

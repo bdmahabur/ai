@@ -1,0 +1,695 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f5f7fb">
+<title>CM ↔ MM Converter</title>
+
+<!-- SVG Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%234f46e5'/%3E%3Cpath d='M14 16H50M14 26H50M14 36H50M14 46H50M22 16V24M32 16V24M42 16V24M22 36V44M32 36V44M42 36V44' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --primary: #4f46e5;
+  --primary-dark: #4338ca;
+  --text: #182230;
+  --muted: #697586;
+  --border: #e5e9f2;
+  --background: #f5f7fb;
+  --white: #ffffff;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--background);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+button, input, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.topbar {
+  background: white;
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar-inner {
+  max-width: 1100px;
+  margin: auto;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+  font-weight: 750;
+}
+
+.brand-icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  background: #eeedff;
+  color: var(--primary);
+  border-radius: 12px;
+}
+
+.brand-icon svg {
+  width: 23px;
+  height: 23px;
+}
+
+.status {
+  padding: 7px 11px;
+  border-radius: 30px;
+  color: #15803d;
+  background: #f0fdf4;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+main {
+  width: 100%;
+  max-width: 760px;
+  padding: 55px 20px 45px;
+  margin: auto;
+  flex: 1;
+}
+
+.heading {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.eyebrow {
+  display: inline-block;
+  background: #eeedff;
+  color: var(--primary);
+  padding: 7px 11px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 1px;
+  margin-bottom: 17px;
+}
+
+h1 {
+  font-size: clamp(30px, 5vw, 43px);
+  letter-spacing: -1.5px;
+  margin-bottom: 12px;
+}
+
+.heading p {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.converter {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 12px 40px rgba(25, 35, 70, 0.05);
+}
+
+.field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.input-wrap {
+  display: flex;
+  align-items: center;
+  border: 1px solid #dce1eb;
+  border-radius: 12px;
+  padding: 0 12px 0 16px;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.input-wrap:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, .1);
+}
+
+.input-wrap input {
+  width: 100%;
+  min-width: 0;
+  height: 62px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 25px;
+  font-weight: 650;
+}
+
+.unit-select {
+  border: none;
+  outline: none;
+  border-radius: 8px;
+  background: #eeedff;
+  color: var(--primary);
+  padding: 9px 10px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.swap-row {
+  display: flex;
+  justify-content: center;
+  margin: 17px 0;
+}
+
+.swap-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e4e2ff;
+  background: #f8f8ff;
+  color: var(--primary);
+  padding: 10px 16px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.swap-btn:hover {
+  background: #eeedff;
+}
+
+.swap-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.result-box {
+  background: #f8f8ff;
+  border: 1px solid #e4e2ff;
+  border-radius: 14px;
+  padding: 21px;
+}
+
+.result-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 13px;
+}
+
+.result-heading > span:first-child {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.unit-badge {
+  background: #eeedff;
+  color: var(--primary);
+  padding: 7px 11px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.result-value {
+  color: var(--primary);
+  font-size: clamp(32px, 6vw, 44px);
+  font-weight: 800;
+  letter-spacing: -1px;
+  overflow-wrap: anywhere;
+}
+
+.result-value small {
+  color: var(--text);
+  font-size: 19px;
+  letter-spacing: 0;
+}
+
+.result-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn {
+  min-height: 46px;
+  padding: 0 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.btn svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
+.btn-primary {
+  flex: 1;
+  color: white;
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--text);
+}
+
+.btn-secondary:hover {
+  background: #f5f6fa;
+}
+
+.formula {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 22px;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+}
+
+.formula svg {
+  width: 20px;
+  height: 20px;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.formula strong {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.formula p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.examples {
+  margin-top: 30px;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 750;
+  margin-bottom: 14px;
+}
+
+.example-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.example {
+  padding: 16px;
+  text-align: left;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: border-color .2s, transform .2s;
+}
+
+.example:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.example strong {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.example span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+footer {
+  text-align: center;
+  padding: 22px 16px;
+  border-top: 1px solid var(--border);
+  background: white;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+@media (max-width: 520px) {
+  main {
+    padding: 38px 15px;
+  }
+
+  .topbar-inner {
+    padding: 13px 16px;
+  }
+
+  .converter {
+    padding: 20px;
+  }
+
+  .example-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .example {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .example strong {
+    margin-bottom: 0;
+    font-size: 14px;
+  }
+
+  .result-actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+
+
+/* Remove number input up/down arrows */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+
+        input[type="number"] {
+          -moz-appearance: textfield;
+          appearance: textfield;
+        }
+</style>
+</head>
+
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4v16M8 4v7M12 4v4M16 4v7M20 4v16"/>
+          <path d="M3 20h18"/>
+        </svg>
+      </span>
+      <span>Measure Tools</span>
+    </div>
+    <span class="status">Free Tool</span>
+  </div>
+</header>
+
+<main>
+  <section class="heading">
+    <span class="eyebrow">LENGTH CONVERTER</span>
+    <h1>CM ↔ MM Converter</h1>
+    <p>Convert centimeters to millimeters and millimeters<br>
+      to centimeters instantly. Simple, accurate, and free.</p>
+  </section>
+
+  <section class="converter">
+    <label class="field-label" for="lengthInput">Enter length</label>
+
+    <div class="input-wrap">
+      <input id="lengthInput" type="number"
+        min="0" step="any" placeholder="Enter a value"
+        inputmode="decimal" autocomplete="off">
+
+      <select id="fromUnit" class="unit-select"
+        aria-label="Convert from unit">
+        <option value="cm">cm</option>
+        <option value="mm">mm</option>
+      </select>
+    </div>
+
+    <div class="swap-row">
+      <button class="swap-btn" id="swapBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 3l4 4-4 4M3 7h18"/>
+          <path d="M7 21l-4-4 4-4M21 17H3"/>
+        </svg>
+        <span>Swap Units</span>
+      </button>
+    </div>
+
+    <div class="result-box" aria-live="polite">
+      <div class="result-heading">
+        <span>Converted result</span>
+        <span class="unit-badge" id="toUnitLabel">mm</span>
+      </div>
+      <div class="result-value">
+        <output id="resultOutput">0 <small>mm</small></output>
+      </div>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn btn-primary" id="copyBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <rect x="8" y="8" width="13" height="13" rx="2"/>
+          <path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>
+        </svg>
+        <span>Copy Result</span>
+      </button>
+
+      <button class="btn btn-secondary" id="clearBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18M8 6V4h8v2m-11 0 1 14h12l1-14"/>
+          <path d="M10 10v6M14 10v6"/>
+        </svg>
+        Clear
+      </button>
+    </div>
+
+    <div class="formula">
+      <svg viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="1.8"
+        stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M12 11v5M12 7h.01"/>
+      </svg>
+      <div>
+        <strong>Conversion formula</strong>
+        <p id="formulaText">mm = cm × 10</p>
+        <p id="formulaExample">Example: 5 cm = 50 mm</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="examples">
+    <h2 class="section-title">Quick conversions</h2>
+    <div class="example-grid">
+      <button class="example" type="button" data-value="1">
+        <strong>1 cm = 10 mm</strong>
+        <span>Small length</span>
+      </button>
+      <button class="example" type="button" data-value="5">
+        <strong>5 cm = 50 mm</strong>
+        <span>Medium length</span>
+      </button>
+      <button class="example" type="button" data-value="10">
+        <strong>10 cm = 100 mm</strong>
+        <span>Larger length</span>
+      </button>
+    </div>
+  </section>
+</main>
+
+<footer>
+  CM ↔ MM Converter · Free online measurement tool
+</footer>
+
+<script>
+
+
+ // Prevent mouse-wheel scrolling from changing the single page number.
+document.addEventListener('wheel', function (e) {
+    const input = e.target.closest('input[type="number"]');
+
+    if (input && document.activeElement === input) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+
+(() => {
+  const input = document.getElementById("lengthInput");
+  const fromUnit = document.getElementById("fromUnit");
+  const toUnitLabel = document.getElementById("toUnitLabel");
+  const output = document.getElementById("resultOutput");
+  const swapBtn = document.getElementById("swapBtn");
+  const copyBtn = document.getElementById("copyBtn");
+  const clearBtn = document.getElementById("clearBtn");
+  const formulaText = document.getElementById("formulaText");
+  const formulaExample = document.getElementById("formulaExample");
+
+  let currentResult = 0;
+  let validResult = true;
+  let copyTimer;
+
+  function formatNumber(value) {
+    return value.toLocaleString("en-US", {
+      maximumFractionDigits: 10,
+      useGrouping: false
+    });
+  }
+
+  function updateResult() {
+    const from = fromUnit.value;
+    const to = from === "cm" ? "mm" : "cm";
+
+    toUnitLabel.textContent = to;
+
+    if (from === "cm") {
+      formulaText.textContent = "mm = cm × 10";
+      formulaExample.textContent = "Example: 5 cm = 50 mm";
+    } else {
+      formulaText.textContent = "cm = mm ÷ 10";
+      formulaExample.textContent = "Example: 50 mm = 5 cm";
+    }
+
+    if (input.value.trim() === "") {
+      currentResult = 0;
+      validResult = true;
+      output.innerHTML = `0 <small>${to}</small>`;
+      return;
+    }
+
+    const number = Number(input.value);
+
+    if (!Number.isFinite(number) || number < 0) {
+      currentResult = NaN;
+      validResult = false;
+      output.innerHTML = `— <small>${to}</small>`;
+      return;
+    }
+
+    currentResult = from === "cm" ? number * 10 : number / 10;
+    validResult = Number.isFinite(currentResult);
+
+    output.innerHTML = validResult
+      ? `${formatNumber(currentResult)} <small>${to}</small>`
+      : `— <small>${to}</small>`;
+  }
+
+  input.addEventListener("input", updateResult);
+  fromUnit.addEventListener("change", updateResult);
+
+  // Swap units AND preserve the same physical length.
+  swapBtn.addEventListener("click", () => {
+    if (input.value.trim() !== "" && validResult) {
+      input.value = formatNumber(currentResult);
+    }
+
+    fromUnit.value = fromUnit.value === "cm" ? "mm" : "cm";
+    updateResult();
+  });
+
+  // Quick conversions always load a centimeter value.
+  document.querySelectorAll(".example").forEach(button => {
+    button.addEventListener("click", () => {
+      fromUnit.value = "cm";
+      input.value = button.dataset.value;
+      updateResult();
+      input.focus();
+    });
+  });
+
+  copyBtn.addEventListener("click", async () => {
+    if (!validResult) return;
+
+    const label = copyBtn.querySelector("span");
+    const text = `${formatNumber(currentResult)} ${toUnitLabel.textContent}`;
+
+    clearTimeout(copyTimer);
+
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const temp = document.createElement("textarea");
+        temp.value = text;
+        temp.style.position = "fixed";
+        temp.style.left = "-9999px";
+        document.body.appendChild(temp);
+        temp.select();
+
+        const success = document.execCommand("copy");
+        temp.remove();
+
+        if (!success) throw new Error("Copy failed");
+      }
+
+      label.textContent = "Copied!";
+    } catch {
+      label.textContent = "Copy failed";
+    }
+
+    copyTimer = setTimeout(() => {
+      label.textContent = "Copy Result";
+    }, 1500);
+  });
+
+  clearBtn.addEventListener("click", () => {
+    input.value = "";
+    updateResult();
+    input.focus();
+  });
+
+  updateResult();
+})();
+
+</script>
+</body>
+</html>
