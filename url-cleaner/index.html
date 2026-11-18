@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%232563eb'/%3E%3Crect x='20' y='25' width='60' height='50' rx='6' fill='white'/%3E%3Ccircle cx='38' cy='43' r='8' fill='%232563eb'/%3E%3Crect x='51' y='37' width='20' height='5' rx='2' fill='%232563eb'/%3E%3Crect x='51' y='47' width='15' height='4' rx='2' fill='%2394a3b8'/%3E%3Crect x='30' y='61' width='40' height='4' rx='2' fill='%2394a3b8'/%3E%3C/svg%3E">
+
+    <title>URL Cleaner & Printer</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
+
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 5px 25px rgba(0, 0, 0, 0.10);
+        }
+
+
+        /* =========================
+           TITLE
+           ========================= */
+
+        h1 {
+            margin: 0 0 28px 0;
+
+            text-align: center;
+
+            color: #222;
+
+            font-size: 40px;
+        }
+
+
+        /* =========================
+           INPUT
+           ========================= */
+
+        textarea {
+            width: 100%;
+
+            height: 120px;
+
+            padding: 15px;
+
+            border: 1px solid #4285f4;
+
+            border-radius: 8px;
+
+            outline: none;
+
+            resize: vertical;
+
+            font-family: Consolas, "Courier New", monospace;
+
+            font-size: 16px;
+
+            line-height: 1.5;
+
+            color: #222;
+
+            background: white;
+        }
+
+        textarea:focus {
+            border-color: #1a73e8;
+
+            box-shadow:
+                0 0 0 2px rgba(66, 133, 244, 0.15);
+        }
+
+
+        /* =========================
+           BUTTONS
+           ========================= */
+
+        .buttons {
+            margin-top: 20px;
+
+            display: flex;
+
+            gap: 10px;
+        }
+
+        button {
+            border: none;
+
+            border-radius: 7px;
+
+            padding: 12px 20px;
+
+            font-size: 15px;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+
+        .process-button {
+            background: #4285f4;
+
+            color: white;
+        }
+
+
+        .clear-button {
+            background: #e5e5e5;
+
+            color: #333;
+        }
+
+
+        /* =========================
+           RESULT
+           ========================= */
+
+        .result {
+            margin-top: 25px;
+
+            padding: 20px;
+
+            background: #f8f9fa;
+
+            border-radius: 8px;
+
+            display: none;
+        }
+
+
+        .result-title {
+            font-size: 20px;
+
+            font-weight: bold;
+
+            margin-bottom: 10px;
+
+            color: #222;
+        }
+
+
+        .cleaned-url {
+            word-break: break-all;
+
+            font-family: Consolas, "Courier New", monospace;
+
+            font-size: 16px;
+
+            color: #0000ee;
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================
+           STATUS
+           ========================= */
+
+        .status {
+            margin-top: 15px;
+
+            font-size: 14px;
+
+            color: #555;
+        }
+
+
+        .error {
+            margin-top: 15px;
+
+            padding: 10px 12px;
+
+            border-radius: 6px;
+
+            background: #fdecec;
+
+            color: #d93025;
+
+            display: none;
+        }
+
+
+        /* =========================
+           PRINT AREA
+           ========================= */
+
+        #printArea {
+            display: none;
+        }
+
+
+        /*
+         * Print styling
+         */
+
+        @media print {
+
+            @page {
+                margin: 0;
+            }
+
+
+            body {
+                margin: 0;
+
+                background: white;
+            }
+
+
+            body > * {
+                display: none !important;
+            }
+
+
+            #printArea {
+                display: flex !important;
+
+                position: fixed;
+
+                left: 0;
+
+                top: 0;
+
+                width: 100vw;
+
+                height: 100vh;
+
+                justify-content: center;
+
+                align-items: center;
+
+                background: white;
+            }
+
+
+            #printImage {
+                display: block;
+
+                max-width: 100%;
+
+                max-height: 100%;
+
+                width: auto;
+
+                height: auto;
+
+                object-fit: contain;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <h1>
+        URL Cleaner &amp; Printer
+    </h1>
+
+
+    <!-- =========================
+         INPUT
+         ========================= -->
+
+    <textarea
+        id="inputText"
+        autofocus
+    ></textarea>
+
+
+    <!-- =========================
+         BUTTONS
+         ========================= -->
+
+    <div class="buttons">
+
+        <button
+            id="processButton"
+            class="process-button"
+            onclick="processAndPrint()">
+
+            Process &amp; Print
+
+        </button>
+
+
+        <button
+            class="clear-button"
+            onclick="clearAll()">
+
+            Clear
+
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         ERROR
+         ========================= -->
+
+    <div
+        id="error"
+        class="error">
+    </div>
+
+
+    <!-- =========================
+         RESULT
+         ========================= -->
+
+    <div
+        id="result"
+        class="result">
+
+        <div class="result-title">
+            Cleaned URL:
+        </div>
+
+
+        <div
+            id="cleanedURL"
+            class="cleaned-url">
+        </div>
+
+
+        <div
+            id="status"
+            class="status">
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     PRINT AREA
+     ========================= -->
+
+<div id="printArea">
+
+    <img
+        id="printImage"
+        alt="Image to print">
+
+</div>
+
+
+
+<script>
+
+
+/* =========================================================
+   MAIN FUNCTION
+   ========================================================= */
+
+function processAndPrint() {
+
+    const input =
+        document.getElementById("inputText");
+
+
+    const result =
+        document.getElementById("result");
+
+
+    const error =
+        document.getElementById("error");
+
+
+    const cleanedURL =
+        document.getElementById("cleanedURL");
+
+
+    const status =
+        document.getElementById("status");
+
+
+    const printImage =
+        document.getElementById("printImage");
+
+
+    /*
+     * Clear previous error
+     */
+
+    error.style.display = "none";
+
+    status.textContent = "";
+
+
+    /*
+     * Get input
+     */
+
+    let text =
+        input.value.trim();
+
+
+    /*
+     * Check empty input
+     */
+
+    if (!text) {
+
+        showError(
+            "Please paste a URL or file path."
+        );
+
+        return;
+    }
+
+
+    /*
+     * ==============================================
+     * REMOVE QUOTES
+     * ==============================================
+     *
+     * Input:
+     *
+     * "E:\Download\Photos\image.jpg"
+     *
+     * Output:
+     *
+     * E:\Download\Photos\image.jpg
+     *
+     */
+
+
+    if (
+        text.length >= 2 &&
+        text.startsWith('"') &&
+        text.endsWith('"')
+    ) {
+
+        text =
+            text.substring(
+                1,
+                text.length - 1
+            );
+    }
+
+
+    /*
+     * Remove any extra spaces
+     */
+
+    text =
+        text.trim();
+
+
+    /*
+     * ==============================================
+     * CREATE URL
+     * ==============================================
+     */
+
+    let openURL;
+
+
+    /*
+     * Windows local file
+     *
+     * Example:
+     *
+     * E:\Download\Photos\image.jpg
+     */
+
+    if (
+        /^[a-zA-Z]:[\\\/]/.test(text)
+    ) {
+
+        openURL =
+            windowsPathToFileURL(text);
+
+    }
+
+
+    /*
+     * file:/// URL
+     */
+
+    else if (
+        text.toLowerCase().startsWith("file:///")
+    ) {
+
+        openURL = text;
+
+    }
+
+
+    /*
+     * HTTP / HTTPS URL
+     */
+
+    else if (
+        /^https?:\/\//i.test(text)
+    ) {
+
+        openURL = text;
+
+    }
+
+
+    /*
+     * Other URL
+     */
+
+    else {
+
+        openURL = text;
+
+    }
+
+
+    /*
+     * ==============================================
+     * SHOW CLEANED URL
+     * ==============================================
+     */
+
+    cleanedURL.textContent =
+        text;
+
+
+    result.style.display =
+        "block";
+
+
+    /*
+     * ==============================================
+     * DETERMINE FILE TYPE
+     * ==============================================
+     */
+
+    const isImage =
+        isImageFile(text);
+
+
+    /*
+     * ==============================================
+     * IMAGE
+     * ==============================================
+     */
+
+    if (isImage) {
+
+        status.textContent =
+            "Loading image for printing...";
+
+
+        /*
+         * Remove previous image
+         */
+
+        printImage.onload = null;
+
+        printImage.onerror = null;
+
+        printImage.src = "";
+
+
+        /*
+         * Image successfully loaded
+         */
+
+        printImage.onload =
+            function () {
+
+                status.textContent =
+                    "Opening print dialog...";
+
+
+                /*
+                 * Small delay gives Chrome
+                 * time to render the image
+                 */
+
+                setTimeout(
+                    function () {
+
+                        window.print();
+
+                    },
+                    300
+                );
+
+            };
+
+
+
+        /*
+         * Load image
+         */
+
+        printImage.src =
+            openURL;
+
+
+        return;
+    }
+
+
+    /*
+     * ==============================================
+     * PDF
+     * ==============================================
+     */
+
+    if (
+        /\.pdf$/i.test(text)
+    ) {
+
+        status.textContent =
+            "Opening PDF...";
+
+
+        /*
+         * PDF cannot reliably be printed
+         * directly from normal JavaScript.
+         *
+         * Open it in Chrome.
+         */
+
+        const pdfWindow =
+            window.open(
+                openURL,
+                "_blank"
+            );
+
+
+        if (!pdfWindow) {
+
+            showError(
+                "Chrome blocked the new tab. " +
+                "Please allow pop-ups for this page."
+            );
+
+            return;
+        }
+
+
+        status.textContent =
+            "PDF opened in a new tab. Use Ctrl+P to print.";
+
+        return;
+    }
+
+
+    /*
+     * ==============================================
+     * OTHER URL
+     * ==============================================
+     */
+
+    const newWindow =
+        window.open(
+            openURL,
+            "_blank"
+        );
+
+
+    if (!newWindow) {
+
+        showError(
+            "Chrome blocked the new tab. " +
+            "Please allow pop-ups for this page."
+        );
+
+        return;
+    }
+
+
+    status.textContent =
+        "URL opened in a new tab.";
+
+}
+
+
+
+/* =========================================================
+   WINDOWS PATH → FILE URL
+   ========================================================= */
+
+function windowsPathToFileURL(path) {
+
+    /*
+     * Convert:
+     *
+     * E:\Download\Photos\image.jpg
+     *
+     * to:
+     *
+     * file:///E:/Download/Photos/image.jpg
+     */
+
+
+    let converted =
+        path.replace(
+            /\\/g,
+            "/"
+        );
+
+
+    /*
+     * Encode spaces and other
+     * special characters safely
+     */
+
+    const parts =
+        converted.split("/");
+
+
+    const encodedParts =
+        parts.map(
+            function (part, index) {
+
+                /*
+                 * Do not encode the drive letter
+                 */
+
+                if (
+                    index === 0 &&
+                    /^[a-zA-Z]:$/.test(part)
+                ) {
+
+                    return part;
+
+                }
+
+
+                return encodeURIComponent(part);
+
+            }
+        );
+
+
+    return (
+        "file:///" +
+        encodedParts.join("/")
+    );
+}
+
+
+
+/* =========================================================
+   CHECK IMAGE
+   ========================================================= */
+
+function isImageFile(path) {
+
+    return /\.(jpg|jpeg|png|gif|bmp|webp|tif|tiff|svg)$/i
+        .test(path);
+
+}
+
+
+
+/* =========================================================
+   CLEAR
+   ========================================================= */
+
+function clearAll() {
+
+    /*
+     * Clear input
+     */
+
+    document.getElementById(
+        "inputText"
+    ).value = "";
+
+
+    /*
+     * Hide result
+     */
+
+    document.getElementById(
+        "result"
+    ).style.display = "none";
+
+
+    /*
+     * Hide error
+     */
+
+    document.getElementById(
+        "error"
+    ).style.display = "none";
+
+
+    /*
+     * Clear status
+     */
+
+    document.getElementById(
+        "status"
+    ).textContent = "";
+
+
+    /*
+     * Clear image
+     */
+
+    document.getElementById(
+        "printImage"
+    ).src = "";
+
+
+    /*
+     * Put cursor back in textbox
+     */
+
+    document.getElementById(
+        "inputText"
+    ).focus();
+
+}
+
+
+
+/* =========================================================
+   SHOW ERROR
+   ========================================================= */
+
+function showError(message) {
+
+    const error =
+        document.getElementById("error");
+
+
+    error.textContent =
+        message;
+
+
+    error.style.display =
+        "block";
+}
+
+
+
+/* =========================================================
+   ENTER KEY
+   ========================================================= */
+
+document.getElementById(
+    "inputText"
+).addEventListener(
+    "keydown",
+    function (event) {
+
+        /*
+         * Ctrl + Enter or Enter
+         */
+
+        if (event.key === "Enter" && !event.shiftKey) {
+
+            event.preventDefault();
+
+            processAndPrint();
+
+        }
+
+    }
+);
+
+
+</script>
+
+
+</body>
+</html>
