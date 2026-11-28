@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b1220" />
+  <meta name="description" content="Open a WhatsApp conversation using a Bangladesh mobile number." />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="WA Chat Opener" />
+  <title>WhatsApp Chat Opener</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1220;
+      --surface: rgba(18, 29, 47, .88);
+      --surface-2: #17243a;
+      --text: #f3f7fb;
+      --muted: #9aabc0;
+      --border: rgba(160, 180, 205, .18);
+      --accent: #25d366;
+      --accent-hover: #1fbd59;
+      --field: #0d192b;
+      --shadow: 0 24px 70px rgba(0,0,0,.35);
+    }
+    [data-theme="light"] {
+      color-scheme: light;
+      --bg: #f1f6f4;
+      --surface: rgba(255,255,255,.92);
+      --surface-2: #f2f7f4;
+      --text: #14231c;
+      --muted: #66776e;
+      --border: rgba(29, 65, 47, .14);
+      --accent: #16a34a;
+      --accent-hover: #12823c;
+      --field: #f8fbf9;
+      --shadow: 0 24px 70px rgba(30, 70, 48, .12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: grid; place-items: center;
+      padding: 24px; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text); background:
+        radial-gradient(circle at 15% 15%, rgba(37,211,102,.14), transparent 32%),
+        radial-gradient(circle at 85% 85%, rgba(42,130,190,.12), transparent 30%), var(--bg);
+      transition: background .25s ease, color .25s ease;
+    }
+    .app { width: min(100%, 440px); }
+    .card-top { display:flex; align-items:center; justify-content:space-between; }
+    .theme-toggle {
+      width:42px; height:42px; display:grid; place-items:center; padding:0; border:1px solid var(--border);
+      border-radius:14px; color:var(--text); background:var(--surface-2); cursor:pointer;
+      transition:border-color .2s, transform .2s, background .2s;
+    }
+    .theme-toggle:hover { border-color:var(--accent); transform:translateY(-1px); }
+    .card {
+      position:relative; overflow:hidden; padding:clamp(25px, 6vw, 38px); border:1px solid var(--border);
+      border-radius:28px; background:var(--surface); box-shadow:var(--shadow); backdrop-filter:blur(18px);
+    }
+    .brand-icon {
+      width:62px; height:62px; display:grid; place-items:center; border-radius:20px;
+      color:#062b16; background:linear-gradient(145deg,#6bf09b,#20c765); box-shadow:0 12px 28px rgba(37,211,102,.22);
+    }
+    h1 { margin:22px 0 8px; font-size:clamp(25px,6vw,31px); letter-spacing:-1.1px; }
+    .subtitle { margin:0; color:var(--muted); font-size:14px; line-height:1.65; }
+    .field-label { display:block; margin:28px 0 10px; font-size:13px; font-weight:650; }
+    .phone-field {
+      display:flex; align-items:center; gap:0; min-height:62px; padding:7px; border:1px solid var(--border);
+      border-radius:16px; background:var(--field); transition:border-color .2s, box-shadow .2s;
+    }
+    .phone-field:focus-within { border-color:var(--accent); box-shadow:0 0 0 4px rgba(37,211,102,.12); }
+    .prefix { flex:none; padding:0 13px; color:var(--text); font-weight:750; letter-spacing:.2px; border-right:1px solid var(--border); }
+    input {
+      width:100%; min-width:0; padding:12px 13px; border:0; outline:0; color:var(--text); background:transparent;
+      font:inherit; font-size:18px; font-weight:650; letter-spacing:1.4px;
+    }
+    input::placeholder { color:var(--muted); opacity:.65; letter-spacing:1px; }
+    .counter { flex:none; padding:0 10px; color:var(--muted); font-size:12px; font-variant-numeric:tabular-nums; }
+    .hint { min-height:20px; margin:9px 2px 0; color:var(--muted); font-size:12px; }
+    .hint.error { color:#ef6b6b; }
+    .send-btn {
+      width:100%; min-height:56px; display:flex; justify-content:center; align-items:center; gap:10px; margin-top:20px;
+      border:0; border-radius:16px; color:#062b16; background:var(--accent); cursor:pointer; font:inherit; font-size:15px; font-weight:800;
+      box-shadow:0 10px 24px rgba(37,211,102,.18); transition:transform .18s, background .18s, opacity .18s;
+    }
+    .send-btn:hover { background:var(--accent-hover); transform:translateY(-1px); }
+    .send-btn:active { transform:translateY(0); }
+    .send-btn:disabled { cursor:not-allowed; opacity:.45; box-shadow:none; }
+    .recent { margin-top:24px; padding-top:20px; border-top:1px solid var(--border); }
+    .recent-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:11px; }
+    .recent-title { color:var(--muted); font-size:12px; font-weight:750; letter-spacing:.7px; text-transform:uppercase; }
+    .clear-btn { padding:4px 0; border:0; color:var(--muted); background:none; cursor:pointer; font:inherit; font-size:12px; }
+    .clear-btn:hover { color:var(--text); }
+    .recent-list { display:grid; gap:8px; }
+    .recent-item { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:11px 12px; border:1px solid var(--border); border-radius:12px; background:var(--surface-2); }
+    .recent-number { overflow:hidden; color:var(--text); font-size:13px; font-weight:650; letter-spacing:.5px; text-overflow:ellipsis; white-space:nowrap; }
+    .use-btn { flex:none; padding:6px 10px; border:1px solid var(--border); border-radius:8px; color:var(--text); background:transparent; cursor:pointer; font:inherit; font-size:11px; }
+    .use-btn:hover { border-color:var(--accent); }
+    .empty { padding:12px 0 2px; color:var(--muted); font-size:12px; text-align:center; }
+    .footer { margin:17px 0 0; color:var(--muted); font-size:11px; line-height:1.6; text-align:center; }
+    svg { display:block; }
+    @media (max-width:380px) { body { padding:14px; } .card { border-radius:22px; } .prefix { padding:0 10px; } input { padding-inline:10px; font-size:17px; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none !important; } }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="card" aria-labelledby="title">
+      <div class="card-top">
+        <div class="brand-icon" aria-hidden="true">
+        <svg width="34" height="34" viewBox="0 0 24 24"
+     xmlns="http://www.w3.org/2000/svg"
+     fill="none">
+
+  <path
+    d="M20.5 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20l1.2-4.8A8.4 8.4 0 1 1 20.5 11.5Z"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="1.8"
+    stroke-linejoin="round"/>
+
+  <path
+    d="M8.5 8.2c.2-.5.5-.5.8-.5h.5c.2 0 .4.1.5.4l.7 1.6c.1.2.1.4-.1.6l-.5.6c-.2.2-.2.4 0 .6.5.9 1.2 1.5 2.1 2 .2.1.4.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.5.7c.3.1.4.3.4.5 0 .4-.2 1.1-.7 1.5-.5.4-1.1.6-1.8.5-1-.1-2.4-.7-3.8-1.9-1.1-.9-1.9-2.1-2.2-3.1-.3-.9-.1-1.6.2-2.1Z"
+    fill="#FFFFFF"/>
+
+</svg>
+        </div>
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme" title="Toggle color theme">
+          <svg id="themeIcon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v2m0 14v2M3 12h2m14 0h2M5.64 5.64l1.42 1.42m9.88 9.88 1.42 1.42m0-12.72-1.42 1.42m-9.88 9.88-1.42 1.42"/><circle cx="12" cy="12" r="4"/></svg>
+        </button>
+      </div>
+      <h1 id="title">WhatsApp Chat Opener</h1>
+      <p class="subtitle">Enter a Bangladesh mobile number and jump straight into a WhatsApp conversation.</p>
+
+      <form id="phoneForm" novalidate>
+        <label class="field-label" for="phoneInput">Mobile number</label>
+        <div class="phone-field">
+          <span class="prefix">+88</span>
+          <input id="phoneInput" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="11" placeholder="01XXXXXXXXX" aria-describedby="phoneHint" />
+          <span class="counter" id="counter">0/11</span>
+        </div>
+        <p class="hint" id="phoneHint" aria-live="polite">Type the 11-digit mobile number starting with 01.</p>
+        <button class="send-btn" id="sendBtn" type="submit" disabled>
+          Open WhatsApp
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>
+        </button>
+      </form>
+
+      <section class="recent" aria-labelledby="recentTitle">
+        <div class="recent-head">
+          <span class="recent-title" id="recentTitle">Recent numbers</span>
+          <button class="clear-btn" id="clearBtn" type="button">Clear history</button>
+        </div>
+        <div class="recent-list" id="recentList"><div class="empty">Your recent numbers will appear here.</div></div>
+      </section>
+    </section>
+  </main>
+  <script>
+    const input = document.getElementById('phoneInput');
+    const counter = document.getElementById('counter');
+    const hint = document.getElementById('phoneHint');
+    const sendBtn = document.getElementById('sendBtn');
+    const form = document.getElementById('phoneForm');
+    const recentList = document.getElementById('recentList');
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const HISTORY_KEY = 'wa-opener-history-v1';
+    const THEME_KEY = 'wa-opener-theme-v1';
+    const DEFAULT_MESSAGE = 'Hi';
+
+    function cleanDigits(value) { return value.replace(/\D/g, '').slice(0, 11); }
+    function isValidNumber(digits) { return /^01\d{9}$/.test(digits); }
+    function updateInput() {
+      const digits = cleanDigits(input.value);
+      if (input.value !== digits) input.value = digits;
+      counter.textContent = `${digits.length}/11`;
+      sendBtn.disabled = !isValidNumber(digits);
+      hint.classList.remove('error');
+      hint.textContent = isValidNumber(digits) ? 'Number looks ready. Open the WhatsApp chat.' : 'Enter 11 digits, starting with 01.';
+    }
+    function getHistory() {
+      try { const value = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); return Array.isArray(value) ? value.slice(0, 5) : []; }
+      catch { return []; }
+    }
+    function saveHistory(number) {
+      const next = [number, ...getHistory().filter(item => item !== number)].slice(0, 5);
+      try { localStorage.setItem(HISTORY_KEY, JSON.stringify(next)); }
+      catch (error) { console.warn('History could not be saved:', error); }
+      renderHistory();
+    }
+    function renderHistory() {
+      const items = getHistory();
+      recentList.replaceChildren();
+      if (!items.length) {
+        const empty = document.createElement('div'); empty.className = 'empty'; empty.textContent = 'Your recent numbers will appear here.'; recentList.append(empty); return;
+      }
+      items.forEach(number => {
+        const row = document.createElement('div'); row.className = 'recent-item';
+        const label = document.createElement('span'); label.className = 'recent-number'; label.textContent = `+${number}`;
+        const button = document.createElement('button'); button.className = 'use-btn'; button.type = 'button'; button.textContent = 'Use number';
+        button.addEventListener('click', () => { input.value = number.slice(2); updateInput(); input.focus(); });
+        row.append(label, button); recentList.append(row);
+      });
+    }
+    function applyTheme(theme) {
+      document.documentElement.dataset.theme = theme;
+      const isDark = theme === 'dark';
+      themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+      themeToggle.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+      themeIcon.innerHTML = isDark
+        ? '<path d="M20.2 15.2A8.5 8.5 0 0 1 8.8 3.8 8.5 8.5 0 1 0 20.2 15.2Z"/>'
+        : '<path d="M12 3v2m0 14v2M3 12h2m14 0h2M5.64 5.64l1.42 1.42m9.88 9.88 1.42 1.42m0-12.72-1.42 1.42m-9.88 9.88-1.42 1.42"/><circle cx="12" cy="12" r="4"/>';
+      document.querySelector('meta[name="theme-color"]').content = isDark ? '#0b1220' : '#f1f6f4';
+      try { localStorage.setItem(THEME_KEY, theme); }
+      catch (error) { console.warn('Theme preference could not be saved:', error); }
+    }
+    input.addEventListener('input', updateInput);
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const digits = cleanDigits(input.value);
+      if (!isValidNumber(digits)) {
+        hint.textContent = 'Please enter a valid 11-digit number starting with 01.'; hint.classList.add('error'); input.focus(); return;
+      }
+      const fullNumber = `88${digits}`;
+      saveHistory(fullNumber);
+      // Phones use WhatsApp's universal link (opens the app when installed).
+      // Computers stay on WhatsApp Web in the current browser.
+      const isMobile = /Android|iPhone|iPad|iPod|Mobile|IEMobile|Opera Mini/i.test(navigator.userAgent)
+        || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const whatsappUrl = isMobile
+        ? `https://wa.me/${fullNumber}?text=${encodeURIComponent(DEFAULT_MESSAGE)}`
+        : `https://web.whatsapp.com/send?phone=${fullNumber}&text=${encodeURIComponent(DEFAULT_MESSAGE)}`;
+      window.location.href = whatsappUrl;
+    });
+    themeToggle.addEventListener('click', () => applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'));
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      try { localStorage.removeItem(HISTORY_KEY); }
+      catch (error) { console.warn('History could not be cleared:', error); }
+      renderHistory();
+    });
+
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem(THEME_KEY); }
+    catch (error) { console.warn('Theme preference could not be read:', error); }
+    const preferredTheme = savedTheme || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    applyTheme(preferredTheme);
+    renderHistory();
+    updateInput();
+  </script>
+  <script>
+    // Cache the app shell so this page can be opened offline after its first visit.
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch((error) => {
+          console.warn('Offline setup could not be completed:', error);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
